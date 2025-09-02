@@ -29,7 +29,8 @@ import {
   Eye,
   Download,
   Shield,
-  Database
+  Database,
+  Bell
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
@@ -575,8 +576,8 @@ const Dashboard: React.FC = () => {
               className="h-8 w-auto mr-4 opacity-90"
             />
           </div>
-          <h1 className="text-2xl sm:text-4xl font-bold mb-2">{t('admin.systemCommand')} 🎯</h1>
-          <p className="text-lg sm:text-xl opacity-90 mb-6">{t('admin.subtitle')}</p>
+          <h1 className="text-2xl sm:text-4xl font-bold mb-2">सिस्टम कमांड सेंटर 🎯</h1>
+          <p className="text-lg sm:text-xl opacity-90 mb-6">{t('dashboard.adminTitle')}</p>
           <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-6">
             <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 w-full sm:w-auto">
               <p className="text-sm opacity-80">{t('dashboard.totalUsers')}</p>
