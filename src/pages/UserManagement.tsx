@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Table, Button, Tag, Input, Select, Space, Avatar, Tooltip, Switch, Modal } from 'antd';
+import { Card, Table, Button, Tag, Input, Select, Space, Avatar, Tooltip, Switch, Row, Col, Statistic } from 'antd';
 import { 
   Users, 
   Plus, 
@@ -16,6 +16,7 @@ import {
   Lock,
   Unlock
 } from 'lucide-react';
+import { Factory, Truck } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { User } from '../types';
 import Swal from 'sweetalert2';
@@ -128,20 +129,31 @@ const UserManagement: React.FC = () => {
   }, [searchText, roleFilter, statusFilter, users]);
 
   const handleToggleStatus = (user: User) => {
+    const swalWithBootstrapButtons = Swal.mixin({
+      customClass: {
+        confirmButton: 'bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg mr-2 transition-colors',
+        cancelButton: 'bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-lg transition-colors',
+        popup: 'bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border-0',
+        title: 'text-gray-900 dark:text-white font-bold',
+        htmlContainer: 'text-gray-700 dark:text-gray-300'
+      },
+      buttonsStyling: false
+    });
+
     const action = user.isActive ? 'deactivate' : 'activate';
-    Swal.fire({
+    swalWithBootstrapButtons.fire({
       title: `${action.charAt(0).toUpperCase() + action.slice(1)} User?`,
       text: `This will ${action} ${user.name}'s account.`,
       icon: 'question',
       showCancelButton: true,
-      confirmButtonColor: user.isActive ? '#ef4444' : '#10b981',
-      confirmButtonText: `Yes, ${action}!`
+      confirmButtonText: `Yes, ${action}!`,
+      cancelButtonText: 'Cancel'
     }).then((result) => {
       if (result.isConfirmed) {
         setUsers(prev => prev.map(u => 
           u.id === user.id ? { ...u, isActive: !u.isActive } : u
         ));
-        Swal.fire({
+        swalWithBootstrapButtons.fire({
           icon: 'success',
           title: `User ${action}d!`,
           text: `${user.name} has been ${action}d.`,
@@ -153,30 +165,49 @@ const UserManagement: React.FC = () => {
   };
 
   const handleSendMail = (user: User) => {
-    Swal.fire({
+    const swalWithBootstrapButtons = Swal.mixin({
+      customClass: {
+        confirmButton: 'bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded-lg mr-2 transition-colors',
+        cancelButton: 'bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-lg transition-colors',
+        popup: 'bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border-0',
+        title: 'text-gray-900 dark:text-white font-bold',
+        htmlContainer: 'text-gray-700 dark:text-gray-300'
+      },
+      buttonsStyling: false
+    });
+
+    swalWithBootstrapButtons.fire({
       title: 'Send Mail to User',
       html: `
-        <div class="text-left">
-          <p><strong>To:</strong> ${user.name} (${user.email})</p>
-          <p><strong>Role:</strong> ${user.role}</p>
-          <select id="mailTemplate" class="w-full mt-3 p-2 border rounded">
+        <div class="text-left space-y-4 p-2">
+          <div class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700/20 dark:to-gray-600/20 p-4 rounded-xl">
+            <p><strong>To:</strong> ${user.name} (${user.email})</p>
+            <p><strong>Role:</strong> <span class="capitalize">${user.role}</span></p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Template</label>
+            <select id="mailTemplate" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
             <option value="">Select Template</option>
             <option value="welcome">Welcome Message</option>
             <option value="security">Security Update</option>
             <option value="account">Account Information</option>
             <option value="custom">Custom Message</option>
           </select>
-          <textarea 
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Message</label>
+            <textarea 
             id="mailContent" 
-            class="w-full mt-3 p-3 border rounded-lg" 
+            class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white" 
             rows="4" 
             placeholder="Enter your message..."
           ></textarea>
+          </div>
         </div>
       `,
       showCancelButton: true,
       confirmButtonText: 'Send Mail',
-      confirmButtonColor: '#1890ff',
+      cancelButtonText: 'Cancel',
       preConfirm: () => {
         const content = (document.getElementById('mailContent') as HTMLTextAreaElement)?.value;
         if (!content) {
@@ -186,7 +217,7 @@ const UserManagement: React.FC = () => {
       }
     }).then((result) => {
       if (result.isConfirmed) {
-        Swal.fire({
+        swalWithBootstrapButtons.fire({
           icon: 'success',
           title: 'Mail Sent!',
           text: `Message sent to ${user.name}`,
@@ -198,18 +229,28 @@ const UserManagement: React.FC = () => {
   };
 
   const handleDelete = (user: User) => {
-    Swal.fire({
+    const swalWithBootstrapButtons = Swal.mixin({
+      customClass: {
+        confirmButton: 'bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-lg mr-2 transition-colors',
+        cancelButton: 'bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-lg transition-colors',
+        popup: 'bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border-0',
+        title: 'text-gray-900 dark:text-white font-bold',
+        htmlContainer: 'text-gray-700 dark:text-gray-300'
+      },
+      buttonsStyling: false
+    });
+
+    swalWithBootstrapButtons.fire({
       title: 'Delete User?',
       text: `This will permanently delete ${user.name} from the system. This action cannot be undone.`,
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#ef4444',
-      cancelButtonColor: '#6b7280',
-      confirmButtonText: 'Yes, delete it!'
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'Cancel'
     }).then((result) => {
       if (result.isConfirmed) {
         setUsers(prev => prev.filter(u => u.id !== user.id));
-        Swal.fire({
+        swalWithBootstrapButtons.fire({
           icon: 'success',
           title: 'User Deleted!',
           text: 'User has been permanently deleted.',
@@ -221,25 +262,36 @@ const UserManagement: React.FC = () => {
   };
 
   const handleAddUser = () => {
-    Swal.fire({
+    const swalWithBootstrapButtons = Swal.mixin({
+      customClass: {
+        confirmButton: 'bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg mr-2 transition-colors',
+        cancelButton: 'bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-lg transition-colors',
+        popup: 'bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border-0',
+        title: 'text-gray-900 dark:text-white font-bold',
+        htmlContainer: 'text-gray-700 dark:text-gray-300'
+      },
+      buttonsStyling: false
+    });
+
+    swalWithBootstrapButtons.fire({
       title: 'Add New User',
       html: `
-        <div class="text-left space-y-4">
+        <div class="text-left space-y-4 p-2">
           <div>
-            <label class="block text-sm font-medium mb-1">User ID</label>
-            <input id="newUserId" class="w-full p-2 border rounded" placeholder="Enter user ID..." />
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">User ID</label>
+            <input id="newUserId" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="Enter user ID..." />
           </div>
           <div>
-            <label class="block text-sm font-medium mb-1">Full Name</label>
-            <input id="newUserName" class="w-full p-2 border rounded" placeholder="Enter full name..." />
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Full Name</label>
+            <input id="newUserName" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="Enter full name..." />
           </div>
           <div>
-            <label class="block text-sm font-medium mb-1">Email</label>
-            <input id="newUserEmail" type="email" class="w-full p-2 border rounded" placeholder="Enter email..." />
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email</label>
+            <input id="newUserEmail" type="email" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="Enter email..." />
           </div>
           <div>
-            <label class="block text-sm font-medium mb-1">Role</label>
-            <select id="newUserRole" class="w-full p-2 border rounded">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Role</label>
+            <select id="newUserRole" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
               <option value="">Select role...</option>
               <option value="manufacturer">Manufacturer</option>
               <option value="distributor">Distributor</option>
@@ -247,14 +299,14 @@ const UserManagement: React.FC = () => {
             </select>
           </div>
           <div>
-            <label class="block text-sm font-medium mb-1">Company</label>
-            <input id="newUserCompany" class="w-full p-2 border rounded" placeholder="Enter company name..." />
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Company</label>
+            <input id="newUserCompany" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="Enter company name..." />
           </div>
         </div>
       `,
       showCancelButton: true,
       confirmButtonText: 'Create User',
-      confirmButtonColor: '#1890ff',
+      cancelButtonText: 'Cancel',
       width: '500px',
       preConfirm: () => {
         const userId = (document.getElementById('newUserId') as HTMLInputElement)?.value;
@@ -283,7 +335,7 @@ const UserManagement: React.FC = () => {
         };
         
         setUsers(prev => [...prev, newUser]);
-        Swal.fire({
+        swalWithBootstrapButtons.fire({
           icon: 'success',
           title: 'User Created!',
           text: `${newUser.name} has been added to the system.`,

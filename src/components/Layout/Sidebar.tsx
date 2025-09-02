@@ -7,6 +7,8 @@ import {
   Mail, 
   Users, 
   Shield,
+  Database,
+  Activity,
   Settings,
   LogOut,
   Menu
@@ -30,6 +32,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
     { path: '/mail', icon: Mail, label: 'Mail Center', roles: ['manufacturer', 'distributor', 'admin'] },
     { path: '/users', icon: Users, label: 'User Management', roles: ['admin'] },
     { path: '/admin', icon: Shield, label: 'Admin Panel', roles: ['admin'] },
+    { path: '/crm-sync', icon: Database, label: 'CRM Sync', roles: ['admin'] },
+    { path: '/transaction-sync', icon: Activity, label: 'Transaction Sync', roles: ['admin'] },
     { path: '/settings', icon: Settings, label: 'Settings', roles: ['manufacturer', 'distributor', 'admin'] },
   ];
 
