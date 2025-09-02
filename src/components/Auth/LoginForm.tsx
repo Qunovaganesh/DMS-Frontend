@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useLanguage } from '../../contexts/LanguageContext';
-import { Factory, Lock, User, Eye, EyeOff } from 'lucide-react';
+import { Factory, Lock, User, Eye, EyeOff, Languages } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Swal from 'sweetalert2';
 
@@ -10,9 +10,10 @@ const LoginForm: React.FC = () => {
   const [userId, setUserId] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [showLanguageSelector, setShowLanguageSelector] = useState(false);
   const { login, isLoading } = useAuth();
   const { getThemeColors } = useTheme();
-  const { t } = useLanguage();
+  const { language, setLanguage, t } = useLanguage();
   const colors = getThemeColors();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -73,6 +74,60 @@ const LoginForm: React.FC = () => {
       >
         {/* Logo and Title */}
         <div className="text-center mb-8">
+          {/* Language Toggle */}
+          <div className="absolute top-4 right-4">
+            <div className="relative">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setShowLanguageSelector(!showLanguageSelector)}
+                className="p-2 rounded-lg bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 transition-colors"
+              >
+                <Languages className="w-5 h-5" />
+              </motion.button>
+
+              {showLanguageSelector && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                  className="absolute right-0 top-12 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 p-3 z-50 min-w-[140px]"
+                >
+                  <div className="space-y-1">
+                    <button
+                      onClick={() => {
+                        setLanguage('en');
+                        setShowLanguageSelector(false);
+                      }}
+                      className={`flex items-center space-x-3 p-2 rounded-lg transition-all text-left w-full ${
+                        language === 'en'
+                          ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300'
+                          : 'hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
+                      }`}
+                    >
+                      <span className="text-lg">🇺🇸</span>
+                      <span className="text-sm font-medium">English</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        setLanguage('hi');
+                        setShowLanguageSelector(false);
+                      }}
+                      className={`flex items-center space-x-3 p-2 rounded-lg transition-all text-left w-full ${
+                        language === 'hi'
+                          ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300'
+                          : 'hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
+                      }`}
+                    >
+                      <span className="text-lg">🇮🇳</span>
+                      <span className="text-sm font-medium">हिंदी</span>
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </div>
+          </div>
+
           <motion.div 
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
