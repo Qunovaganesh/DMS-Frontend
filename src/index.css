@@ -28,8 +28,8 @@ body {
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -59,15 +59,15 @@ body {
 
 /* Ant Design customizations */
 .ant-card {
-  border-radius: 12px !important;
+  border-radius: 16px !important;
   border: none !important;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
   transition: all 0.3s ease !important;
 }
 
 .ant-card:hover {
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
-  transform: translateY(-2px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+  transform: translateY(-4px);
 }
 
 .ant-card-head {
@@ -118,7 +118,7 @@ body {
 }
 
 .ant-btn {
-  border-radius: 8px !important;
+  border-radius: 12px !important;
   font-weight: 500 !important;
   transition: all 0.3s ease !important;
 }
@@ -129,12 +129,12 @@ body {
 }
 
 .ant-input, .ant-select-selector {
-  border-radius: 8px !important;
+  border-radius: 12px !important;
   transition: all 0.3s ease !important;
 }
 
 .ant-input:focus, .ant-select-focused .ant-select-selector {
-  border-color: #1890ff !important;
+  border-color: var(--theme-primary) !important;
   box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2) !important;
 }
 
@@ -222,26 +222,73 @@ body {
 
 /* Responsive design enhancements */
 @media (max-width: 768px) {
+  .ant-row {
+    margin-left: -8px !important;
+    margin-right: -8px !important;
+  }
+  
+  .ant-col {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+  
   .ant-card-body {
-    padding: 16px !important;
+    padding: 12px !important;
   }
   
   .ant-table {
-    font-size: 14px;
+    font-size: 12px;
   }
   
   .ant-statistic-title {
-    font-size: 12px !important;
+    font-size: 11px !important;
   }
   
   .ant-statistic-content {
-    font-size: 18px !important;
+    font-size: 16px !important;
+  }
+  
+  .ant-btn {
+    font-size: 12px !important;
+    padding: 4px 8px !important;
+    height: auto !important;
+  }
+  
+  .ant-input {
+    font-size: 14px !important;
+  }
+  
+  .ant-select {
+    font-size: 14px !important;
+  }
+}
+
+/* Mobile-first responsive utilities */
+@media (max-width: 640px) {
+  .text-responsive {
+    font-size: 0.875rem !important;
+  }
+  
+  .text-responsive-lg {
+    font-size: 1rem !important;
+  }
+  
+  .p-responsive {
+    padding: 0.75rem !important;
+  }
+  
+  .m-responsive {
+    margin: 0.5rem !important;
+  }
+  
+  .space-responsive > * + * {
+    margin-left: 0.5rem !important;
   }
 }
 
 /* Custom gradient backgrounds */
 .gradient-bg-1 {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--theme-primary) 0%, var(--theme-secondary) 100%);
 }
 
 .gradient-bg-2 {
@@ -304,7 +351,7 @@ body {
 
 /* Enhanced form styles */
 .form-group {
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 
 .form-label {
@@ -320,16 +367,38 @@ body {
 
 /* Custom button styles */
 .btn-gradient {
-  background: linear-gradient(135deg, #1890ff, #722ed1);
+  background: linear-gradient(135deg, var(--theme-primary), var(--theme-accent));
   border: none;
   color: white;
   transition: all 0.3s ease;
 }
 
 .btn-gradient:hover {
-  background: linear-gradient(135deg, #40a9ff, #9254de);
+  background: linear-gradient(135deg, var(--theme-secondary), var(--theme-primary));
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(24, 144, 255, 0.4);
+  box-shadow: 0 4px 12px rgba(24, 144, 255, 0.3);
+}
+
+/* Theme-aware components */
+.theme-primary {
+  color: var(--theme-primary) !important;
+}
+
+.theme-bg-primary {
+  background-color: var(--theme-primary) !important;
+}
+
+.theme-border-primary {
+  border-color: var(--theme-primary) !important;
+}
+
+/* Bizz+ branding */
+.bizz-logo {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.bizz-gradient {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #ec4899 100%);
 }
 
 /* Print styles */

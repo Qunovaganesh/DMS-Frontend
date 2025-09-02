@@ -19,7 +19,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const AppContent: React.FC = () => {
   const { isAuthenticated, isLoading } = useAuth();
-  const { isDark } = useTheme();
+  const { isDark, getThemeColors } = useTheme();
+  const colors = getThemeColors();
 
   if (isLoading) {
     return (
@@ -42,9 +43,13 @@ const AppContent: React.FC = () => {
       theme={{
         algorithm: isDark ? theme.darkAlgorithm : theme.defaultAlgorithm,
         token: {
-          colorPrimary: '#1890ff',
-          borderRadius: 8,
+          colorPrimary: colors.primary,
+          borderRadius: 12,
           fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+          colorSuccess: '#52c41a',
+          colorWarning: '#faad14',
+          colorError: '#ff4d4f',
+          colorInfo: colors.primary,
         },
       }}
     >
