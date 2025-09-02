@@ -259,8 +259,11 @@ export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }
 
   useEffect(() => {
     const savedLanguage = localStorage.getItem('bizz_language') as Language;
+    // Default to English if no saved language
     if (savedLanguage && (savedLanguage === 'en' || savedLanguage === 'hi')) {
       setLanguage(savedLanguage);
+    } else {
+      setLanguage('en'); // Default to English
     }
   }, []);
 
