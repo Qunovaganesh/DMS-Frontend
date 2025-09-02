@@ -34,6 +34,7 @@ import {
 import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import { DashboardStats, Manufacturer, Distributor, MailData } from '../types';
 
 const { TabPane } = Tabs;
@@ -43,6 +44,7 @@ const { RangePicker } = DatePicker;
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
   const { getThemeColors } = useTheme();
+  const { t } = useLanguage();
   const colors = getThemeColors();
   const [stats, setStats] = useState<DashboardStats>({
     totalManufacturers: 0,
@@ -161,15 +163,15 @@ const Dashboard: React.FC = () => {
               className="h-8 w-auto mr-4 opacity-90"
             />
           </div>
-          <h1 className="text-2xl sm:text-4xl font-bold mb-2">नमस्ते, {user?.name}! 🚀</h1>
-          <p className="text-lg sm:text-xl opacity-90 mb-6">आपका निर्माण साम्राज्य फल-फूल रहा है। यहाँ है आपका कमांड सेंटर।</p>
+          <h1 className="text-2xl sm:text-4xl font-bold mb-2">{t('dashboard.welcome')}, {user?.name}! 🚀</h1>
+          <p className="text-base sm:text-lg opacity-80 mb-6">{t('dashboard.manufacturerTitle')}</p>
           <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-6">
             <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 w-full sm:w-auto">
-              <p className="text-sm opacity-80">कुल राजस्व</p>
+              <p className="text-sm opacity-80">{t('dashboard.totalRevenue')}</p>
               <p className="text-xl sm:text-2xl font-bold">₹{manufacturerData.orderValue.current.toLocaleString('hi-IN')}</p>
             </div>
             <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 w-full sm:w-auto">
-              <p className="text-sm opacity-80">वृद्धि दर</p>
+              <p className="text-sm opacity-80">{t('dashboard.growthRate')}</p>
               <p className="text-xl sm:text-2xl font-bold">+{manufacturerData.orderValue.growth}%</p>
             </div>
           </div>
@@ -186,16 +188,16 @@ const Dashboard: React.FC = () => {
       >
         <Row gutter={[24, 24]}>
           <Col xs={12} sm={12} lg={6}>
-            {renderStatCard('ऑर्डर वैल्यू', manufacturerData.orderValue.current, manufacturerData.orderValue.previous, manufacturerData.orderValue.growth, DollarSign, colors.gradient, '₹')}
+            {renderStatCard(t('metrics.orderValue'), manufacturerData.orderValue.current, manufacturerData.orderValue.previous, manufacturerData.orderValue.growth, DollarSign, colors.gradient, '₹')}
           </Col>
           <Col xs={12} sm={12} lg={6}>
-            {renderStatCard('ऑर्डर संख्या', manufacturerData.orderCount.current, manufacturerData.orderCount.previous, manufacturerData.orderCount.growth, ShoppingCart, 'from-blue-500 to-indigo-600')}
+            {renderStatCard(t('metrics.orderCount'), manufacturerData.orderCount.current, manufacturerData.orderCount.previous, manufacturerData.orderCount.growth, ShoppingCart, 'from-blue-500 to-indigo-600')}
           </Col>
           <Col xs={12} sm={12} lg={6}>
-            {renderStatCard('औसत ऑर्डर वैल्यू', manufacturerData.avgOrderValue.current, manufacturerData.avgOrderValue.previous, manufacturerData.avgOrderValue.growth, Target, 'from-purple-500 to-pink-600', '₹')}
+            {renderStatCard(t('metrics.avgOrderValue'), manufacturerData.avgOrderValue.current, manufacturerData.avgOrderValue.previous, manufacturerData.avgOrderValue.growth, Target, 'from-purple-500 to-pink-600', '₹')}
           </Col>
           <Col xs={12} sm={12} lg={6}>
-            {renderStatCard('यूनीक आउटलेट्स', manufacturerData.uniqueOutlets.current, manufacturerData.uniqueOutlets.previous, manufacturerData.uniqueOutlets.growth, Globe, 'from-orange-500 to-red-600')}
+            {renderStatCard(t('metrics.uniqueOutlets'), manufacturerData.uniqueOutlets.current, manufacturerData.uniqueOutlets.previous, manufacturerData.uniqueOutlets.growth, Globe, 'from-orange-500 to-red-600')}
           </Col>
         </Row>
       </motion.div>
@@ -208,16 +210,16 @@ const Dashboard: React.FC = () => {
       >
         <Row gutter={[24, 24]}>
           <Col xs={12} sm={12} lg={6}>
-            {renderStatCard('यूनीक डिस्ट्रिब्यूटर्स', manufacturerData.uniqueDistributors.current, manufacturerData.uniqueDistributors.previous, manufacturerData.uniqueDistributors.growth, Truck, 'from-cyan-500 to-blue-600')}
+            {renderStatCard(t('metrics.uniqueDistributors'), manufacturerData.uniqueDistributors.current, manufacturerData.uniqueDistributors.previous, manufacturerData.uniqueDistributors.growth, Truck, 'from-cyan-500 to-blue-600')}
           </Col>
           <Col xs={12} sm={12} lg={6}>
-            {renderStatCard('नए आउटलेट्स', manufacturerData.newOutlets.current, manufacturerData.newOutlets.previous, manufacturerData.newOutlets.growth, MapPin, 'from-green-500 to-emerald-600')}
+            {renderStatCard(t('metrics.newOutlets'), manufacturerData.newOutlets.current, manufacturerData.newOutlets.previous, manufacturerData.newOutlets.growth, MapPin, 'from-green-500 to-emerald-600')}
           </Col>
           <Col xs={12} sm={12} lg={6}>
-            {renderStatCard('नए डिस्ट्रिब्यूटर्स', manufacturerData.newDistributors.current, manufacturerData.newDistributors.previous, manufacturerData.newDistributors.growth, Users, 'from-violet-500 to-purple-600')}
+            {renderStatCard(t('metrics.newDistributors'), manufacturerData.newDistributors.current, manufacturerData.newDistributors.previous, manufacturerData.newDistributors.growth, Users, 'from-violet-500 to-purple-600')}
           </Col>
           <Col xs={12} sm={12} lg={6}>
-            {renderStatCard('पूर्ति दर', manufacturerData.fulfillmentRate.current, manufacturerData.fulfillmentRate.previous, manufacturerData.fulfillmentRate.growth, Award, 'from-yellow-500 to-orange-600', '', '%')}
+            {renderStatCard(t('metrics.fulfillmentRate'), manufacturerData.fulfillmentRate.current, manufacturerData.fulfillmentRate.previous, manufacturerData.fulfillmentRate.growth, Award, 'from-yellow-500 to-orange-600', '', '%')}
           </Col>
         </Row>
       </motion.div>
@@ -230,13 +232,13 @@ const Dashboard: React.FC = () => {
       >
         <Row gutter={[24, 24]}>
           <Col xs={12} sm={12} lg={8}>
-            {renderStatCard('प्राप्य राशि', manufacturerData.receivables.current, manufacturerData.receivables.previous, manufacturerData.receivables.growth, CreditCard, 'from-indigo-500 to-blue-600', '₹')}
+            {renderStatCard(t('metrics.receivables'), manufacturerData.receivables.current, manufacturerData.receivables.previous, manufacturerData.receivables.growth, CreditCard, 'from-indigo-500 to-blue-600', '₹')}
           </Col>
           <Col xs={12} sm={12} lg={8}>
-            {renderStatCard('देय राशि', manufacturerData.payables.current, manufacturerData.payables.previous, manufacturerData.payables.growth, Receipt, 'from-red-500 to-pink-600', '₹')}
+            {renderStatCard(t('metrics.payables'), manufacturerData.payables.current, manufacturerData.payables.previous, manufacturerData.payables.growth, Receipt, 'from-red-500 to-pink-600', '₹')}
           </Col>
           <Col xs={12} sm={12} lg={8}>
-            {renderStatCard('इन्वेंटरी टर्नओवर', manufacturerData.inventoryTurnover.current, manufacturerData.inventoryTurnover.previous, manufacturerData.inventoryTurnover.growth, Activity, 'from-teal-500 to-cyan-600', '', 'x')}
+            {renderStatCard(t('metrics.inventoryTurnover'), manufacturerData.inventoryTurnover.current, manufacturerData.inventoryTurnover.previous, manufacturerData.inventoryTurnover.growth, Activity, 'from-teal-500 to-cyan-600', '', 'x')}
           </Col>
         </Row>
       </motion.div>
@@ -255,9 +257,9 @@ const Dashboard: React.FC = () => {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <Award className="w-5 h-5 text-yellow-500" />
-                    <span className="text-lg font-bold">टॉप सेलिंग प्रोडक्ट्स</span>
+                    <span className="text-lg font-bold">{t('products.topSelling')}</span>
                   </div>
-                  <Button type="text" icon={<Eye className="w-4 h-4" />} size="small">View All</Button>
+                  <Button type="text" icon={<Eye className="w-4 h-4" />} size="small">{t('products.viewAll')}</Button>
                 </div>
               }
               className="shadow-xl border-0 bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-900/10 dark:to-orange-900/10"
@@ -277,7 +279,7 @@ const Dashboard: React.FC = () => {
                       </div>
                       <div>
                         <p className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base truncate">{product.name}</p>
-                        <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">{product.sku} • {product.units} यूनिट्स</p>
+                        <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">{product.sku} • {product.units} {t('products.units')}</p>
                       </div>
                     </div>
                     <div className="text-right">
@@ -300,9 +302,9 @@ const Dashboard: React.FC = () => {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <Package className="w-5 h-5 text-blue-500" />
-                    <span className="text-lg font-bold">हाल के ऑर्डर्स</span>
+                    <span className="text-lg font-bold">{t('products.recentOrders')}</span>
                   </div>
-                  <Button type="text" icon={<Download className="w-4 h-4" />} size="small">Export</Button>
+                  <Button type="text" icon={<Download className="w-4 h-4" />} size="small">{t('products.export')}</Button>
                 </div>
               }
               className="shadow-xl border-0 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/10 dark:to-indigo-900/10"
@@ -327,9 +329,9 @@ const Dashboard: React.FC = () => {
                         order.status === 'shipped' ? 'blue' :
                         order.status === 'processing' ? 'orange' : 'red'
                       } className="text-xs">
-                        {order.status === 'delivered' ? 'डिलीवर्ड' :
-                         order.status === 'shipped' ? 'शिप्ड' :
-                         order.status === 'processing' ? 'प्रोसेसिंग' : 'पेंडिंग'}
+                        {order.status === 'delivered' ? t('common.delivered') :
+                         order.status === 'shipped' ? t('common.shipped') :
+                         order.status === 'processing' ? t('common.processing') : t('common.pending')}
                       </Tag>
                     </div>
                   </motion.div>
@@ -351,16 +353,16 @@ const Dashboard: React.FC = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <BarChart3 className="w-6 h-6 text-purple-500" />
-                <span className="text-xl font-bold">प्रदर्शन विश्लेषण</span>
+                <span className="text-xl font-bold">{t('performance.analysis')}</span>
               </div>
               <div className="flex items-center space-x-4">
                 <Select value={timeFilter} onChange={setTimeFilter} className="w-32">
-                  <Option value="thisWeek">This Week</Option>
-                  <Option value="thisMonth">This Month</Option>
-                  <Option value="thisQuarter">This Quarter</Option>
-                  <Option value="thisYear">This Year</Option>
+                  <Option value="thisWeek">{t('common.thisWeek')}</Option>
+                  <Option value="thisMonth">{t('common.thisMonth')}</Option>
+                  <Option value="thisQuarter">{t('common.thisQuarter')}</Option>
+                  <Option value="thisYear">{t('common.thisYear')}</Option>
                 </Select>
-                <Button icon={<RefreshCw className="w-4 h-4" />}>Refresh</Button>
+                <Button icon={<RefreshCw className="w-4 h-4" />}>{t('common.refresh')}</Button>
               </div>
             </div>
           }
@@ -369,12 +371,12 @@ const Dashboard: React.FC = () => {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">बिक्री ट्रेंड</h3>
+                <h3 className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">{t('performance.salesTrend')}</h3>
                 <TrendingUp className="w-5 h-5 text-green-500" />
               </div>
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm">इस महीने</span>
+                  <span className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm">{t('performance.thisMonth')}</span>
                   <span className="font-semibold text-green-600">+12.4%</span>
                 </div>
                 <Progress percent={85} strokeColor="#10b981" trailColor="#f3f4f6" />
@@ -383,13 +385,13 @@ const Dashboard: React.FC = () => {
 
             <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">ऑर्डर वेलोसिटी</h3>
+                <h3 className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">{t('performance.orderVelocity')}</h3>
                 <Zap className="w-5 h-5 text-yellow-500" />
               </div>
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm">प्रोसेसिंग स्पीड</span>
-                  <span className="font-semibold text-blue-600">तेज़</span>
+                  <span className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm">{t('performance.processingSpeed')}</span>
+                  <span className="font-semibold text-blue-600">{t('performance.fast')}</span>
                 </div>
                 <Progress percent={92} strokeColor="#3b82f6" trailColor="#f3f4f6" />
               </div>
@@ -397,13 +399,13 @@ const Dashboard: React.FC = () => {
 
             <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">गुणवत्ता स्कोर</h3>
+                <h3 className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">{t('performance.qualityScore')}</h3>
                 <Award className="w-5 h-5 text-purple-500" />
               </div>
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm">ग्राहक रेटिंग</span>
-                  <span className="font-semibold text-purple-600">उत्कृष्ट</span>
+                  <span className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm">{t('performance.customerRating')}</span>
+                  <span className="font-semibold text-purple-600">{t('performance.excellent')}</span>
                 </div>
                 <Progress percent={96} strokeColor="#8b5cf6" trailColor="#f3f4f6" />
               </div>
@@ -411,13 +413,13 @@ const Dashboard: React.FC = () => {
 
             <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">बाज़ार पहुंच</h3>
+                <h3 className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">{t('performance.marketReach')}</h3>
                 <Globe className="w-5 h-5 text-cyan-500" />
               </div>
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm">कवरेज</span>
-                  <span className="font-semibold text-cyan-600">राष्ट्रीय</span>
+                  <span className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm">{t('performance.coverage')}</span>
+                  <span className="font-semibold text-cyan-600">{t('performance.national')}</span>
                 </div>
                 <Progress percent={78} strokeColor="#06b6d4" trailColor="#f3f4f6" />
               </div>
@@ -447,14 +449,14 @@ const Dashboard: React.FC = () => {
             />
           </div>
           <h1 className="text-2xl sm:text-4xl font-bold mb-2">वितरण कमांड सेंटर 🌍</h1>
-          <p className="text-lg sm:text-xl opacity-90 mb-6">आपका नेटवर्क बढ़ रहा है। अपने क्षेत्र के प्रदर्शन की निगरानी करें।</p>
+          <p className="text-lg sm:text-xl opacity-90 mb-6">{t('dashboard.distributorTitle')}</p>
           <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-6">
             <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 w-full sm:w-auto">
-              <p className="text-sm opacity-80">कुल बिक्री</p>
+              <p className="text-sm opacity-80">{t('dashboard.totalSales')}</p>
               <p className="text-xl sm:text-2xl font-bold">₹{distributorData.totalSales.current.toLocaleString('hi-IN')}</p>
             </div>
             <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 w-full sm:w-auto">
-              <p className="text-sm opacity-80">वृद्धि दर</p>
+              <p className="text-sm opacity-80">{t('dashboard.growthRate')}</p>
               <p className="text-xl sm:text-2xl font-bold">+{distributorData.totalSales.growth}%</p>
             </div>
           </div>
@@ -471,16 +473,16 @@ const Dashboard: React.FC = () => {
       >
         <Row gutter={[24, 24]}>
           <Col xs={12} sm={12} lg={6}>
-            {renderStatCard('ऑर्डर वैल्यू', distributorData.orderValue.current, distributorData.orderValue.previous, distributorData.orderValue.growth, DollarSign, colors.gradient, '₹')}
+            {renderStatCard(t('metrics.orderValue'), distributorData.orderValue.current, distributorData.orderValue.previous, distributorData.orderValue.growth, DollarSign, colors.gradient, '₹')}
           </Col>
           <Col xs={12} sm={12} lg={6}>
-            {renderStatCard('ऑर्डर संख्या', distributorData.orderCount.current, distributorData.orderCount.previous, distributorData.orderCount.growth, ShoppingCart, 'from-blue-500 to-cyan-600')}
+            {renderStatCard(t('metrics.orderCount'), distributorData.orderCount.current, distributorData.orderCount.previous, distributorData.orderCount.growth, ShoppingCart, 'from-blue-500 to-cyan-600')}
           </Col>
           <Col xs={12} sm={12} lg={6}>
-            {renderStatCard('औसत ऑर्डर वैल्यू', distributorData.avgOrderValue.current, distributorData.avgOrderValue.previous, distributorData.avgOrderValue.growth, Target, 'from-purple-500 to-indigo-600', '₹')}
+            {renderStatCard(t('metrics.avgOrderValue'), distributorData.avgOrderValue.current, distributorData.avgOrderValue.previous, distributorData.avgOrderValue.growth, Target, 'from-purple-500 to-indigo-600', '₹')}
           </Col>
           <Col xs={12} sm={12} lg={6}>
-            {renderStatCard('यूनीक आउटलेट्स', distributorData.uniqueOutlets.current, distributorData.uniqueOutlets.previous, distributorData.uniqueOutlets.growth, Globe, 'from-orange-500 to-yellow-600')}
+            {renderStatCard(t('metrics.uniqueOutlets'), distributorData.uniqueOutlets.current, distributorData.uniqueOutlets.previous, distributorData.uniqueOutlets.growth, Globe, 'from-orange-500 to-yellow-600')}
           </Col>
         </Row>
       </motion.div>
@@ -495,7 +497,7 @@ const Dashboard: React.FC = () => {
           title={
             <div className="flex items-center space-x-2">
               <Globe className="w-6 h-6 text-blue-500" />
-              <span className="text-xl font-bold">क्षेत्रीय बिक्री विवरण</span>
+              <span className="text-xl font-bold">{t('regions.salesBreakdown')}</span>
             </div>
           }
           className="shadow-xl border-0 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/10 dark:to-cyan-900/10"
@@ -510,7 +512,7 @@ const Dashboard: React.FC = () => {
                   className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all"
                 >
                   <div className="text-center space-y-2">
-                    <h3 className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">{region.region}</h3>
+                    <h3 className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">{t(`regions.${region.region.toLowerCase().replace(' ', '')}`)}</h3>
                     <p className="text-lg sm:text-2xl font-bold text-blue-600 dark:text-blue-400">
                       ₹{region.sales.toLocaleString('hi-IN')}
                     </p>
@@ -526,7 +528,6 @@ const Dashboard: React.FC = () => {
                       />
                     </div>
                     <p className="text-sm text-gray-500 dark:text-gray-400">{region.percentage}% of total</p>
-                    <p className="text-xs text-gray-400">कुल का {region.percentage}%</p>
                   </div>
                 </motion.div>
               </Col>
@@ -543,13 +544,13 @@ const Dashboard: React.FC = () => {
       >
         <Row gutter={[24, 24]}>
           <Col xs={12} sm={12} lg={8}>
-            {renderStatCard('प्राप्य राशि', distributorData.receivables.current, distributorData.receivables.previous, distributorData.receivables.growth, CreditCard, 'from-indigo-500 to-purple-600', '₹')}
+            {renderStatCard(t('metrics.receivables'), distributorData.receivables.current, distributorData.receivables.previous, distributorData.receivables.growth, CreditCard, 'from-indigo-500 to-purple-600', '₹')}
           </Col>
           <Col xs={12} sm={12} lg={8}>
-            {renderStatCard('देय राशि', distributorData.payables.current, distributorData.payables.previous, distributorData.payables.growth, Receipt, 'from-red-500 to-pink-600', '₹')}
+            {renderStatCard(t('metrics.payables'), distributorData.payables.current, distributorData.payables.previous, distributorData.payables.growth, Receipt, 'from-red-500 to-pink-600', '₹')}
           </Col>
           <Col xs={12} sm={12} lg={8}>
-            {renderStatCard('इन्वेंटरी टर्नओवर', distributorData.inventoryTurnover.current, distributorData.inventoryTurnover.previous, distributorData.inventoryTurnover.growth, Activity, 'from-teal-500 to-cyan-600', '', 'x')}
+            {renderStatCard(t('metrics.inventoryTurnover'), distributorData.inventoryTurnover.current, distributorData.inventoryTurnover.previous, distributorData.inventoryTurnover.growth, Activity, 'from-teal-500 to-cyan-600', '', 'x')}
           </Col>
         </Row>
       </motion.div>
@@ -575,14 +576,14 @@ const Dashboard: React.FC = () => {
             />
           </div>
           <h1 className="text-2xl sm:text-4xl font-bold mb-2">सिस्टम कमांड सेंटर 🎯</h1>
-          <p className="text-lg sm:text-xl opacity-90 mb-6">आपके वितरण इकोसिस्टम पर पूर्ण नियंत्रण। सब कुछ मॉनिटर करें।</p>
+          <p className="text-lg sm:text-xl opacity-90 mb-6">{t('dashboard.adminTitle')}</p>
           <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-6">
             <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 w-full sm:w-auto">
-              <p className="text-sm opacity-80">कुल उपयोगकर्ता</p>
+              <p className="text-sm opacity-80">{t('dashboard.totalUsers')}</p>
               <p className="text-xl sm:text-2xl font-bold">{stats.totalManufacturers + stats.totalDistributors}</p>
             </div>
             <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 w-full sm:w-auto">
-              <p className="text-sm opacity-80">सिस्टम स्वास्थ्य</p>
+              <p className="text-sm opacity-80">{t('dashboard.systemHealth')}</p>
               <p className="text-xl sm:text-2xl font-bold">98.5%</p>
             </div>
           </div>
@@ -599,16 +600,16 @@ const Dashboard: React.FC = () => {
       >
         <Row gutter={[24, 24]}>
           <Col xs={12} sm={12} lg={6}>
-            {renderStatCard('कुल निर्माता', stats.totalManufacturers, 140, 11.4, Factory, 'from-blue-500 to-indigo-600')}
+            {renderStatCard(t('metrics.totalManufacturers'), stats.totalManufacturers, 140, 11.4, Factory, 'from-blue-500 to-indigo-600')}
           </Col>
           <Col xs={12} sm={12} lg={6}>
-            {renderStatCard('कुल वितरक', stats.totalDistributors, 82, 8.5, Truck, 'from-green-500 to-emerald-600')}
+            {renderStatCard(t('metrics.totalDistributors'), stats.totalDistributors, 82, 8.5, Truck, 'from-green-500 to-emerald-600')}
           </Col>
           <Col xs={12} sm={12} lg={6}>
-            {renderStatCard('सक्रिय मेल्स', stats.activeMails, 1156, 7.3, Send, 'from-purple-500 to-pink-600')}
+            {renderStatCard(t('metrics.activeMails'), stats.activeMails, 1156, 7.3, Send, 'from-purple-500 to-pink-600')}
           </Col>
           <Col xs={12} sm={12} lg={6}>
-            {renderStatCard('सिस्टम अपटाइम', 99.8, 99.2, 0.6, Activity, 'from-cyan-500 to-blue-600', '', '%')}
+            {renderStatCard(t('metrics.systemUptime'), 99.8, 99.2, 0.6, Activity, 'from-cyan-500 to-blue-600', '', '%')}
           </Col>
         </Row>
       </motion.div>
@@ -625,7 +626,7 @@ const Dashboard: React.FC = () => {
               title={
                 <div className="flex items-center space-x-2">
                   <Shield className="w-6 h-6 text-red-500" />
-                  <span className="text-xl font-bold">सुरक्षा अवलोकन</span>
+                  <span className="text-xl font-bold">{t('security.overview')}</span>
                 </div>
               }
               className="shadow-xl border-0 bg-gradient-to-br from-red-50 to-pink-50 dark:from-red-900/10 dark:to-pink-900/10"
@@ -633,24 +634,24 @@ const Dashboard: React.FC = () => {
               <div className="space-y-6">
                 <div className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-xl">
                   <div>
-                    <p className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">सक्रिय सत्र</p>
-                    <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">वर्तमान में लॉग इन उपयोगकर्ता</p>
+                    <p className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">{t('security.activeSessions')}</p>
+                    <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">{t('security.currentlyLoggedIn')}</p>
                   </div>
                   <div className="text-2xl font-bold text-green-600">24</div>
                 </div>
                 <div className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-xl">
                   <div>
-                    <p className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">असफल लॉगिन प्रयास</p>
-                    <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">पिछले 24 घंटे</p>
+                    <p className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">{t('security.failedLogins')}</p>
+                    <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">{t('security.last24Hours')}</p>
                   </div>
                   <div className="text-2xl font-bold text-red-600">3</div>
                 </div>
                 <div className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-xl">
                   <div>
-                    <p className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">डेटा बैकअप स्थिति</p>
-                    <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">अंतिम बैकअप</p>
+                    <p className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">{t('security.dataBackup')}</p>
+                    <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">{t('security.lastBackup')}</p>
                   </div>
-                  <div className="text-xs sm:text-sm font-bold text-green-600">2 घंटे पहले</div>
+                  <div className="text-xs sm:text-sm font-bold text-green-600">2 {t('security.hoursAgo')}</div>
                 </div>
               </div>
             </Card>
@@ -661,7 +662,7 @@ const Dashboard: React.FC = () => {
               title={
                 <div className="flex items-center space-x-2">
                   <BarChart3 className="w-6 h-6 text-purple-500" />
-                  <span className="text-xl font-bold">सिस्टम प्रदर्शन</span>
+                  <span className="text-xl font-bold">{t('system.performance')}</span>
                 </div>
               }
               className="shadow-xl border-0 bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-900/10 dark:to-indigo-900/10"
@@ -669,13 +670,13 @@ const Dashboard: React.FC = () => {
               <div className="space-y-6">
                 <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">API रिस्पांस टाइम</h3>
+                    <h3 className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">{t('system.apiResponseTime')}</h3>
                     <Zap className="w-5 h-5 text-yellow-500" />
                   </div>
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm">औसत: 120ms</span>
-                      <span className="font-semibold text-green-600">उत्कृष्ट</span>
+                      <span className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm">{t('system.average')}: 120ms</span>
+                      <span className="font-semibold text-green-600">{t('performance.excellent')}</span>
                     </div>
                     <Progress percent={95} strokeColor="#10b981" trailColor="#f3f4f6" />
                   </div>
@@ -683,13 +684,13 @@ const Dashboard: React.FC = () => {
 
                 <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">डेटाबेस प्रदर्शन</h3>
+                    <h3 className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">{t('system.databasePerformance')}</h3>
                     <Database className="w-5 h-5 text-blue-500" />
                   </div>
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm">क्वेरी स्पीड</span>
-                      <span className="font-semibold text-blue-600">तेज़</span>
+                      <span className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm">{t('system.querySpeed')}</span>
+                      <span className="font-semibold text-blue-600">{t('performance.fast')}</span>
                     </div>
                     <Progress percent={88} strokeColor="#3b82f6" trailColor="#f3f4f6" />
                   </div>
@@ -709,25 +710,25 @@ const Dashboard: React.FC = () => {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
           <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
             <Select value={timeFilter} onChange={setTimeFilter} className="w-full sm:w-40">
-              <Option value="today">आज</Option>
-              <Option value="thisWeek">इस सप्ताह</Option>
-              <Option value="thisMonth">इस महीने</Option>
-              <Option value="thisQuarter">इस तिमाही</Option>
-              <Option value="thisYear">इस वर्ष</Option>
+              <Option value="today">{t('common.today')}</Option>
+              <Option value="thisWeek">{t('common.thisWeek')}</Option>
+              <Option value="thisMonth">{t('common.thisMonth')}</Option>
+              <Option value="thisQuarter">{t('common.thisQuarter')}</Option>
+              <Option value="thisYear">{t('common.thisYear')}</Option>
             </Select>
             {(user?.role === 'admin' || user?.role === 'distributor') && (
               <Select value={regionFilter} onChange={setRegionFilter} className="w-full sm:w-40">
-                <Option value="all">सभी क्षेत्र</Option>
-                <Option value="north">उत्तर भारत</Option>
-                <Option value="west">पश्चिम भारत</Option>
-                <Option value="south">दक्षिण भारत</Option>
-                <Option value="east">पूर्व भारत</Option>
+                <Option value="all">{t('common.allRegions')}</Option>
+                <Option value="north">{t('regions.northIndia')}</Option>
+                <Option value="west">{t('regions.westIndia')}</Option>
+                <Option value="south">{t('regions.southIndia')}</Option>
+                <Option value="east">{t('regions.eastIndia')}</Option>
               </Select>
             )}
           </div>
           <div className="flex items-center space-x-2">
-            <Button icon={<RefreshCw className="w-4 h-4" />} size="small" className="text-xs sm:text-sm">रिफ्रेश</Button>
-            <Button type="primary" icon={<Download className="w-4 h-4" />} size="small" className="text-xs sm:text-sm">एक्सपोर्ट</Button>
+            <Button icon={<RefreshCw className="w-4 h-4" />} size="small" className="text-xs sm:text-sm">{t('common.refresh')}</Button>
+            <Button type="primary" icon={<Download className="w-4 h-4" />} size="small" className="text-xs sm:text-sm">{t('common.export')}</Button>
           </div>
         </div>
       </Card>
