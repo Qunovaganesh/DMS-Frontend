@@ -39,7 +39,7 @@ const Header: React.FC = () => {
         </div>
 
         {/* Search - Hidden on mobile */}
-        <div className="flex-1 max-w-md mx-4 hidden lg:block">
+        {/* <div className="flex-1 max-w-md mx-4 hidden lg:block">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <input
@@ -49,7 +49,7 @@ const Header: React.FC = () => {
               style={{ focusRingColor: colors.primary }}
             />
           </div>
-        </div>
+        </div> */}
 
         {/* Right side actions */}
         <div className="flex items-center space-x-2 sm:space-x-4">

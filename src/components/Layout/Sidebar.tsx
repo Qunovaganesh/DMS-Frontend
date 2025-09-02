@@ -33,10 +33,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
 
   const menuItems = [
     { path: '/dashboard', icon: LayoutDashboard, label: t('nav.dashboard'), roles: ['manufacturer', 'distributor', 'admin'] },
-    { path: '/manufacturers', icon: Factory, label: t('nav.manufacturers'), roles: ['admin', 'distributor'] },
-    { path: '/distributors', icon: Truck, label: t('nav.distributors'), roles: ['admin', 'manufacturer'] },
-    { path: '/mail', icon: Mail, label: t('nav.mailCenter'), roles: ['manufacturer', 'distributor', 'admin'] },
-    { path: '/users', icon: Users, label: t('nav.userManagement'), roles: ['admin'] },
+    // { path: '/manufacturers', icon: Factory, label: t('nav.manufacturers'), roles: ['admin', 'distributor'] },
+    // { path: '/distributors', icon: Truck, label: t('nav.distributors'), roles: ['admin', 'manufacturer'] },
+    // { path: '/users', icon: Users, label: t('nav.userManagement'), roles: ['admin'] },
+    { path: '/mail', icon: Mail, label: t('nav.mailCenter'), roles: ['admin'] },
     { path: '/admin', icon: Shield, label: t('nav.adminPanel'), roles: ['admin'] },
     { path: '/crm-sync', icon: Database, label: t('nav.crmSync'), roles: ['admin'] },
     { path: '/transaction-sync', icon: Activity, label: t('nav.transactionSync'), roles: ['admin'] },

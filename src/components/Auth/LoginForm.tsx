@@ -65,7 +65,7 @@ const LoginForm: React.FC = () => {
   };
 
   return (
-    <div className={`min-h-screen flex items-center justify-center bg-gradient-to-br ${colors.light} dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 px-4`}>
+    <div className={`h-100 flex items-center justify-center bg-gradient-to-br ${colors.light} dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 px-4`}>
       <motion.div 
         initial={{ opacity: 0, y: 50, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -132,16 +132,16 @@ const LoginForm: React.FC = () => {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2, duration: 0.3 }}
-            className="inline-flex flex-col items-center justify-center mb-4"
+            className="inline-flex flex-col items-center justify-center mb-4 mt-5"
           >
             <img 
               src="/src/assets/bizz+Logo_Final.png" 
               alt="Bizz+" 
               className="h-16 w-auto mb-4"
             />
-            <div className={`inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br ${colors.gradient} rounded-2xl shadow-lg`}>
+            {/* <div className={`inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br ${colors.gradient} rounded-2xl shadow-lg`}>
               <Factory className="w-8 h-8 text-white" />
-            </div>
+            </div> */}
           </motion.div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">FMCG Distribution Hub</h1>
           <p className="text-gray-600 dark:text-gray-400">{t('login.subtitle')}</p>

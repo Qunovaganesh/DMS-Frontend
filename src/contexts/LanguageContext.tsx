@@ -36,6 +36,7 @@ const translations = {
     'dashboard.totalUsers': 'Total Users',
     'dashboard.systemHealth': 'System Health',
     'dashboard.totalSales': 'Total Sales',
+    'dashboard.distributionCommandCenter': 'Distribution Command Center',
 
     // Admin Dashboard
     'admin.systemCommand': 'System Command Center',
@@ -84,6 +85,17 @@ const translations = {
     'products.viewAll': 'View All',
     'products.export': 'Export',
     'products.units': 'units',
+    'products.surfExcel': 'Surf Excel Detergent Powder 1kg',
+    'products.headShoulders': 'Head & Shoulders Shampoo 400ml',
+    'products.tajMahal': 'Taj Mahal Tea Bags 100pcs',
+    'products.fortuneOil': 'Fortune Sunflower Oil 1L',
+    'products.parleG': 'Parle-G Biscuit 200g',
+
+    // Customers
+    'customers.mumbaiRetail': 'Mumbai Retail Stores',
+    'customers.delhiSupply': 'Delhi Supply Chain',
+    'customers.bangaloreDist': 'Bangalore Distribution',
+    'customers.kolkataPartners': 'Kolkata Partners',
 
     // Regions
     'regions.northIndia': 'North India',
@@ -91,6 +103,10 @@ const translations = {
     'regions.southIndia': 'South India',
     'regions.eastIndia': 'East India',
     'regions.salesBreakdown': 'Regional Sales Breakdown',
+    'regions.उत्तरभारत': 'North India',
+    'regions.पश्चिमभारत': 'West India',
+    'regions.दक्षिणभारत': 'South India',
+    'regions.पूर्वभारत': 'East India',
 
     // Performance
     'performance.analysis': 'Performance Analysis',
@@ -180,6 +196,7 @@ const translations = {
     'dashboard.totalUsers': 'कुल उपयोगकर्ता',
     'dashboard.systemHealth': 'सिस्टम स्वास्थ्य',
     'dashboard.totalSales': 'कुल बिक्री',
+    'dashboard.distributionCommandCenter': 'वितरण कमांड सेंटर',
 
     // Admin Dashboard
     'admin.systemCommand': 'सिस्टम कमांड सेंटर',
@@ -228,6 +245,17 @@ const translations = {
     'products.viewAll': 'सभी देखें',
     'products.export': 'एक्सपोर्ट',
     'products.units': 'यूनिट्स',
+    'products.surfExcel': 'सर्फ एक्सेल डिटर्जेंट पाउडर 1kg',
+    'products.headShoulders': 'हेड एंड शोल्डर्स शैम्पू 400ml',
+    'products.tajMahal': 'ताज महल टी बैग्स 100pcs',
+    'products.fortuneOil': 'फॉर्च्यून सनफ्लावर ऑयल 1L',
+    'products.parleG': 'पार्ले-जी बिस्कुट 200g',
+
+    // Customers
+    'customers.mumbaiRetail': 'मुंबई रिटेल स्टोर्स',
+    'customers.delhiSupply': 'दिल्ली सप्लाई चेन',
+    'customers.bangaloreDist': 'बेंगलुरु डिस्ट्रिब्यूशन',
+    'customers.kolkataPartners': 'कोलकाता पार्टनर्स',
 
     // Regions
     'regions.northIndia': 'उत्तर भारत',
@@ -235,6 +263,10 @@ const translations = {
     'regions.southIndia': 'दक्षिण भारत',
     'regions.eastIndia': 'पूर्व भारत',
     'regions.salesBreakdown': 'क्षेत्रीय बिक्री विवरण',
+    'regions.उत्तरभारत': 'उत्तर भारत',
+    'regions.पश्चिमभारत': 'पश्चिम भारत',
+    'regions.दक्षिणभारत': 'दक्षिण भारत',
+    'regions.पूर्वभारत': 'पूर्व भारत',
 
     // Performance
     'performance.analysis': 'प्रदर्शन विश्लेषण',

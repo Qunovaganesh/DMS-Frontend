@@ -84,26 +84,26 @@ const Dashboard: React.FC = () => {
     inventoryTurnover: { current: 6.2, previous: 5.8, growth: 6.9 },
     totalSales: { current: 34500000, previous: 31200000, growth: 10.6 },
     regionBreakdown: [
-      { region: 'उत्तर भारत', sales: 12000000, percentage: 34.8 },
-      { region: 'पश्चिम भारत', sales: 8900000, percentage: 25.8 },
-      { region: 'दक्षिण भारत', sales: 7800000, percentage: 22.6 },
-      { region: 'पूर्व भारत', sales: 5800000, percentage: 16.8 }
+      { region: 'उत्तरभारत', sales: 12000000, percentage: 34.8 },
+      { region: 'पश्चिमभारत', sales: 8900000, percentage: 25.8 },
+      { region: 'दक्षिणभारत', sales: 7800000, percentage: 22.6 },
+      { region: 'पूर्वभारत', sales: 5800000, percentage: 16.8 }
     ]
   });
 
   const [topProducts, setTopProducts] = useState([
-    { sku: 'DET-001', name: 'सर्फ एक्सेल डिटर्जेंट पाउडर 1kg', sales: 450000, units: 2340, growth: 15.2 },
-    { sku: 'SHP-002', name: 'हेड एंड शोल्डर्स शैम्पू 400ml', sales: 320000, units: 1456, growth: 8.7 },
-    { sku: 'TEA-003', name: 'ताज महल टी बैग्स 100pcs', sales: 280000, units: 1789, growth: 12.3 },
-    { sku: 'OIL-004', name: 'फॉर्च्यून सनफ्लावर ऑयल 1L', sales: 670000, units: 1123, growth: 22.1 },
-    { sku: 'BIS-005', name: 'पार्ले-जी बिस्कुट 200g', sales: 180000, units: 2567, growth: 5.4 }
+    { sku: 'DET-001', nameKey: 'products.surfExcel', sales: 450000, units: 2340, growth: 15.2 },
+    { sku: 'SHP-002', nameKey: 'products.headShoulders', sales: 320000, units: 1456, growth: 8.7 },
+    { sku: 'TEA-003', nameKey: 'products.tajMahal', sales: 280000, units: 1789, growth: 12.3 },
+    { sku: 'OIL-004', nameKey: 'products.fortuneOil', sales: 670000, units: 1123, growth: 22.1 },
+    { sku: 'BIS-005', nameKey: 'products.parleG', sales: 180000, units: 2567, growth: 5.4 }
   ]);
 
   const [recentOrders, setRecentOrders] = useState([
-    { id: 'ORD-001', customer: 'मुंबई रिटेल स्टोर्स', amount: 450000, status: 'delivered', date: '2024-12-20' },
-    { id: 'ORD-002', customer: 'दिल्ली सप्लाई चेन', amount: 320000, status: 'shipped', date: '2024-12-19' },
-    { id: 'ORD-003', customer: 'बेंगलुरु डिस्ट्रिब्यूशन', amount: 280000, status: 'processing', date: '2024-12-18' },
-    { id: 'ORD-004', customer: 'कोलकाता पार्टनर्स', amount: 670000, status: 'pending', date: '2024-12-17' }
+    { id: 'ORD-001', customerKey: 'customers.mumbaiRetail', amount: 450000, status: 'delivered', date: '2024-12-20' },
+    { id: 'ORD-002', customerKey: 'customers.delhiSupply', amount: 320000, status: 'shipped', date: '2024-12-19' },
+    { id: 'ORD-003', customerKey: 'customers.bangaloreDist', amount: 280000, status: 'processing', date: '2024-12-18' },
+    { id: 'ORD-004', customerKey: 'customers.kolkataPartners', amount: 670000, status: 'pending', date: '2024-12-17' }
   ]);
 
   useEffect(() => {
@@ -279,7 +279,7 @@ const Dashboard: React.FC = () => {
                         #{index + 1}
                       </div>
                       <div>
-                        <p className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base truncate">{product.name}</p>
+                        <p className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base truncate">{t(product.nameKey)}</p>
                         <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">{product.sku} • {product.units} {t('products.units')}</p>
                       </div>
                     </div>
@@ -320,7 +320,7 @@ const Dashboard: React.FC = () => {
                     className="flex items-center justify-between p-3 sm:p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all"
                   >
                     <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base truncate">{order.customer}</p>
+                      <p className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base truncate">{t(order.customerKey)}</p>
                       <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">{order.id} • {order.date}</p>
                     </div>
                     <div className="text-right">
@@ -449,7 +449,7 @@ const Dashboard: React.FC = () => {
               className="h-8 w-auto mr-4 opacity-90"
             />
           </div>
-          <h1 className="text-2xl sm:text-4xl font-bold mb-2">वितरण कमांड सेंटर 🌍</h1>
+          <h1 className="text-2xl sm:text-4xl font-bold mb-2">{t('dashboard.distributionCommandCenter')} 🌍</h1>
           <p className="text-lg sm:text-xl opacity-90 mb-6">{t('dashboard.distributorTitle')}</p>
           <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-6">
             <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 w-full sm:w-auto">
@@ -513,7 +513,7 @@ const Dashboard: React.FC = () => {
                   className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all"
                 >
                   <div className="text-center space-y-2">
-                    <h3 className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">{t(`regions.${region.region.toLowerCase().replace(' ', '')}`)}</h3>
+                    <h3 className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">{t(`regions.${region.region}`)}</h3>
                     <p className="text-lg sm:text-2xl font-bold text-blue-600 dark:text-blue-400">
                       ₹{region.sales.toLocaleString('hi-IN')}
                     </p>
@@ -576,7 +576,7 @@ const Dashboard: React.FC = () => {
               className="h-8 w-auto mr-4 opacity-90"
             />
           </div>
-          <h1 className="text-2xl sm:text-4xl font-bold mb-2">सिस्टम कमांड सेंटर 🎯</h1>
+          <h1 className="text-2xl sm:text-4xl font-bold mb-2">{t('admin.systemCommand')} 🎯</h1>
           <p className="text-lg sm:text-xl opacity-90 mb-6">{t('dashboard.adminTitle')}</p>
           <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-6">
             <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 w-full sm:w-auto">

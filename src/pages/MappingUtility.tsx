@@ -453,8 +453,8 @@ const MappingUtility: React.FC = () => {
             </select>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Territory</label>
-            <input id="territory" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="Enter territory..." />
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">GST No</label>
+            <input id="territory" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="Enter GST No..." />
           </div>
         </div>
       `,

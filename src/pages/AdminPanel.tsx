@@ -25,6 +25,20 @@ import dayjs from 'dayjs';
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 
+// FMCG Categories
+const FMCG_CATEGORIES = [
+  "Beauty & Cosmetics",
+  "Home Care",
+  "Pet Care",
+  "Baby Care",
+  "Home supplies",
+  "Health & Wellness",
+  "Food & Beverages",
+  "Staples & Essential Groceries",
+  "Personal Care",
+  "Confectionaries"
+];
+
 interface EntitySyncData {
   id: string;
   companyName: string;
@@ -66,7 +80,7 @@ const AdminPanel: React.FC = () => {
         password: 'TechCorp@2024',
         emailSentStatus: 'sent',
         entityType: 'manufacturer',
-        categories: ['Electronics', 'Software', 'Hardware'],
+        categories: ['Food & Beverages', 'Staples & Essential Groceries'],
         source: 'CRM',
         isBizzPlus: true,
         contactPerson: 'John Smith',
@@ -85,7 +99,7 @@ const AdminPanel: React.FC = () => {
         password: 'GlobalMfg@2024',
         emailSentStatus: 'sent',
         entityType: 'manufacturer',
-        categories: ['Automotive', 'Industrial'],
+        categories: ['Home Care', 'Personal Care'],
         source: 'Tally Utility',
         isBizzPlus: false,
         contactPerson: 'Emily Johnson',
@@ -104,7 +118,7 @@ const AdminPanel: React.FC = () => {
         password: 'Innovation@2024',
         emailSentStatus: 'pending',
         entityType: 'manufacturer',
-        categories: ['Technology', 'Innovation', 'R&D'],
+        categories: ['Beauty & Cosmetics', 'Health & Wellness'],
         source: 'CRM',
         isBizzPlus: true,
         contactPerson: 'Michael Chen',
@@ -123,7 +137,7 @@ const AdminPanel: React.FC = () => {
         password: 'GlobalDist@2024',
         emailSentStatus: 'sent',
         entityType: 'distributor',
-        categories: ['Logistics', 'Supply Chain'],
+        categories: ['Food & Beverages', 'Confectionaries'],
         source: 'CRM',
         isBizzPlus: true,
         contactPerson: 'Mike Chen',
@@ -142,7 +156,7 @@ const AdminPanel: React.FC = () => {
         password: 'RegPartners@2024',
         emailSentStatus: 'failed',
         entityType: 'distributor',
-        categories: ['Regional Distribution'],
+        categories: ['Baby Care', 'Pet Care'],
         source: 'Tally Utility',
         isBizzPlus: false,
         contactPerson: 'Anna Rodriguez',
@@ -161,7 +175,7 @@ const AdminPanel: React.FC = () => {
         password: 'AsiaPac@2024',
         emailSentStatus: 'sent',
         entityType: 'distributor',
-        categories: ['International', 'Asia Pacific'],
+        categories: ['Home supplies', 'Personal Care'],
         source: 'CRM',
         isBizzPlus: true,
         contactPerson: 'James Wilson',
@@ -431,6 +445,7 @@ const AdminPanel: React.FC = () => {
       title: 'Categories',
       dataIndex: 'categories',
       key: 'categories',
+      width: 200,
       render: (categories: string[]) => (
         <div className="space-y-1">
           {categories.slice(0, 2).map((category, index) => (
@@ -512,7 +527,10 @@ const AdminPanel: React.FC = () => {
           <Button
             type="text"
             icon={<Key className="w-4 h-4" />}
-            onClick={() => handleRegeneratePassword(record)}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleRegeneratePassword(record);
+            }}
             className="text-blue-600 hover:text-blue-800 hover:bg-blue-50 dark:hover:bg-blue-900/20"
           />
         </Tooltip>
@@ -524,19 +542,14 @@ const AdminPanel: React.FC = () => {
       align: 'center' as const,
       render: (record: EntitySyncData) => (
         <Space>
-          <Tooltip title="View Details">
-            <Button
-              type="text"
-              icon={<Eye className="w-4 h-4" />}
-              onClick={() => handleViewDetails(record)}
-              className="text-purple-600 hover:text-purple-800 hover:bg-purple-50 dark:hover:bg-purple-900/20"
-            />
-          </Tooltip>
           <Tooltip title="Send Credentials Email">
             <Button
               type="text"
               icon={<Send className="w-4 h-4" />}
-              onClick={() => handleSendEmail(record)}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleSendEmail(record);
+              }}
               className="text-green-600 hover:text-green-800 hover:bg-green-50 dark:hover:bg-green-900/20"
             />
           </Tooltip>
@@ -581,72 +594,78 @@ const AdminPanel: React.FC = () => {
       >
         <Row gutter={[24, 24]}>
           <Col xs={24} lg={12}>
-            <Card className="shadow-lg border-0 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-lg font-semibold text-blue-800 dark:text-blue-300 mb-4 flex items-center">
-                    <Factory className="w-5 h-5 mr-2" />
-                    Manufacturers
-                  </h3>
-                  <Row gutter={16}>
-                    <Col span={8}>
-                      <Statistic
-                        title="Total"
-                        value={entityCounts.manufacturers.total}
-                        valueStyle={{ color: '#1890ff', fontSize: '20px' }}
-                      />
-                    </Col>
-                    <Col span={8}>
-                      <Statistic
-                        title="Bizz+"
-                        value={entityCounts.manufacturers.bizzPlus}
-                        valueStyle={{ color: '#52c41a', fontSize: '20px' }}
-                      />
-                    </Col>
-                    <Col span={8}>
-                      <Statistic
-                        title="Non Bizz+"
-                        value={entityCounts.manufacturers.nonBizzPlus}
-                        valueStyle={{ color: '#faad14', fontSize: '20px' }}
-                      />
-                    </Col>
-                  </Row>
+            <Card className="shadow-xl border-0 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 hover:shadow-2xl transition-all duration-300">
+              <div className="text-center">
+                <div className="flex items-center justify-center mb-4">
+                  <div className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center shadow-lg">
+                    <Factory className="w-6 h-6 text-white" />
+                  </div>
                 </div>
+                <h3 className="text-xl font-bold text-blue-800 dark:text-blue-300 mb-6">Manufacturers</h3>
+                <Row gutter={[16, 16]}>
+                  <Col span={8}>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-1">
+                        {entityCounts.manufacturers.total}
+                      </div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400 font-medium">Total</div>
+                    </div>
+                  </Col>
+                  <Col span={8}>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-green-600 dark:text-green-400 mb-1">
+                        {entityCounts.manufacturers.bizzPlus}
+                      </div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400 font-medium">Bizz+</div>
+                    </div>
+                  </Col>
+                  <Col span={8}>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-orange-600 dark:text-orange-400 mb-1">
+                        {entityCounts.manufacturers.nonBizzPlus}
+                      </div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400 font-medium">Non Bizz+</div>
+                    </div>
+                  </Col>
+                </Row>
               </div>
             </Card>
           </Col>
           <Col xs={24} lg={12}>
-            <Card className="shadow-lg border-0 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-lg font-semibold text-green-800 dark:text-green-300 mb-4 flex items-center">
-                    <Truck className="w-5 h-5 mr-2" />
-                    Distributors
-                  </h3>
-                  <Row gutter={16}>
-                    <Col span={8}>
-                      <Statistic
-                        title="Total"
-                        value={entityCounts.distributors.total}
-                        valueStyle={{ color: '#1890ff', fontSize: '20px' }}
-                      />
-                    </Col>
-                    <Col span={8}>
-                      <Statistic
-                        title="Bizz+"
-                        value={entityCounts.distributors.bizzPlus}
-                        valueStyle={{ color: '#52c41a', fontSize: '20px' }}
-                      />
-                    </Col>
-                    <Col span={8}>
-                      <Statistic
-                        title="Non Bizz+"
-                        value={entityCounts.distributors.nonBizzPlus}
-                        valueStyle={{ color: '#faad14', fontSize: '20px' }}
-                      />
-                    </Col>
-                  </Row>
+            <Card className="shadow-xl border-0 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 hover:shadow-2xl transition-all duration-300">
+              <div className="text-center">
+                <div className="flex items-center justify-center mb-4">
+                  <div className="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center shadow-lg">
+                    <Truck className="w-6 h-6 text-white" />
+                  </div>
                 </div>
+                <h3 className="text-xl font-bold text-green-800 dark:text-green-300 mb-6">Distributors</h3>
+                <Row gutter={[16, 16]}>
+                  <Col span={8}>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-1">
+                        {entityCounts.distributors.total}
+                      </div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400 font-medium">Total</div>
+                    </div>
+                  </Col>
+                  <Col span={8}>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-green-600 dark:text-green-400 mb-1">
+                        {entityCounts.distributors.bizzPlus}
+                      </div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400 font-medium">Bizz+</div>
+                    </div>
+                  </Col>
+                  <Col span={8}>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-orange-600 dark:text-orange-400 mb-1">
+                        {entityCounts.distributors.nonBizzPlus}
+                      </div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400 font-medium">Non Bizz+</div>
+                    </div>
+                  </Col>
+                </Row>
               </div>
             </Card>
           </Col>
@@ -755,6 +774,11 @@ const AdminPanel: React.FC = () => {
             dataSource={filteredData}
             loading={loading}
             rowKey="id"
+            onRow={(record) => ({
+              onClick: () => handleViewDetails(record),
+              style: { cursor: 'pointer' },
+              className: 'hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors'
+            })}
             pagination={{
               pageSize: 10,
               showSizeChanger: true,

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Table, Select, Tag, Input, Switch, Row, Col, DatePicker, Statistic, Button, Modal } from 'antd';
+import { Card, Table, Select, Tag, Input, Row, Col, DatePicker, Statistic } from 'antd';
 import { 
   Activity, 
   Search, 
@@ -7,9 +7,10 @@ import {
   Factory,
   Truck,
   DollarSign,
+  IndianRupee,
   CreditCard,
   Receipt,
-  TrendingUp,
+
   ArrowUpRight,
   ArrowDownLeft,
   CheckCircle,
@@ -21,6 +22,7 @@ import dayjs from 'dayjs';
 
 const { Option } = Select;
 const { RangePicker } = DatePicker;
+
 
 interface TransactionSyncData {
   id: string;
@@ -35,6 +37,7 @@ interface TransactionSyncData {
   contactPerson: string;
   phone: string;
   email: string;
+  categories: string[];
 }
 
 const TransactionSync: React.FC = () => {
@@ -62,7 +65,8 @@ const TransactionSync: React.FC = () => {
         status: 'completed',
         contactPerson: 'John Smith',
         phone: '+1-555-0123',
-        email: 'john@techcorp.com'
+        email: 'john@techcorp.com',
+        categories: ['Food & Beverages', 'Staples & Essential Groceries']
       },
       {
         id: '2',
@@ -76,7 +80,8 @@ const TransactionSync: React.FC = () => {
         status: 'completed',
         contactPerson: 'Emily Johnson',
         phone: '+1-555-0124',
-        email: 'emily@globalmfg.com'
+        email: 'emily@globalmfg.com',
+        categories: ['Home Care', 'Personal Care']
       },
       {
         id: '3',
@@ -90,7 +95,8 @@ const TransactionSync: React.FC = () => {
         status: 'pending',
         contactPerson: 'Mike Chen',
         phone: '+1-555-0200',
-        email: 'mike@globaldist.com'
+        email: 'mike@globaldist.com',
+        categories: ['Food & Beverages', 'Confectionaries']
       },
       {
         id: '4',
@@ -104,7 +110,8 @@ const TransactionSync: React.FC = () => {
         status: 'failed',
         contactPerson: 'Anna Rodriguez',
         phone: '+1-555-0201',
-        email: 'anna@regpartners.com'
+        email: 'anna@regpartners.com',
+        categories: ['Baby Care', 'Pet Care']
       },
       {
         id: '5',
@@ -118,7 +125,8 @@ const TransactionSync: React.FC = () => {
         status: 'completed',
         contactPerson: 'Michael Chen',
         phone: '+1-555-0125',
-        email: 'michael@innovworks.com'
+        email: 'michael@innovworks.com',
+        categories: ['Beauty & Cosmetics', 'Health & Wellness']
       }
     ];
 
@@ -194,7 +202,7 @@ const TransactionSync: React.FC = () => {
           <div>
             <p className="font-medium text-gray-900 dark:text-white">{text}</p>
             <div className="flex items-center space-x-2 mt-1">
-              <Tag size="small" color={record.isBizzPlus ? 'blue' : 'default'}>
+              <Tag color={record.isBizzPlus ? 'blue' : 'default'}>
                 {record.isBizzPlus ? 'Bizz+' : 'Non Bizz+'}
               </Tag>
               <span className="text-xs text-gray-500 capitalize">{record.entityType}</span>
@@ -207,13 +215,13 @@ const TransactionSync: React.FC = () => {
       title: 'Sync Type',
       dataIndex: 'syncType',
       key: 'syncType',
-      render: (type: string, record: TransactionSyncData) => (
+      render: (type: string) => (
         <div className="flex items-center space-x-2">
           {getSyncTypeIcon(type)}
           <span className="font-medium">{type}</span>
-          <div className="text-xs text-gray-500">
+          {/* <div className="text-xs text-gray-500">
             {record.transactionCount} txns
-          </div>
+          </div> */}
         </div>
       ),
     },
@@ -240,8 +248,8 @@ const TransactionSync: React.FC = () => {
       key: 'amount',
       render: (amount: number) => (
         <div className="flex items-center space-x-1">
-          <DollarSign className="w-4 h-4 text-green-500" />
-          <span className="font-medium">${amount.toLocaleString()}</span>
+          <IndianRupee className="w-4 h-4 text-green-500" />
+          <span className="font-medium">{amount.toLocaleString()}</span>
         </div>
       ),
     },
@@ -311,9 +319,9 @@ const TransactionSync: React.FC = () => {
               <Statistic
                 title="Total Amount"
                 value={stats.totalAmount}
-                prefix={<DollarSign className="w-4 h-4 text-green-500" />}
+                prefix={<IndianRupee className="w-4 h-4 text-green-500" />}
                 valueStyle={{ color: '#52c41a' }}
-                formatter={(value) => `$${Number(value).toLocaleString()}`}
+                formatter={(value) => `${Number(value).toLocaleString()}`}
               />
             </Card>
           </Col>
@@ -418,7 +426,7 @@ const TransactionSync: React.FC = () => {
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Date Range</label>
                   <RangePicker
                     value={dateRange}
-                    onChange={setDateRange}
+                    onChange={(dates) => setDateRange(dates as [dayjs.Dayjs, dayjs.Dayjs] | null)}
                     className="w-full"
                     format="YYYY-MM-DD"
                   />
