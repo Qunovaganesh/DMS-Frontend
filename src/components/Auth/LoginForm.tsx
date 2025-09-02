@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useLanguage } from '../../contexts/LanguageContext';
 import { Factory, Lock, User, Eye, EyeOff } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Swal from 'sweetalert2';
@@ -11,6 +12,7 @@ const LoginForm: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const { login, isLoading } = useAuth();
   const { getThemeColors } = useTheme();
+  const { t } = useLanguage();
   const colors = getThemeColors();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -19,8 +21,8 @@ const LoginForm: React.FC = () => {
     if (!userId || !password) {
       Swal.fire({
         icon: 'warning',
-        title: 'जानकारी अनुपलब्ध',
-        text: 'कृपया User ID और Password दोनों दर्ज करें',
+        title: 'Information Missing',
+        text: 'Please enter both User ID and Password',
         confirmButtonColor: colors.primary,
         customClass: {
           popup: 'bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border-0',
@@ -36,8 +38,8 @@ const LoginForm: React.FC = () => {
     if (!success) {
       Swal.fire({
         icon: 'error',
-        title: 'लॉगिन असफल',
-        text: 'गलत क्रेडेंशियल्स। कृपया अपनी User ID और Password जांचें।',
+        title: 'Login Failed',
+        text: 'Invalid credentials. Please check your User ID and Password.',
         confirmButtonColor: colors.primary,
         customClass: {
           popup: 'bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border-0',
@@ -48,8 +50,8 @@ const LoginForm: React.FC = () => {
     } else {
       Swal.fire({
         icon: 'success',
-        title: 'स्वागत है!',
-        text: 'लॉगिन सफल। डैशबोर्ड पर रीडायरेक्ट कर रहे हैं...',
+        title: 'Welcome!',
+        text: 'Login successful. Redirecting to dashboard...',
         timer: 1500,
         showConfirmButton: false,
         customClass: {
@@ -87,8 +89,8 @@ const LoginForm: React.FC = () => {
             </div>
           </motion.div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">FMCG Distribution Hub</h1>
-          <p className="text-gray-600 dark:text-gray-400">भारत का सबसे बड़ा FMCG वितरण प्लेटफॉर्म</p>
-          <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">Powered by Bizz+</p>
+          <p className="text-gray-600 dark:text-gray-400">{t('login.subtitle')}</p>
+          <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">{t('login.poweredBy')}</p>
         </div>
 
         {/* Login Card */}
@@ -101,18 +103,18 @@ const LoginForm: React.FC = () => {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Demo Credentials */}
             <div className={`bg-gradient-to-r ${colors.light} dark:${colors.dark} border border-opacity-20 rounded-lg p-4 mb-6`} style={{ borderColor: colors.primary }}>
-              <h3 className="text-sm font-semibold mb-2" style={{ color: colors.primary }}>डेमो क्रेडेंशियल्स:</h3>
+              <h3 className="text-sm font-semibold mb-2" style={{ color: colors.primary }}>{t('login.demoCredentials')}</h3>
               <div className="text-xs space-y-1" style={{ color: colors.accent }}>
-                <p><strong>निर्माता:</strong> mfr001 / password123</p>
-                <p><strong>एडमिन:</strong> admin001 / password123</p>
-                <p><strong>वितरक:</strong> dist001 / password123</p>
+                <p><strong>{t('login.manufacturer')}:</strong> mfr001 / password123</p>
+                <p><strong>{t('login.admin')}:</strong> admin001 / password123</p>
+                <p><strong>{t('login.distributor')}:</strong> dist001 / password123</p>
               </div>
             </div>
 
             {/* User ID Field */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                User ID
+                {t('login.userId')}
               </label>
               <div className="relative">
                 <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -122,7 +124,7 @@ const LoginForm: React.FC = () => {
                   onChange={(e) => setUserId(e.target.value)}
                   className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:border-transparent transition-all"
                   style={{ focusRingColor: colors.primary }}
-                  placeholder="अपनी User ID दर्ज करें"
+                  placeholder={t('login.enterUserId')}
                   required
                 />
               </div>
@@ -131,7 +133,7 @@ const LoginForm: React.FC = () => {
             {/* Password Field */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Password
+                {t('login.password')}
               </label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -141,7 +143,7 @@ const LoginForm: React.FC = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full pl-10 pr-12 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:border-transparent transition-all"
                   style={{ focusRingColor: colors.primary }}
-                  placeholder="अपना पासवर्ड दर्ज करें"
+                  placeholder={t('login.enterPassword')}
                   required
                 />
                 <button
@@ -166,10 +168,10 @@ const LoginForm: React.FC = () => {
               {isLoading ? (
                 <div className="flex items-center justify-center space-x-2">
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  <span>साइन इन हो रहे हैं...</span>
+                  <span>{t('login.signingIn')}</span>
                 </div>
               ) : (
-                'साइन इन करें'
+                t('login.signIn')
               )}
             </motion.button>
           </form>
@@ -183,7 +185,7 @@ const LoginForm: React.FC = () => {
           className="text-center mt-8"
         >
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            © 2025 Bizz+ FMCG Distribution Hub. सभी अधिकार सुरक्षित।
+            {t('login.copyright')}
           </p>
         </motion.div>
       </motion.div>

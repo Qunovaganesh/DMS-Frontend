@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useLanguage } from '../../contexts/LanguageContext';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface SidebarProps {
@@ -27,19 +28,20 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
   const location = useLocation();
   const { user, logout } = useAuth();
   const { getThemeColors } = useTheme();
+  const { t } = useLanguage();
   const colors = getThemeColors();
 
   const menuItems = [
-    { path: '/dashboard', icon: LayoutDashboard, label: 'Dashboard', roles: ['manufacturer', 'distributor', 'admin'] },
-    { path: '/manufacturers', icon: Factory, label: 'Manufacturers', roles: ['admin', 'distributor'] },
-    { path: '/distributors', icon: Truck, label: 'Distributors', roles: ['admin', 'manufacturer'] },
-    { path: '/mail', icon: Mail, label: 'Mail Center', roles: ['manufacturer', 'distributor', 'admin'] },
-    { path: '/users', icon: Users, label: 'User Management', roles: ['admin'] },
-    { path: '/admin', icon: Shield, label: 'Admin Panel', roles: ['admin'] },
-    { path: '/crm-sync', icon: Database, label: 'CRM Sync', roles: ['admin'] },
-    { path: '/transaction-sync', icon: Activity, label: 'Transaction Sync', roles: ['admin'] },
-    { path: '/mapping', icon: Map, label: 'Mapping Utility', roles: ['admin'] },
-    { path: '/settings', icon: Settings, label: 'Settings', roles: ['manufacturer', 'distributor', 'admin'] },
+    { path: '/dashboard', icon: LayoutDashboard, label: t('nav.dashboard'), roles: ['manufacturer', 'distributor', 'admin'] },
+    { path: '/manufacturers', icon: Factory, label: t('nav.manufacturers'), roles: ['admin', 'distributor'] },
+    { path: '/distributors', icon: Truck, label: t('nav.distributors'), roles: ['admin', 'manufacturer'] },
+    { path: '/mail', icon: Mail, label: t('nav.mailCenter'), roles: ['manufacturer', 'distributor', 'admin'] },
+    { path: '/users', icon: Users, label: t('nav.userManagement'), roles: ['admin'] },
+    { path: '/admin', icon: Shield, label: t('nav.adminPanel'), roles: ['admin'] },
+    { path: '/crm-sync', icon: Database, label: t('nav.crmSync'), roles: ['admin'] },
+    { path: '/transaction-sync', icon: Activity, label: t('nav.transactionSync'), roles: ['admin'] },
+    { path: '/mapping', icon: Map, label: t('nav.mappingUtility'), roles: ['admin'] },
+    { path: '/settings', icon: Settings, label: t('nav.settings'), roles: ['manufacturer', 'distributor', 'admin'] },
   ];
 
   const filteredMenuItems = menuItems.filter(item => 

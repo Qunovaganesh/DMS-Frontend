@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
-import { Bell, Search, Sun, Moon, User, Palette } from 'lucide-react';
+import { Bell, Search, Sun, Moon, User, Palette, Languages } from 'lucide-react';
 import { useTheme, ColorTheme } from '../../contexts/ThemeContext';
+import { useLanguage } from '../../contexts/LanguageContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Header: React.FC = () => {
   const { isDark, toggleTheme, colorTheme, setColorTheme, getThemeColors } = useTheme();
+  const { language, setLanguage, t } = useLanguage();
   const { user } = useAuth();
   const [showThemeSelector, setShowThemeSelector] = useState(false);
+  const [showLanguageSelector, setShowLanguageSelector] = useState(false);
   const colors = getThemeColors();
 
   const themeOptions: { name: string; value: ColorTheme; color: string }[] = [
@@ -41,7 +44,7 @@ const Header: React.FC = () => {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <input
               type="text"
-              placeholder="Search products, distributors..."
+              placeholder={language === 'hi' ? 'उत्पाद, वितरक खोजें...' : 'Search products, distributors...'}
               className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:border-transparent transition-all text-sm"
               style={{ focusRingColor: colors.primary }}
             />
@@ -50,6 +53,61 @@ const Header: React.FC = () => {
 
         {/* Right side actions */}
         <div className="flex items-center space-x-2 sm:space-x-4">
+          {/* Language Toggle */}
+          <div className="relative">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setShowLanguageSelector(!showLanguageSelector)}
+              className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            >
+              <Languages className="w-4 h-4 sm:w-5 sm:h-5" />
+            </motion.button>
+
+            <AnimatePresence>
+              {showLanguageSelector && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                  className="absolute right-0 top-12 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 p-3 z-50 min-w-[160px]"
+                >
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">Language</h3>
+                  <div className="space-y-1">
+                    <button
+                      onClick={() => {
+                        setLanguage('en');
+                        setShowLanguageSelector(false);
+                      }}
+                      className={`flex items-center space-x-3 p-2 rounded-lg transition-all text-left w-full ${
+                        language === 'en'
+                          ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300'
+                          : 'hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
+                      }`}
+                    >
+                      <span className="text-lg">🇺🇸</span>
+                      <span className="text-sm font-medium">English</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        setLanguage('hi');
+                        setShowLanguageSelector(false);
+                      }}
+                      className={`flex items-center space-x-3 p-2 rounded-lg transition-all text-left w-full ${
+                        language === 'hi'
+                          ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300'
+                          : 'hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
+                      }`}
+                    >
+                      <span className="text-lg">🇮🇳</span>
+                      <span className="text-sm font-medium">हिंदी</span>
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
           {/* Theme Color Selector */}
           <div className="relative">
             <motion.button
