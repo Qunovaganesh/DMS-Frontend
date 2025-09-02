@@ -15,6 +15,7 @@ import {
   Menu
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useTheme } from '../../contexts/ThemeContext';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface SidebarProps {
@@ -25,6 +26,8 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
   const location = useLocation();
   const { user, logout } = useAuth();
+  const { getThemeColors } = useTheme();
+  const colors = getThemeColors();
 
   const menuItems = [
     { path: '/dashboard', icon: LayoutDashboard, label: 'Dashboard', roles: ['manufacturer', 'distributor', 'admin'] },
@@ -62,10 +65,15 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
                 transition={{ duration: 0.2 }}
                 className="flex items-center space-x-3"
               >
-                <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                  <Factory className="w-5 h-5 text-white" />
+                <img 
+                  src="/src/assets/bizz+Logo_Final.png" 
+                  alt="Bizz+" 
+                  className="h-8 w-auto"
+                />
+                <div>
+                  <span className="text-lg font-bold text-gray-800 dark:text-white">FMCG Hub</span>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Distribution Management</p>
                 </div>
-                <span className="text-xl font-bold text-gray-800 dark:text-white">DMS Pro</span>
               </motion.div>
             )}
           </AnimatePresence>
@@ -79,7 +87,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 p-4">
+      <nav className="flex-1 p-4 overflow-y-auto">
         <ul className="space-y-2">
           {filteredMenuItems.map((item) => {
             const isActive = location.pathname === item.path;
@@ -89,11 +97,15 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
                   to={item.path}
                   className={`flex items-center space-x-3 p-3 rounded-lg transition-all duration-200 group ${
                     isActive
-                      ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border-r-2 border-blue-500'
+                      ? `text-white border-r-2`
                       : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white'
                   }`}
+                  style={{
+                    backgroundColor: isActive ? colors.primary : 'transparent',
+                    borderRightColor: isActive ? colors.accent : 'transparent'
+                  }}
                 >
-                  <item.icon className={`w-5 h-5 ${isActive ? 'text-blue-500' : ''} group-hover:scale-110 transition-transform`} />
+                  <item.icon className={`w-5 h-5 ${isActive ? 'text-white' : ''} group-hover:scale-110 transition-transform`} />
                   <AnimatePresence mode="wait">
                     {!isCollapsed && (
                       <motion.span
@@ -101,7 +113,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: -10 }}
                         transition={{ duration: 0.2 }}
-                        className="font-medium"
+                        className="font-medium text-sm"
                       >
                         {item.label}
                       </motion.span>
@@ -128,8 +140,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
                 alt={user.name}
                 className="w-10 h-10 rounded-full object-cover"
               />
-              <div>
-                <p className="text-sm font-medium text-gray-900 dark:text-white">{user.name}</p>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{user.name}</p>
                 <p className="text-xs text-gray-500 dark:text-gray-400 capitalize">{user.role}</p>
               </div>
             </div>
@@ -150,7 +162,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -10 }}
                 transition={{ duration: 0.2 }}
-                className="font-medium"
+                className="font-medium text-sm"
               >
                 Logout
               </motion.span>

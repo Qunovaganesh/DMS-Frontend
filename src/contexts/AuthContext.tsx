@@ -8,15 +8,15 @@ interface AuthContextType extends AuthState {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Mock user data - In real app, this would come from your CRM API
+// Mock user data with Indian FMCG context
 const mockUsers: User[] = [
   {
     id: '1',
     userId: 'mfr001',
-    email: 'john@techcorp.com',
+    email: 'rajesh@hindustanindustries.com',
     role: 'manufacturer',
-    name: 'John Smith',
-    company: 'TechCorp Industries',
+    name: 'Rajesh Kumar',
+    company: 'Hindustan FMCG Industries',
     avatar: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&dpr=1',
     isActive: true,
     createdAt: '2024-01-15',
@@ -25,10 +25,10 @@ const mockUsers: User[] = [
   {
     id: '2',
     userId: 'admin001',
-    email: 'admin@dms.com',
+    email: 'admin@bizzplus.in',
     role: 'admin',
-    name: 'Sarah Johnson',
-    company: 'DMS Corp',
+    name: 'Priya Sharma',
+    company: 'Bizz+ Technologies',
     avatar: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&dpr=1',
     isActive: true,
     createdAt: '2024-01-01',
@@ -37,10 +37,10 @@ const mockUsers: User[] = [
   {
     id: '3',
     userId: 'dist001',
-    email: 'mike@globaldist.com',
+    email: 'amit@bharatdistribution.com',
     role: 'distributor',
-    name: 'Mike Chen',
-    company: 'Global Distribution',
+    name: 'Amit Patel',
+    company: 'Bharat Distribution Network',
     avatar: 'https://images.pexels.com/photos/1681010/pexels-photo-1681010.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&dpr=1',
     isActive: true,
     createdAt: '2024-02-01',
@@ -57,7 +57,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   useEffect(() => {
     // Check for stored auth data
-    const storedUser = localStorage.getItem('dms_user');
+    const storedUser = localStorage.getItem('bizz_user');
     if (storedUser) {
       const user = JSON.parse(storedUser);
       setAuthState({
@@ -76,12 +76,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     // Simulate API call delay
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    // Mock authentication - In real app, this would call your CRM API
+    // Mock authentication
     const user = mockUsers.find(u => u.userId === userId);
     
-    if (user && password === 'password123') { // Mock password check
+    if (user && password === 'password123') {
       const updatedUser = { ...user, lastLogin: new Date().toISOString() };
-      localStorage.setItem('dms_user', JSON.stringify(updatedUser));
+      localStorage.setItem('bizz_user', JSON.stringify(updatedUser));
       setAuthState({
         user: updatedUser,
         isAuthenticated: true,
@@ -95,7 +95,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const logout = () => {
-    localStorage.removeItem('dms_user');
+    localStorage.removeItem('bizz_user');
     setAuthState({
       user: null,
       isAuthenticated: false,
