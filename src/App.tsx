@@ -14,6 +14,7 @@ import AdminPanel from './pages/AdminPanel';
 import CRMSync from './pages/CRMSync';
 import TransactionSync from './pages/TransactionSync';
 import Settings from './pages/Settings';
+import MappingUtility from './pages/MappingUtility';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const AppContent: React.FC = () => {
@@ -78,6 +79,7 @@ const AppContent: React.FC = () => {
                   <Route path="admin" element={<AdminPanel />} />
                   <Route path="crm-sync" element={<CRMSync />} />
                   <Route path="transaction-sync" element={<TransactionSync />} />
+                  <Route path="mapping" element={<MappingUtility />} />
                   <Route path="settings" element={<Settings />} />
                   <Route path="*" element={<Navigate to="/dashboard" replace />} />
                 </Route>

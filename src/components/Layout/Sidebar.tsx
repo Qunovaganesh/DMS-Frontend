@@ -9,6 +9,7 @@ import {
   Shield,
   Database,
   Activity,
+  Map,
   Settings,
   LogOut,
   Menu
@@ -34,6 +35,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
     { path: '/admin', icon: Shield, label: 'Admin Panel', roles: ['admin'] },
     { path: '/crm-sync', icon: Database, label: 'CRM Sync', roles: ['admin'] },
     { path: '/transaction-sync', icon: Activity, label: 'Transaction Sync', roles: ['admin'] },
+    { path: '/mapping', icon: Map, label: 'Mapping Utility', roles: ['admin'] },
     { path: '/settings', icon: Settings, label: 'Settings', roles: ['manufacturer', 'distributor', 'admin'] },
   ];
 
