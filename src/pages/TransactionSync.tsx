@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Table, Select, Tag, Input, Switch, Row, Col, DatePicker } from 'antd';
+import { Card, Table, Select, Tag, Input, Switch, Row, Col, DatePicker, Statistic, Button, Modal } from 'antd';
 import { 
   Activity, 
   Search, 
@@ -11,7 +11,10 @@ import {
   Receipt,
   TrendingUp,
   ArrowUpRight,
-  ArrowDownLeft
+  ArrowDownLeft,
+  CheckCircle,
+  Clock,
+  XCircle
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import dayjs from 'dayjs';
