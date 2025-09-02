@@ -6,6 +6,7 @@ import {
   Truck, 
   Mail, 
   Users, 
+  Shield,
   Settings,
   LogOut,
   Menu
@@ -28,6 +29,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
     { path: '/distributors', icon: Truck, label: 'Distributors', roles: ['admin', 'manufacturer'] },
     { path: '/mail', icon: Mail, label: 'Mail Center', roles: ['manufacturer', 'distributor', 'admin'] },
     { path: '/users', icon: Users, label: 'User Management', roles: ['admin'] },
+    { path: '/admin', icon: Shield, label: 'Admin Panel', roles: ['admin'] },
     { path: '/settings', icon: Settings, label: 'Settings', roles: ['manufacturer', 'distributor', 'admin'] },
   ];
 

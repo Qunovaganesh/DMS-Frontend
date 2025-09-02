@@ -10,6 +10,7 @@ import Manufacturers from './pages/Manufacturers';
 import Distributors from './pages/Distributors';
 import MailCenter from './pages/MailCenter';
 import UserManagement from './pages/UserManagement';
+import AdminPanel from './pages/AdminPanel';
 import Settings from './pages/Settings';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -72,6 +73,7 @@ const AppContent: React.FC = () => {
                   <Route path="distributors" element={<Distributors />} />
                   <Route path="mail" element={<MailCenter />} />
                   <Route path="users" element={<UserManagement />} />
+                  <Route path="admin" element={<AdminPanel />} />
                   <Route path="settings" element={<Settings />} />
                   <Route path="*" element={<Navigate to="/dashboard" replace />} />
                 </Route>
