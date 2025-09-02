@@ -27,7 +27,9 @@ import {
   ArrowUp,
   ArrowDown,
   Eye,
-  Download
+  Download,
+  Shield,
+  Database
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
