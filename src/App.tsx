@@ -80,6 +80,7 @@ const AppContent: React.FC = () => {
                   <Route path="dashboard" element={<Dashboard />} />
                   <Route path="manufacturers" element={<Manufacturers />} />
                   <Route path="distributors" element={<Distributors />} />
+                   <Route path="masters" element={<Masters />} />
                   <Route path="mail" element={<MailCenter />} />
                   <Route path="users" element={<UserManagement />} />
                   <Route path="admin" element={<AdminPanel />} />

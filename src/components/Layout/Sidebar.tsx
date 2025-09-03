@@ -36,6 +36,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
     // { path: '/manufacturers', icon: Factory, label: t('nav.manufacturers'), roles: ['admin', 'distributor'] },
     // { path: '/distributors', icon: Truck, label: t('nav.distributors'), roles: ['admin', 'manufacturer'] },
     // { path: '/users', icon: Users, label: t('nav.userManagement'), roles: ['admin'] },
+    { path: '/masters', icon: Database, label: 'Masters', roles: ['admin'] },
     { path: '/mail', icon: Mail, label: t('nav.mailCenter'), roles: ['admin'] },
     { path: '/admin', icon: Shield, label: t('nav.adminPanel'), roles: ['admin'] },
     { path: '/crm-sync', icon: Database, label: t('nav.crmSync'), roles: ['admin'] },
