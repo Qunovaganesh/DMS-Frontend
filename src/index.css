@@ -430,7 +430,6 @@ body {
 }
 
 .dark .custom-modal .ant-modal-footer {
-  border-top-color: #4b5563 !important;
 
 /* Custom pagination styles */
 .custom-pagination .ant-pagination-item {
