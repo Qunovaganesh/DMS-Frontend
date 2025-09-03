@@ -9,6 +9,7 @@ import Layout from './components/Layout/Layout';
 import Dashboard from './pages/Dashboard';
 import Manufacturers from './pages/Manufacturers';
 import Distributors from './pages/Distributors';
+import Masters from './pages/Masters';
 import MailCenter from './pages/MailCenter';
 import UserManagement from './pages/UserManagement';
 import AdminPanel from './pages/AdminPanel';

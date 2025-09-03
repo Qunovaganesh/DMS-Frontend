@@ -416,6 +416,7 @@ body {
   background: linear-gradient(135deg, #374151, #4b5563) !important;
   border-bottom-color: #4b5563 !important;
 }
+}
 
 .custom-modal .ant-modal-body {
   padding: 24px !important;
