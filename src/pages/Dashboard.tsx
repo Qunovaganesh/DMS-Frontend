@@ -65,7 +65,7 @@ const Dashboard: React.FC = () => {
     orderCount: { current: 1245, previous: 1156, growth: 7.7 },
     avgOrderValue: { current: 20400, previous: 19550, growth: 4.3 },
     uniqueOutlets: { current: 456, previous: 423, growth: 7.8 },
-    uniqueDistributors: { current: 89, previous: 82, growth: 8.5 },
+    totalDistributors: { current: 89, previous: 82, growth: 8.5 },
     newOutlets: { current: 34, previous: 28, growth: 21.4 },
     newDistributors: { current: 7, previous: 5, growth: 40.0 },
     receivables: { current: 3400000, previous: 2980000, growth: 14.1 },
@@ -211,7 +211,7 @@ const Dashboard: React.FC = () => {
       >
         <Row gutter={[24, 24]}>
           <Col xs={12} sm={12} lg={6}>
-            {renderStatCard(t('metrics.uniqueDistributors'), manufacturerData.uniqueDistributors.current, manufacturerData.uniqueDistributors.previous, manufacturerData.uniqueDistributors.growth, Truck, 'from-cyan-500 to-blue-600')}
+            {renderStatCard(t('metrics.totalDistributors'), manufacturerData.totalDistributors.current, manufacturerData.totalDistributors.previous, manufacturerData.totalDistributors.growth, Truck, 'from-cyan-500 to-blue-600')}
           </Col>
           <Col xs={12} sm={12} lg={6}>
             {renderStatCard(t('metrics.newOutlets'), manufacturerData.newOutlets.current, manufacturerData.newOutlets.previous, manufacturerData.newOutlets.growth, MapPin, 'from-green-500 to-emerald-600')}
@@ -235,9 +235,9 @@ const Dashboard: React.FC = () => {
           <Col xs={12} sm={12} lg={8}>
             {renderStatCard(t('metrics.receivables'), manufacturerData.receivables.current, manufacturerData.receivables.previous, manufacturerData.receivables.growth, CreditCard, 'from-indigo-500 to-blue-600', '₹')}
           </Col>
-          <Col xs={12} sm={12} lg={8}>
+          {/* <Col xs={12} sm={12} lg={8}>
             {renderStatCard(t('metrics.payables'), manufacturerData.payables.current, manufacturerData.payables.previous, manufacturerData.payables.growth, Receipt, 'from-red-500 to-pink-600', '₹')}
-          </Col>
+          </Col> */}
           <Col xs={12} sm={12} lg={8}>
             {renderStatCard(t('metrics.inventoryTurnover'), manufacturerData.inventoryTurnover.current, manufacturerData.inventoryTurnover.previous, manufacturerData.inventoryTurnover.growth, Activity, 'from-teal-500 to-cyan-600', '', 'x')}
           </Col>
@@ -547,9 +547,9 @@ const Dashboard: React.FC = () => {
           <Col xs={12} sm={12} lg={8}>
             {renderStatCard(t('metrics.receivables'), distributorData.receivables.current, distributorData.receivables.previous, distributorData.receivables.growth, CreditCard, 'from-indigo-500 to-purple-600', '₹')}
           </Col>
-          <Col xs={12} sm={12} lg={8}>
+          {/* <Col xs={12} sm={12} lg={8}>
             {renderStatCard(t('metrics.payables'), distributorData.payables.current, distributorData.payables.previous, distributorData.payables.growth, Receipt, 'from-red-500 to-pink-600', '₹')}
-          </Col>
+          </Col> */}
           <Col xs={12} sm={12} lg={8}>
             {renderStatCard(t('metrics.inventoryTurnover'), distributorData.inventoryTurnover.current, distributorData.inventoryTurnover.previous, distributorData.inventoryTurnover.growth, Activity, 'from-teal-500 to-cyan-600', '', 'x')}
           </Col>

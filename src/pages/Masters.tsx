@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Table, Button, Tag, Input, Select, Space, Avatar, Tooltip, Switch, Row, Col, Modal, Form, InputNumber, Tabs } from 'antd';
-import { 
-  Database, 
-  Plus, 
-  Search, 
-  Filter, 
-  Mail, 
-  Phone, 
+import { Card, Table, Button, Tag, Input, Select, Space, Tooltip, Row, Col, Modal, Form, InputNumber, Tabs } from 'antd';
+import {
+  Database,
+  Plus,
+  Search,
+  Filter,
+  Mail,
+  Phone,
   MapPin,
   Factory,
   Truck,
@@ -17,19 +17,6 @@ import {
   Save,
   X,
   Building,
-  User,
-  Globe,
-  Calendar,
-  DollarSign,
-  BarChart3,
-  Layers,
-  Box,
-  ShoppingCart,
-  Tag as TagIcon,
-  Hash,
-  FileText,
-  Image,
-  Palette
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Swal from 'sweetalert2';
@@ -43,7 +30,7 @@ const { TabPane } = Tabs;
 const FMCG_CATEGORIES = [
   "Beauty & Personal Care",
   "Home Care & Cleaning",
-  "Food & Beverages", 
+  "Food & Beverages",
   "Health & Wellness",
   "Baby Care",
   "Pet Care",
@@ -55,10 +42,10 @@ const FMCG_CATEGORIES = [
 
 // Indian States
 const INDIAN_STATES = [
-  "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", 
-  "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", 
-  "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", 
-  "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", 
+  "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat",
+  "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh",
+  "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab",
+  "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh",
   "Uttarakhand", "West Bengal", "Delhi", "Jammu and Kashmir", "Ladakh"
 ];
 
@@ -124,19 +111,19 @@ interface Product {
 const Masters: React.FC = () => {
   const [activeSection, setActiveSection] = useState<'entities' | 'items'>('entities');
   const [entityType, setEntityType] = useState<'manufacturers' | 'distributors'>('manufacturers');
-  
+
   // Data states
   const [manufacturers, setManufacturers] = useState<Manufacturer[]>([]);
   const [distributors, setDistributors] = useState<Distributor[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
-  
+
   // UI states
   const [loading, setLoading] = useState(true);
   const [searchText, setSearchText] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [stateFilter, setStateFilter] = useState<string>('all');
-  
+
   // Modal states
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingItem, setEditingItem] = useState<any>(null);
@@ -391,7 +378,7 @@ const Masters: React.FC = () => {
         } else {
           setProducts(prev => prev.filter(p => p.id !== item.id));
         }
-        
+
         swalWithBootstrapButtons.fire({
           icon: 'success',
           title: 'Deleted Successfully!',
@@ -407,11 +394,11 @@ const Masters: React.FC = () => {
     try {
       const values = await form.validateFields();
       const timestamp = new Date().toISOString().split('T')[0];
-      
+
       if (editingItem) {
         // Update existing item
         const updatedItem = { ...editingItem, ...values, lastUpdated: timestamp };
-        
+
         if (activeSection === 'entities') {
           if (entityType === 'manufacturers') {
             setManufacturers(prev => prev.map(m => m.id === editingItem.id ? updatedItem : m));
@@ -430,7 +417,7 @@ const Masters: React.FC = () => {
           lastUpdated: timestamp,
           status: 'active'
         };
-        
+
         if (activeSection === 'entities') {
           if (entityType === 'manufacturers') {
             setManufacturers(prev => [...prev, newItem]);
@@ -441,11 +428,11 @@ const Masters: React.FC = () => {
           setProducts(prev => [...prev, newItem]);
         }
       }
-      
+
       setIsModalVisible(false);
       form.resetFields();
       setEditingItem(null);
-      
+
       Swal.fire({
         icon: 'success',
         title: editingItem ? 'Updated Successfully!' : 'Created Successfully!',
@@ -465,7 +452,7 @@ const Masters: React.FC = () => {
   // Filter data based on current selection
   const getFilteredData = () => {
     let data: any[] = [];
-    
+
     if (activeSection === 'entities') {
       data = entityType === 'manufacturers' ? manufacturers : distributors;
     } else {
@@ -475,11 +462,11 @@ const Masters: React.FC = () => {
     // Apply filters
     if (searchText) {
       data = data.filter(item => {
-        const searchFields = activeSection === 'entities' 
+        const searchFields = activeSection === 'entities'
           ? [item.companyName, item.contactPerson, item.email, item.city, item.state]
           : [item.name, item.sku, item.brand, item.manufacturerName];
-        
-        return searchFields.some(field => 
+
+        return searchFields.some(field =>
           field?.toLowerCase().includes(searchText.toLowerCase())
         );
       });
@@ -568,6 +555,7 @@ const Masters: React.FC = () => {
       title: 'Categories',
       dataIndex: 'categories',
       key: 'categories',
+      width: 200,
       render: (categories: string[]) => (
         <div className="space-y-1">
           {categories.slice(0, 2).map((category, index) => (
@@ -583,19 +571,19 @@ const Masters: React.FC = () => {
         </div>
       ),
     },
-    {
-      title: 'Status',
-      dataIndex: 'status',
-      key: 'status',
-      render: (status: string) => (
-        <Tag color={
-          status === 'active' ? 'green' : 
-          status === 'pending' ? 'orange' : 'red'
-        } className="text-xs">
-          {status.toUpperCase()}
-        </Tag>
-      ),
-    },
+    // {
+    //   title: 'Status',
+    //   dataIndex: 'status',
+    //   key: 'status',
+    //   render: (status: string) => (
+    //     <Tag color={
+    //       status === 'active' ? 'green' :
+    //         status === 'pending' ? 'orange' : 'red'
+    //     } className="text-xs">
+    //       {status.toUpperCase()}
+    //     </Tag>
+    //   ),
+    // },
     {
       title: 'Actions',
       key: 'actions',
@@ -605,18 +593,18 @@ const Masters: React.FC = () => {
             <Button type="text" size="small" icon={<Eye className="w-3 h-3" />} />
           </Tooltip>
           <Tooltip title="Edit">
-            <Button 
-              type="text" 
-              size="small" 
+            <Button
+              type="text"
+              size="small"
               icon={<Edit className="w-3 h-3" />}
               onClick={() => handleEdit(record)}
             />
           </Tooltip>
           <Tooltip title="Delete">
-            <Button 
-              type="text" 
-              size="small" 
-              danger 
+            <Button
+              type="text"
+              size="small"
+              danger
               icon={<Trash2 className="w-3 h-3" />}
               onClick={() => handleDelete(record)}
             />
@@ -687,6 +675,7 @@ const Masters: React.FC = () => {
     {
       title: 'Categories',
       dataIndex: 'categories',
+      width: 200,
       key: 'categories',
       render: (categories: string[]) => (
         <div className="space-y-1">
@@ -703,19 +692,19 @@ const Masters: React.FC = () => {
         </div>
       ),
     },
-    {
-      title: 'Status',
-      dataIndex: 'status',
-      key: 'status',
-      render: (status: string) => (
-        <Tag color={
-          status === 'active' ? 'green' : 
-          status === 'pending' ? 'orange' : 'red'
-        } className="text-xs">
-          {status.toUpperCase()}
-        </Tag>
-      ),
-    },
+    // {
+    //   title: 'Status',
+    //   dataIndex: 'status',
+    //   key: 'status',
+    //   render: (status: string) => (
+    //     <Tag color={
+    //       status === 'active' ? 'green' :
+    //         status === 'pending' ? 'orange' : 'red'
+    //     } className="text-xs">
+    //       {status.toUpperCase()}
+    //     </Tag>
+    //   ),
+    // },
     {
       title: 'Actions',
       key: 'actions',
@@ -725,18 +714,18 @@ const Masters: React.FC = () => {
             <Button type="text" size="small" icon={<Eye className="w-3 h-3" />} />
           </Tooltip>
           <Tooltip title="Edit">
-            <Button 
-              type="text" 
-              size="small" 
+            <Button
+              type="text"
+              size="small"
               icon={<Edit className="w-3 h-3" />}
               onClick={() => handleEdit(record)}
             />
           </Tooltip>
           <Tooltip title="Delete">
-            <Button 
-              type="text" 
-              size="small" 
-              danger 
+            <Button
+              type="text"
+              size="small"
+              danger
               icon={<Trash2 className="w-3 h-3" />}
               onClick={() => handleDelete(record)}
             />
@@ -817,8 +806,8 @@ const Masters: React.FC = () => {
       key: 'status',
       render: (status: string) => (
         <Tag color={
-          status === 'active' ? 'green' : 
-          status === 'discontinued' ? 'red' : 'orange'
+          status === 'active' ? 'green' :
+            status === 'discontinued' ? 'red' : 'orange'
         } className="text-xs">
           {status.toUpperCase()}
         </Tag>
@@ -833,18 +822,18 @@ const Masters: React.FC = () => {
             <Button type="text" size="small" icon={<Eye className="w-3 h-3" />} />
           </Tooltip>
           <Tooltip title="Edit">
-            <Button 
-              type="text" 
-              size="small" 
+            <Button
+              type="text"
+              size="small"
               icon={<Edit className="w-3 h-3" />}
               onClick={() => handleEdit(record)}
             />
           </Tooltip>
           <Tooltip title="Delete">
-            <Button 
-              type="text" 
-              size="small" 
-              danger 
+            <Button
+              type="text"
+              size="small"
+              danger
               icon={<Trash2 className="w-3 h-3" />}
               onClick={() => handleDelete(record)}
             />
@@ -856,7 +845,7 @@ const Masters: React.FC = () => {
 
   const renderEntityForm = () => {
     const isManufacturer = entityType === 'manufacturers';
-    
+
     return (
       <Form form={form} layout="vertical" className="space-y-4">
         <Row gutter={[16, 16]}>
@@ -978,9 +967,9 @@ const Masters: React.FC = () => {
                 label="Established Year"
                 rules={[{ required: true, message: 'Please enter year' }]}
               >
-                <InputNumber 
-                  min={1800} 
-                  max={new Date().getFullYear()} 
+                <InputNumber
+                  min={1800}
+                  max={new Date().getFullYear()}
                   placeholder="YYYY"
                   className="w-full"
                 />
@@ -992,8 +981,8 @@ const Masters: React.FC = () => {
                 label="Annual Turnover (₹)"
                 rules={[{ required: true, message: 'Please enter turnover' }]}
               >
-                <InputNumber 
-                  min={0} 
+                <InputNumber
+                  min={0}
                   placeholder="Enter amount"
                   className="w-full"
                   formatter={(value) => `₹ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
@@ -1006,8 +995,8 @@ const Masters: React.FC = () => {
                 label="Employee Count"
                 rules={[{ required: true, message: 'Please enter employee count' }]}
               >
-                <InputNumber 
-                  min={1} 
+                <InputNumber
+                  min={1}
                   placeholder="Number of employees"
                   className="w-full"
                 />
@@ -1034,8 +1023,8 @@ const Masters: React.FC = () => {
                   label="Warehouse Capacity (sq.ft)"
                   rules={[{ required: true, message: 'Please enter warehouse capacity' }]}
                 >
-                  <InputNumber 
-                    min={0} 
+                  <InputNumber
+                    min={0}
                     placeholder="Enter capacity"
                     className="w-full"
                   />
@@ -1047,8 +1036,8 @@ const Masters: React.FC = () => {
                   label="Vehicle Count"
                   rules={[{ required: true, message: 'Please enter vehicle count' }]}
                 >
-                  <InputNumber 
-                    min={0} 
+                  <InputNumber
+                    min={0}
                     placeholder="Number of vehicles"
                     className="w-full"
                   />
@@ -1129,8 +1118,8 @@ const Masters: React.FC = () => {
             label="MRP (₹)"
             rules={[{ required: true, message: 'Please enter MRP' }]}
           >
-            <InputNumber 
-              min={0} 
+            <InputNumber
+              min={0}
               placeholder="Enter MRP"
               className="w-full"
               formatter={(value) => `₹ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
@@ -1164,9 +1153,9 @@ const Masters: React.FC = () => {
             label="GST Rate (%)"
             rules={[{ required: true, message: 'Please enter GST rate' }]}
           >
-            <InputNumber 
-              min={0} 
-              max={28} 
+            <InputNumber
+              min={0}
+              max={28}
               placeholder="GST %"
               className="w-full"
             />
@@ -1241,24 +1230,22 @@ const Masters: React.FC = () => {
               <div className="flex items-center space-x-4">
                 <motion.div
                   whileHover={{ scale: 1.05 }}
-                  className={`flex items-center space-x-2 px-6 py-3 rounded-xl transition-all cursor-pointer ${
-                    activeSection === 'entities' 
-                      ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg' 
+                  className={`flex items-center space-x-2 px-6 py-3 rounded-xl transition-all cursor-pointer ${activeSection === 'entities'
+                      ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg'
                       : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
-                  }`}
+                    }`}
                   onClick={() => setActiveSection('entities')}
                 >
                   <Building className="w-5 h-5" />
                   <span className="font-semibold">Entities</span>
                 </motion.div>
-                
+
                 <motion.div
                   whileHover={{ scale: 1.05 }}
-                  className={`flex items-center space-x-2 px-6 py-3 rounded-xl transition-all cursor-pointer ${
-                    activeSection === 'items' 
-                      ? 'bg-gradient-to-r from-purple-500 to-pink-600 text-white shadow-lg' 
+                  className={`flex items-center space-x-2 px-6 py-3 rounded-xl transition-all cursor-pointer ${activeSection === 'items'
+                      ? 'bg-gradient-to-r from-purple-500 to-pink-600 text-white shadow-lg'
                       : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
-                  }`}
+                    }`}
                   onClick={() => setActiveSection('items')}
                 >
                   <Package className="w-5 h-5" />
@@ -1286,25 +1273,23 @@ const Masters: React.FC = () => {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => setEntityType('manufacturers')}
-                    className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all ${
-                      entityType === 'manufacturers'
+                    className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all ${entityType === 'manufacturers'
                         ? 'bg-blue-500 text-white shadow-md'
                         : 'text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
-                    }`}
+                      }`}
                   >
                     <Factory className="w-4 h-4" />
                     <span className="font-medium">Manufacturers</span>
                   </motion.button>
-                  
+
                   <motion.button
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => setEntityType('distributors')}
-                    className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all ${
-                      entityType === 'distributors'
+                    className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all ${entityType === 'distributors'
                         ? 'bg-green-500 text-white shadow-md'
                         : 'text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
-                    }`}
+                      }`}
                   >
                     <Truck className="w-4 h-4" />
                     <span className="font-medium">Distributors</span>
@@ -1408,14 +1393,14 @@ const Masters: React.FC = () => {
                 </Select>
               )}
             </div>
-            
+
             <div className="flex items-center justify-between lg:justify-end space-x-4">
               <span className="text-sm text-gray-600 dark:text-gray-400">
                 Total: {filteredData.length} {activeSection === 'entities' ? entityType : 'products'}
               </span>
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button 
-                  type="primary" 
+                <Button
+                  type="primary"
                   size="large"
                   icon={<Plus className="w-4 h-4" />}
                   className="bg-gradient-to-r from-indigo-500 to-purple-600 border-0 shadow-lg"
@@ -1438,7 +1423,7 @@ const Masters: React.FC = () => {
         <Card className="shadow-xl border-0 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900">
           <Table
             columns={
-              activeSection === 'entities' 
+              activeSection === 'entities'
                 ? (entityType === 'manufacturers' ? manufacturerColumns : distributorColumns)
                 : productColumns
             }
@@ -1474,7 +1459,7 @@ const Masters: React.FC = () => {
             )}
             <span>
               {editingItem ? 'Edit' : 'Add'} {
-                activeSection === 'entities' 
+                activeSection === 'entities'
                   ? (entityType === 'manufacturers' ? 'Manufacturer' : 'Distributor')
                   : 'Product'
               }
@@ -1482,6 +1467,7 @@ const Masters: React.FC = () => {
           </div>
         }
         open={isModalVisible}
+        closable={false}
         onCancel={() => {
           setIsModalVisible(false);
           form.resetFields();
@@ -1491,9 +1477,9 @@ const Masters: React.FC = () => {
           <Button key="cancel" onClick={() => setIsModalVisible(false)} icon={<X className="w-4 h-4" />}>
             Cancel
           </Button>,
-          <Button 
-            key="save" 
-            type="primary" 
+          <Button
+            key="save"
+            type="primary"
             onClick={handleSave}
             icon={<Save className="w-4 h-4" />}
             className="bg-gradient-to-r from-green-500 to-emerald-600 border-0"

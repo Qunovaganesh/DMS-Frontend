@@ -1,19 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Button, Progress, Statistic, Row, Col, Timeline, Tag } from 'antd';
-import { 
-  RefreshCw, 
-  Database, 
-  CheckCircle, 
-  Clock, 
+import { Card, Button, Progress, Statistic, Row, Col, Timeline, Tag, Upload, message } from 'antd';
+import {
+  RefreshCw,
+  Database,
+  CheckCircle,
+  Clock,
   AlertCircle,
-  Factory,
-  Truck,
   Zap,
   Activity,
-  TrendingUp
+  Upload as UploadIcon,
+  FileText,
+  FileSpreadsheet
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Swal from 'sweetalert2';
+import type { UploadProps, UploadFile } from 'antd';
 
 interface SyncStatus {
   isRunning: boolean;
@@ -43,6 +44,8 @@ const CRMSync: React.FC = () => {
   });
 
   const [syncActivities, setSyncActivities] = useState<SyncActivity[]>([]);
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     const mockActivities: SyncActivity[] = [
@@ -101,7 +104,7 @@ const CRMSync: React.FC = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         setSyncStatus(prev => ({ ...prev, isRunning: true, status: 'syncing', progress: 0 }));
-        
+
         // Simulate sync progress
         const interval = setInterval(() => {
           setSyncStatus(prev => {
@@ -148,6 +151,60 @@ const CRMSync: React.FC = () => {
       case 'error': return AlertCircle;
       default: return Clock;
     }
+  };
+
+  const handleFileUpload: UploadProps['customRequest'] = async (options) => {
+    const { file, onSuccess, onError } = options;
+    setUploading(true);
+
+    try {
+      // Simulate file processing
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      // Validate file type
+      const allowedTypes = [
+        'text/csv',
+        'application/vnd.ms-excel',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      ];
+
+      if (!allowedTypes.includes((file as File).type)) {
+        throw new Error('Only CSV and Excel files are allowed');
+      }
+
+      // Validate file size (max 10MB)
+      if ((file as File).size > 10 * 1024 * 1024) {
+        throw new Error('File size must be less than 10MB');
+      }
+
+      message.success(`${(file as File).name} uploaded successfully`);
+      onSuccess?.(file);
+
+      // Add to sync activities
+      const newActivity: SyncActivity = {
+        id: Date.now().toString(),
+        timestamp: new Date().toISOString(),
+        action: `File Upload: ${(file as File).name}`,
+        entityCount: Math.floor(Math.random() * 100) + 1,
+        status: 'success'
+      };
+
+      setSyncActivities(prev => [newActivity, ...prev]);
+
+    } catch (error) {
+      message.error(error instanceof Error ? error.message : 'Upload failed');
+      onError?.(error as Error);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleFileChange: UploadProps['onChange'] = (info) => {
+    setFileList(info.fileList);
+  };
+
+  const handleFileRemove = (file: UploadFile) => {
+    setFileList(prev => prev.filter(item => item.uid !== file.uid));
   };
 
   return (
@@ -218,7 +275,7 @@ const CRMSync: React.FC = () => {
         <Card className="shadow-lg border-0 bg-gradient-to-br from-indigo-50 to-indigo-100 dark:from-indigo-900/20 dark:to-indigo-800/20">
           <div className="text-center">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Synchronization Control</h2>
-            
+
             {syncStatus.isRunning && (
               <div className="mb-6">
                 <Progress
@@ -265,13 +322,94 @@ const CRMSync: React.FC = () => {
         </Card>
       </motion.div>
 
+      {/* File Upload Section */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5, duration: 0.5 }}
+      >
+        <Card className="shadow-lg border-0 bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/20 dark:to-emerald-800/20">
+          <div className="text-center">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl mb-4 shadow-lg">
+              <UploadIcon className="w-8 h-8 text-white" />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Upload CRM Data</h2>
+            <p className="text-gray-600 dark:text-gray-400 mb-6">
+              Upload CSV or Excel files to import CRM entities into the system
+            </p>
+
+            <div className="max-w-2xl mx-auto">
+              <Upload.Dragger
+                name="file"
+                multiple={false}
+                fileList={fileList}
+                customRequest={handleFileUpload}
+                onChange={handleFileChange}
+                onRemove={handleFileRemove}
+                accept=".csv,.xlsx,.xls"
+                disabled={uploading}
+                className="bg-white dark:bg-gray-800 border-2 border-dashed border-emerald-300 dark:border-emerald-600 hover:border-emerald-400 dark:hover:border-emerald-500 rounded-xl"
+              >
+                <div className="py-8">
+                  <div className="flex justify-center mb-4">
+                    {uploading ? (
+                      <RefreshCw className="w-12 h-12 text-emerald-500 animate-spin" />
+                    ) : (
+                      <div className="flex space-x-2">
+                        <FileText className="w-8 h-8 text-emerald-500" />
+                        <FileSpreadsheet className="w-8 h-8 text-emerald-500" />
+                      </div>
+                    )}
+                  </div>
+                  <p className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                    {uploading ? 'Processing file...' : 'Click or drag file to this area to upload'}
+                  </p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    Support for CSV, XLS, and XLSX files. Maximum file size: 10MB
+                  </p>
+                </div>
+              </Upload.Dragger>
+
+              {fileList.length > 0 && (
+                <div className="mt-4 text-left">
+                  <h4 className="font-medium text-gray-900 dark:text-white mb-2">Uploaded Files:</h4>
+                  <div className="space-y-2">
+                    {fileList.map((file) => (
+                      <div key={file.uid} className="flex items-center justify-between p-3 bg-white dark:bg-gray-700 rounded-lg border">
+                        <div className="flex items-center space-x-3">
+                          {file.name?.endsWith('.csv') ? (
+                            <FileText className="w-5 h-5 text-blue-500" />
+                          ) : (
+                            <FileSpreadsheet className="w-5 h-5 text-green-500" />
+                          )}
+                          <span className="text-gray-900 dark:text-white">{file.name}</span>
+                          {file.status === 'done' && (
+                            <Tag color="green">Uploaded</Tag>
+                          )}
+                          {file.status === 'uploading' && (
+                            <Tag color="blue">Uploading...</Tag>
+                          )}
+                          {file.status === 'error' && (
+                            <Tag color="red">Error</Tag>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </Card>
+      </motion.div>
+
       {/* Sync Activity Timeline */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.6, duration: 0.5 }}
       >
-        <Card 
+        <Card
           title={
             <div className="flex items-center space-x-2">
               <Activity className="w-5 h-5 text-purple-500" />
@@ -303,7 +441,7 @@ const CRMSync: React.FC = () => {
                   </div>
                   <Tag color={
                     activity.status === 'success' ? 'green' :
-                    activity.status === 'warning' ? 'orange' : 'red'
+                      activity.status === 'warning' ? 'orange' : 'red'
                   }>
                     {activity.status.toUpperCase()}
                   </Tag>

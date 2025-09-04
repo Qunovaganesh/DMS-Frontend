@@ -84,7 +84,7 @@ const AppContent: React.FC = () => {
                    <Route path="masters" element={<Masters />} />
                   <Route path="mail" element={<MailCenter />} />
                   <Route path="users" element={<UserManagement />} />
-                  <Route path="admin" element={<AdminPanel />} />
+                  <Route path="Entitiesync" element={<AdminPanel />} />
                   <Route path="crm-sync" element={<CRMSync />} />
                   <Route path="transaction-sync" element={<TransactionSync />} />
                   <Route path="mapping" element={<MappingUtility />} />

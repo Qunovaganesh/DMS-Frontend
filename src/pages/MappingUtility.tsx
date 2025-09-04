@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Table, Button, Tag, Input, Select, Space, Switch, Row, Col, Modal, Tooltip, Divider } from 'antd';
+import { Card, Table, Button, Tag, Input, Select, Space, Switch, Row, Col, Tooltip } from 'antd';
 import { 
-  Map, 
-  Search, 
-  Filter, 
   Package,
   Factory,
   Truck,
@@ -11,11 +8,7 @@ import {
   Link,
   AlertTriangle,
   CheckCircle,
-  Eye,
-  Edit,
-  ArrowRight,
-  Users,
-  Building
+  Trash2
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Swal from 'sweetalert2';
@@ -41,6 +34,7 @@ interface UnmatchedDistributor {
   distributorName: string;
   companyName: string;
   gst: string;
+  pin: string;
   contactPerson: string;
   phone: string;
   email: string;
@@ -57,8 +51,12 @@ interface ManufacturerDistributorMapping {
   id: string;
   manufacturerId: string;
   manufacturerName: string;
+  manufacturerGst: string;
+  manufacturerPin: string;
   distributorId: string;
   distributorName: string;
+  distributorGst: string;
+  distributorPin: string;
   territory: string;
   mappedOn: string;
   status: 'active' | 'inactive';
@@ -136,6 +134,7 @@ const MappingUtility: React.FC = () => {
         distributorName: 'Metro Distribution Hub',
         companyName: 'Metro Distribution Hub Pvt Ltd',
         gst: 'GST123456789',
+        pin: '10001',
         contactPerson: 'Robert Johnson',
         phone: '+1-555-0300',
         email: 'robert@metrodist.com',
@@ -150,6 +149,7 @@ const MappingUtility: React.FC = () => {
         distributorName: 'Global Dist Network',
         companyName: 'Global Distribution Network LLC',
         gst: 'GST789123456',
+        pin: '98101',
         contactPerson: 'Mike Chen',
         phone: '+1-555-0200',
         email: 'mike@globaldist.com',
@@ -166,6 +166,7 @@ const MappingUtility: React.FC = () => {
         distributorName: 'East Coast Partners',
         companyName: 'East Coast Distribution Partners',
         gst: 'GST456789123',
+        pin: '02101',
         contactPerson: 'Lisa Wang',
         phone: '+1-555-0301',
         email: 'lisa@eastcoast.com',
@@ -183,8 +184,12 @@ const MappingUtility: React.FC = () => {
         id: '1',
         manufacturerId: 'mfr001',
         manufacturerName: 'TechCorp Industries',
+        manufacturerGst: 'GST111111111',
+        manufacturerPin: '110001',
         distributorId: 'dist001',
         distributorName: 'Global Distribution Network',
+        distributorGst: 'GST789123456',
+        distributorPin: '98101',
         territory: 'North America',
         mappedOn: '2024-12-15T10:00:00Z',
         status: 'active'
@@ -193,8 +198,12 @@ const MappingUtility: React.FC = () => {
         id: '2',
         manufacturerId: 'mfr002',
         manufacturerName: 'Global Manufacturing Ltd',
+        manufacturerGst: 'GST222222222',
+        manufacturerPin: '400001',
         distributorId: 'dist002',
         distributorName: 'Regional Partners LLC',
+        distributorGst: 'GST456789123',
+        distributorPin: '02101',
         territory: 'Europe',
         mappedOn: '2024-12-10T14:30:00Z',
         status: 'active'
@@ -351,6 +360,13 @@ const MappingUtility: React.FC = () => {
         buttonsStyling: false
       });
 
+      // Mock data for existing distributors with GST and PIN
+      const existingDistributors = [
+        { id: 'dist001', name: 'Global Distribution Network', gst: 'GST789123456', pin: '98101' },
+        { id: 'dist002', name: 'Regional Partners LLC', gst: 'GST456789123', pin: '02101' },
+        { id: 'dist003', name: 'Asia Pacific Distributors', gst: 'GST654987321', pin: '560001' }
+      ];
+
       swalWithBootstrapButtons.fire({
         title: 'Mark as Duplicate Distributor',
         html: `
@@ -358,28 +374,62 @@ const MappingUtility: React.FC = () => {
             <div class="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 p-4 rounded-xl">
               <p><strong>Distributor:</strong> ${distributor.distributorName}</p>
               <p><strong>GST:</strong> ${distributor.gst}</p>
+              <p><strong>PIN:</strong> ${distributor.pin}</p>
               <p><strong>Contact:</strong> ${distributor.contactPerson}</p>
+            </div>
+            <div class="bg-yellow-50 dark:bg-yellow-900/20 p-3 rounded-lg border border-yellow-200 dark:border-yellow-800">
+              <p class="text-sm text-yellow-800 dark:text-yellow-200">
+                <strong>Note:</strong> To merge distributors with different names, both GSTN and PIN must match exactly.
+              </p>
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Select Original Distributor</label>
               <select id="originalDistributor" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
                 <option value="">Select original distributor...</option>
-                <option value="dist001">Global Distribution Network (GST789123456)</option>
-                <option value="dist002">Regional Partners LLC (GST456789123)</option>
-                <option value="dist003">Asia Pacific Distributors (GST654987321)</option>
+                ${existingDistributors.map(dist => 
+                  `<option value="${dist.id}" data-gst="${dist.gst}" data-pin="${dist.pin}">
+                    ${dist.name} (GST: ${dist.gst}, PIN: ${dist.pin})
+                  </option>`
+                ).join('')}
               </select>
             </div>
+            <div id="validationMessage" class="hidden text-red-600 dark:text-red-400 text-sm"></div>
           </div>
         `,
         showCancelButton: true,
         confirmButtonText: 'Mark as Duplicate',
         cancelButtonText: 'Cancel',
+        width: '600px',
         preConfirm: () => {
-          const originalDistributor = (document.getElementById('originalDistributor') as HTMLSelectElement)?.value;
-          if (!originalDistributor) {
+          const originalDistributorSelect = document.getElementById('originalDistributor') as HTMLSelectElement;
+          const selectedOption = originalDistributorSelect?.selectedOptions[0];
+          const validationMessage = document.getElementById('validationMessage');
+          
+          if (!originalDistributorSelect?.value) {
             Swal.showValidationMessage('Please select the original distributor');
+            return false;
           }
-          return originalDistributor;
+
+          if (selectedOption) {
+            const originalGst = selectedOption.getAttribute('data-gst');
+            const originalPin = selectedOption.getAttribute('data-pin');
+            
+            // Check if GST and PIN match
+            if (distributor.gst !== originalGst || distributor.pin !== originalPin) {
+              if (validationMessage) {
+                validationMessage.textContent = `Cannot merge: GST (${distributor.gst} vs ${originalGst}) or PIN (${distributor.pin} vs ${originalPin}) do not match.`;
+                validationMessage.classList.remove('hidden');
+              }
+              Swal.showValidationMessage('GSTN and PIN must match exactly to merge distributors with different names');
+              return false;
+            } else {
+              if (validationMessage) {
+                validationMessage.classList.add('hidden');
+              }
+            }
+          }
+          
+          return originalDistributorSelect.value;
         }
       }).then((result) => {
         if (result.isConfirmed) {
@@ -430,56 +480,118 @@ const MappingUtility: React.FC = () => {
       buttonsStyling: false
     });
 
+    // Mock data for manufacturers and distributors with GST and PIN
+    const manufacturers = [
+      { id: 'mfr001', name: 'TechCorp Industries', gst: 'GST111111111', pin: '110001' },
+      { id: 'mfr002', name: 'Global Manufacturing Ltd', gst: 'GST222222222', pin: '400001' },
+      { id: 'mfr003', name: 'Innovation Works Inc', gst: 'GST333333333', pin: '560001' }
+    ];
+
+    const distributors = [
+      { id: 'dist001', name: 'Global Distribution Network', gst: 'GST789123456', pin: '98101' },
+      { id: 'dist002', name: 'Regional Partners LLC', gst: 'GST456789123', pin: '02101' },
+      { id: 'dist003', name: 'Asia Pacific Distributors', gst: 'GST654987321', pin: '560001' }
+    ];
+
     swalWithBootstrapButtons.fire({
       title: 'Create Manufacturer-Distributor Mapping',
       html: `
         <div class="text-left space-y-4">
+          <div class="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg border border-blue-200 dark:border-blue-800">
+            <p class="text-sm text-blue-800 dark:text-blue-200">
+              <strong>Note:</strong> For mapping manufacturers and distributors with different names, GSTN and PIN must match exactly.
+            </p>
+          </div>
           <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Select Manufacturer</label>
             <select id="manufacturer" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
               <option value="">Select manufacturer...</option>
-              <option value="mfr001">TechCorp Industries</option>
-              <option value="mfr002">Global Manufacturing Ltd</option>
-              <option value="mfr003">Innovation Works Inc</option>
+              ${manufacturers.map(mfr => 
+                `<option value="${mfr.id}" data-gst="${mfr.gst}" data-pin="${mfr.pin}">
+                  ${mfr.name} (GST: ${mfr.gst}, PIN: ${mfr.pin})
+                </option>`
+              ).join('')}
             </select>
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Select Distributor</label>
             <select id="distributor" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
               <option value="">Select distributor...</option>
-              <option value="dist001">Global Distribution Network</option>
-              <option value="dist002">Regional Partners LLC</option>
-              <option value="dist003">Asia Pacific Distributors</option>
+              ${distributors.map(dist => 
+                `<option value="${dist.id}" data-gst="${dist.gst}" data-pin="${dist.pin}">
+                  ${dist.name} (GST: ${dist.gst}, PIN: ${dist.pin})
+                </option>`
+              ).join('')}
             </select>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">GST No</label>
-            <input id="territory" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="Enter GST No..." />
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Territory</label>
+            <input id="territory" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="Enter territory..." />
           </div>
+          <div id="mappingValidationMessage" class="hidden text-red-600 dark:text-red-400 text-sm"></div>
         </div>
       `,
       showCancelButton: true,
       confirmButtonText: 'Create Mapping',
       cancelButtonText: 'Cancel',
-      width: '500px',
+      width: '600px',
       preConfirm: () => {
-        const manufacturer = (document.getElementById('manufacturer') as HTMLSelectElement)?.value;
-        const distributor = (document.getElementById('distributor') as HTMLSelectElement)?.value;
+        const manufacturerSelect = document.getElementById('manufacturer') as HTMLSelectElement;
+        const distributorSelect = document.getElementById('distributor') as HTMLSelectElement;
         const territory = (document.getElementById('territory') as HTMLInputElement)?.value;
+        const validationMessage = document.getElementById('mappingValidationMessage');
         
-        if (!manufacturer || !distributor || !territory) {
+        if (!manufacturerSelect?.value || !distributorSelect?.value || !territory) {
           Swal.showValidationMessage('Please fill in all fields');
+          return false;
         }
-        return { manufacturer, distributor, territory };
+
+        const manufacturerOption = manufacturerSelect.selectedOptions[0];
+        const distributorOption = distributorSelect.selectedOptions[0];
+        
+        if (manufacturerOption && distributorOption) {
+          const manufacturerGst = manufacturerOption.getAttribute('data-gst');
+          const manufacturerPin = manufacturerOption.getAttribute('data-pin');
+          const distributorGst = distributorOption.getAttribute('data-gst');
+          const distributorPin = distributorOption.getAttribute('data-pin');
+          
+          // Check if GST and PIN match for manufacturer and distributor
+          if (manufacturerGst !== distributorGst || manufacturerPin !== distributorPin) {
+            if (validationMessage) {
+              validationMessage.textContent = `Cannot create mapping: Manufacturer GST/PIN (${manufacturerGst}/${manufacturerPin}) does not match Distributor GST/PIN (${distributorGst}/${distributorPin}).`;
+              validationMessage.classList.remove('hidden');
+            }
+            Swal.showValidationMessage('Manufacturer and Distributor GSTN and PIN must match exactly to create mapping');
+            return false;
+          } else {
+            if (validationMessage) {
+              validationMessage.classList.add('hidden');
+            }
+          }
+        }
+        
+        return { 
+          manufacturer: manufacturerSelect.value, 
+          distributor: distributorSelect.value, 
+          territory,
+          manufacturerGst: manufacturerOption?.getAttribute('data-gst'),
+          manufacturerPin: manufacturerOption?.getAttribute('data-pin'),
+          distributorGst: distributorOption?.getAttribute('data-gst'),
+          distributorPin: distributorOption?.getAttribute('data-pin')
+        };
       }
     }).then((result) => {
       if (result.isConfirmed) {
         const newMapping: ManufacturerDistributorMapping = {
           id: Date.now().toString(),
           manufacturerId: result.value.manufacturer,
-          manufacturerName: 'Selected Manufacturer',
+          manufacturerName: manufacturers.find(m => m.id === result.value.manufacturer)?.name || 'Selected Manufacturer',
+          manufacturerGst: result.value.manufacturerGst,
+          manufacturerPin: result.value.manufacturerPin,
           distributorId: result.value.distributor,
-          distributorName: 'Selected Distributor',
+          distributorName: distributors.find(d => d.id === result.value.distributor)?.name || 'Selected Distributor',
+          distributorGst: result.value.distributorGst,
+          distributorPin: result.value.distributorPin,
           territory: result.value.territory,
           mappedOn: new Date().toISOString(),
           status: 'active'
@@ -491,6 +603,65 @@ const MappingUtility: React.FC = () => {
           icon: 'success',
           title: 'Mapping Created!',
           text: 'Manufacturer-Distributor mapping has been created successfully.',
+          timer: 2000,
+          showConfirmButton: false
+        });
+      }
+    });
+  };
+
+  const handleRemoveMapping = (mapping: ManufacturerDistributorMapping) => {
+    const swalWithBootstrapButtons = Swal.mixin({
+      customClass: {
+        confirmButton: 'bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-lg mr-2 transition-colors',
+        cancelButton: 'bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-lg transition-colors',
+        popup: 'bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border-0',
+        title: 'text-gray-900 dark:text-white font-bold',
+        htmlContainer: 'text-gray-700 dark:text-gray-300'
+      },
+      buttonsStyling: false
+    });
+
+    swalWithBootstrapButtons.fire({
+      title: 'Remove Mapping',
+      html: `
+        <div class="text-left space-y-4">
+          <div class="bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/20 p-4 rounded-xl">
+            <p class="font-medium text-gray-900 dark:text-white">Are you sure you want to remove this mapping?</p>
+            <div class="mt-3 space-y-2">
+              <div class="flex items-center space-x-2">
+                <Factory className="w-4 h-4 text-blue-500" />
+                <span class="text-sm"><strong>Manufacturer:</strong> ${mapping.manufacturerName}</span>
+              </div>
+              <div class="flex items-center space-x-2">
+                <Truck className="w-4 h-4 text-green-500" />
+                <span class="text-sm"><strong>Distributor:</strong> ${mapping.distributorName}</span>
+              </div>
+              <div class="text-sm text-gray-600 dark:text-gray-400">
+                <strong>Territory:</strong> ${mapping.territory}
+              </div>
+            </div>
+          </div>
+          <div class="bg-yellow-50 dark:bg-yellow-900/20 p-3 rounded-lg border border-yellow-200 dark:border-yellow-800">
+            <p class="text-sm text-yellow-800 dark:text-yellow-200">
+              <strong>Warning:</strong> This action cannot be undone. The mapping will be permanently removed.
+            </p>
+          </div>
+        </div>
+      `,
+      showCancelButton: true,
+      confirmButtonText: 'Remove Mapping',
+      cancelButtonText: 'Cancel',
+      width: '500px',
+      icon: 'warning'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setManufacturerMappings(prev => prev.filter(m => m.id !== mapping.id));
+        
+        swalWithBootstrapButtons.fire({
+          icon: 'success',
+          title: 'Mapping Removed!',
+          text: 'The manufacturer-distributor mapping has been successfully removed.',
           timer: 2000,
           showConfirmButton: false
         });
@@ -510,7 +681,7 @@ const MappingUtility: React.FC = () => {
           <div>
             <p className="font-medium text-gray-900 dark:text-white">{record.itemName}</p>
             <p className="text-sm text-gray-500 dark:text-gray-400">Code: {record.itemCode}</p>
-            <Tag size="small" color="blue">{record.category}</Tag>
+            <Tag color="blue">{record.category}</Tag>
           </div>
         </div>
       ),
@@ -593,18 +764,39 @@ const MappingUtility: React.FC = () => {
 
   const distributorColumns = [
     {
-      title: 'Distributor Details',
+      title: 'Synced Distributor',
       key: 'distributorDetails',
       render: (record: UnmatchedDistributor) => (
         <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
+          {/* <div className="w-8 h-8 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
             <Truck className="w-4 h-4 text-green-600 dark:text-green-400" />
-          </div>
+          </div> */}
           <div>
             <p className="font-medium text-gray-900 dark:text-white">{record.distributorName}</p>
             <p className="text-sm text-gray-500 dark:text-gray-400">{record.companyName}</p>
             <p className="text-xs text-gray-400">GST: {record.gst}</p>
+            <p className="text-xs text-gray-400">PIN: {record.pin}</p>
           </div>
+        </div>
+      ),
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+      key: 'status',
+      render: (status: string, record: UnmatchedDistributor) => (
+        <div>
+          {status === 'duplicate' && record.originalDistributorName && (
+            <p className="font-medium text-gray-900 dark:text-white mb-5">
+              Original: {record.originalDistributorName}
+            </p>
+          )}
+          <Tag color={
+            status === 'new' ? 'green' :
+            status === 'duplicate' ? 'orange' : 'blue'
+          }>
+            {status.toUpperCase()}
+          </Tag>
         </div>
       ),
     },
@@ -646,26 +838,7 @@ const MappingUtility: React.FC = () => {
         </div>
       ),
     },
-    {
-      title: 'Status',
-      dataIndex: 'status',
-      key: 'status',
-      render: (status: string, record: UnmatchedDistributor) => (
-        <div>
-          <Tag color={
-            status === 'new' ? 'green' :
-            status === 'duplicate' ? 'orange' : 'blue'
-          }>
-            {status.toUpperCase()}
-          </Tag>
-          {status === 'duplicate' && record.originalDistributorName && (
-            <p className="text-xs text-gray-500 mt-1">
-              Original: {record.originalDistributorName}
-            </p>
-          )}
-        </div>
-      ),
-    },
+   
     {
       title: 'Actions',
       key: 'actions',
@@ -699,10 +872,15 @@ const MappingUtility: React.FC = () => {
       title: 'Manufacturer',
       dataIndex: 'manufacturerName',
       key: 'manufacturerName',
-      render: (text: string) => (
+      render: (text: string, record: ManufacturerDistributorMapping) => (
         <div className="flex items-center space-x-2">
           <Factory className="w-4 h-4 text-blue-500" />
-          <span className="font-medium">{text}</span>
+          <div>
+            <span className="font-medium">{text}</span>
+            <div className="text-xs text-gray-500">
+              GST: {record.manufacturerGst} | PIN: {record.manufacturerPin}
+            </div>
+          </div>
         </div>
       ),
     },
@@ -710,10 +888,15 @@ const MappingUtility: React.FC = () => {
       title: 'Distributor',
       dataIndex: 'distributorName',
       key: 'distributorName',
-      render: (text: string) => (
+      render: (text: string, record: ManufacturerDistributorMapping) => (
         <div className="flex items-center space-x-2">
           <Truck className="w-4 h-4 text-green-500" />
-          <span className="font-medium">{text}</span>
+          <div>
+            <span className="font-medium">{text}</span>
+            <div className="text-xs text-gray-500">
+              GST: {record.distributorGst} | PIN: {record.distributorPin}
+            </div>
+          </div>
         </div>
       ),
     },
@@ -736,6 +919,23 @@ const MappingUtility: React.FC = () => {
         <Tag color={status === 'active' ? 'green' : 'red'}>
           {status.toUpperCase()}
         </Tag>
+      ),
+    },
+    {
+      title: 'Actions',
+      key: 'actions',
+      render: (record: ManufacturerDistributorMapping) => (
+        <Space>
+          <Tooltip title="Remove Mapping">
+            <Button 
+              type="text" 
+              size="small" 
+              icon={<Trash2 className="w-4 h-4" />}
+              onClick={() => handleRemoveMapping(record)}
+              className="text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+            />
+          </Tooltip>
+        </Space>
       ),
     },
   ];
@@ -784,7 +984,6 @@ const MappingUtility: React.FC = () => {
               <Switch
                 checked={activeTab === 'distributors'}
                 onChange={(checked) => setActiveTab(checked ? 'distributors' : 'items')}
-                size="large"
               />
               <span className={`font-medium ${activeTab === 'distributors' ? 'text-green-600 dark:text-green-400' : 'text-gray-500'}`}>
                 Manufacturer-Distributor Mappings

@@ -11,13 +11,11 @@ import {
   Filter,
   Eye,
   Trash2,
-  BarChart3,
-  Calendar,
-  Users
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { MailData } from '../types';
 import Swal from 'sweetalert2';
+import { Tooltip } from 'antd';
 
 const { Search: AntSearch } = Input;
 const { Option } = Select;
