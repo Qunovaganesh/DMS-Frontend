@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Table, Tag, Progress, Statistic, Row, Col, Tabs, Select, DatePicker, Button } from 'antd';
+import { Card, Table, Tag, Progress, Statistic, Row, Col, Tabs, Select, DatePicker, Button, Space } from 'antd';
+import { LineChart, Line, ResponsiveContainer } from 'recharts';
 import { 
   Factory, 
   Truck, 
@@ -22,6 +23,7 @@ import {
   Globe,
   MapPin,
   Calendar,
+  TrendingUp,
   Filter,
   RefreshCw,
   ArrowUp,
@@ -31,12 +33,21 @@ import {
   Shield,
   Database,
   Bell
+  CreditCard,
+  Receipt,
+  ShoppingBag,
+  Users2
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { DashboardStats, Manufacturer, Distributor, MailData } from '../types';
+import KpiCard from '../components/Dashboard/KpiCard';
+import TrendChart from '../components/Dashboard/TrendChart';
+import DataTable from '../components/Dashboard/DataTable';
+import FilterBar from '../components/Dashboard/FilterBar';
+import dayjs from 'dayjs';
 
 const { TabPane } = Tabs;
 const { Option } = Select;
@@ -56,6 +67,34 @@ const Dashboard: React.FC = () => {
     monthlyGrowth: 0
   });
 
+  // Enhanced state for new dashboard features
+  const [dashboardData, setDashboardData] = useState({
+    totalDistributors: 0,
+    activeMails: 0,
+    remainingMails: 0,
+    totalRevenue: 0,
+    monthlyGrowth: 0
+  });
+
+  // Filter states
+  const [dateRange, setDateRange] = useState<[dayjs.Dayjs, dayjs.Dayjs] | null>([
+    dayjs().subtract(30, 'day'),
+    dayjs()
+  ]);
+  const [city, setCity] = useState('All Cities');
+  const [district, setDistrict] = useState('All Districts');
+  const [state, setState] = useState('All States');
+  const [entityType, setEntityType] = useState<'manufacturers' | 'distributors'>('manufacturers');
+
+  // Financial data
+  const [financialData, setFinancialData] = useState({
+    receivables: { value: 3400000, change: 14.1 },
+    payables: { value: 1800000, change: -9.1 },
+    inventoryTurnover: { value: 8.5, change: 9.0 }
+  });
+
+  // Sales and order data with trends
+  const [salesData, setSalesData] = useState({
   const [timeFilter, setTimeFilter] = useState('thisMonth');
   const [regionFilter, setRegionFilter] = useState('all');
 
@@ -63,6 +102,46 @@ const Dashboard: React.FC = () => {
   const [manufacturerData, setManufacturerData] = useState({
     orderValue: { current: 25400000, previous: 22600000, growth: 12.4 },
     orderCount: { current: 1245, previous: 1156, growth: 7.7 },
+    primary: {
+      sales: { value: 25400000, change: 12.4, trend: [
+        { value: 20000000 }, { value: 21000000 }, { value: 22500000 }, 
+        { value: 24000000 }, { value: 25400000 }
+      ]},
+      orderCount: { value: 1245, change: 7.7, trend: [
+        { value: 1100 }, { value: 1150 }, { value: 1200 }, 
+        { value: 1220 }, { value: 1245 }
+      ]},
+      uob: { value: 456, change: 7.8, trend: [
+        { value: 400 }, { value: 420 }, { value: 435 }, 
+        { value: 445 }, { value: 456 }
+      ]},
+      avgOrderValue: { value: 20400, change: 4.3, trend: [
+        { value: 19000 }, { value: 19500 }, { value: 20000 }, 
+        { value: 20200 }, { value: 20400 }
+      ]}
+    },
+    secondary: {
+      sales: { value: 18900000, change: 9.9, trend: [
+        { value: 16000000 }, { value: 17000000 }, { value: 17800000 }, 
+        { value: 18500000 }, { value: 18900000 }
+      ]},
+      orderCount: { value: 892, change: 7.0, trend: [
+        { value: 800 }, { value: 830 }, { value: 860 }, 
+        { value: 875 }, { value: 892 }
+      ]},
+      uob: { value: 234, change: 7.3, trend: [
+        { value: 200 }, { value: 210 }, { value: 220 }, 
+        { value: 228 }, { value: 234 }
+      ]},
+      avgOrderValue: { value: 21200, change: 2.8, trend: [
+        { value: 20500 }, { value: 20700 }, { value: 20900 }, 
+        { value: 21000 }, { value: 21200 }
+      ]}
+    }
+  });
+
+  // Network data for tables
+  const [networkData, setNetworkData] = useState({
     avgOrderValue: { current: 20400, previous: 19550, growth: 4.3 },
     uniqueOutlets: { current: 456, previous: 423, growth: 7.8 },
     totalDistributors: { current: 89, previous: 82, growth: 8.5 },
@@ -72,6 +151,91 @@ const Dashboard: React.FC = () => {
     payables: { current: 1800000, previous: 1650000, growth: 9.1 },
     inventoryTurnover: { current: 8.5, previous: 7.8, growth: 9.0 },
     fulfillmentRate: { current: 96.8, previous: 94.2, growth: 2.8 }
+    manufacturers: [
+      { rank: 1, name: 'TechCorp Industries', sales: 4500000, change: 15.2, share: 18.5 },
+      { rank: 2, name: 'Global Manufacturing Ltd', sales: 3200000, change: 8.7, share: 13.2 },
+      { rank: 3, name: 'Innovation Works Inc', sales: 2800000, change: 12.3, share: 11.5 },
+      { rank: 4, name: 'Quality Manufacturing', sales: 2100000, change: -2.1, share: 8.6 },
+      { rank: 5, name: 'Precise Manufacturing', sales: 1900000, change: 5.4, share: 7.8 },
+      { rank: 6, name: 'Advanced Industries', sales: 1600000, change: -1.2, share: 6.6 },
+      { rank: 7, name: 'Modern Manufacturing', sales: 1400000, change: 3.8, share: 5.8 },
+      { rank: 8, name: 'Elite Production', sales: 1200000, change: -0.5, share: 4.9 }
+    ],
+    distributors: [
+      { rank: 1, name: 'Global Distribution Network', sales: 3400000, change: 18.2, share: 22.1 },
+      { rank: 2, name: 'Regional Partners LLC', sales: 2800000, change: 12.5, share: 18.2 },
+      { rank: 3, name: 'Asia Pacific Distributors', sales: 2200000, change: 9.8, share: 14.3 },
+      { rank: 4, name: 'Metro Distribution Hub', sales: 1800000, change: 6.2, share: 11.7 },
+      { rank: 5, name: 'East Coast Partners', sales: 1500000, change: -3.1, share: 9.8 },
+      { rank: 6, name: 'Central Supply Chain', sales: 1200000, change: 4.5, share: 7.8 },
+      { rank: 7, name: 'Northern Networks', sales: 1000000, change: 2.1, share: 6.5 },
+      { rank: 8, name: 'Southern Distribution', sales: 900000, change: -1.8, share: 5.9 }
+    ],
+    outlets: [
+      { rank: 1, name: 'Mumbai Retail Stores', sales: 1200000, change: 22.5, share: 15.8 },
+      { rank: 2, name: 'Delhi Supply Chain', sales: 980000, change: 18.3, share: 12.9 },
+      { rank: 3, name: 'Bangalore Distribution', sales: 850000, change: 14.7, share: 11.2 },
+      { rank: 4, name: 'Chennai Outlets', sales: 720000, change: 9.2, share: 9.5 },
+      { rank: 5, name: 'Kolkata Partners', sales: 650000, change: 6.8, share: 8.6 },
+      { rank: 6, name: 'Hyderabad Network', sales: 580000, change: -2.3, share: 7.6 },
+      { rank: 7, name: 'Pune Distribution', sales: 520000, change: 4.1, share: 6.9 },
+      { rank: 8, name: 'Ahmedabad Retail', sales: 480000, change: 1.5, share: 6.3 }
+    ]
+  });
+
+  // SKU data
+  const [skuData, setSkuData] = useState([
+    { 
+      rank: 1, 
+      name: 'Surf Excel Detergent Powder 1kg', 
+      brand: 'Hindustan Unilever', 
+      category: 'Home Care', 
+      sales: 450000, 
+      change: 15.2, 
+      share: 8.5,
+      sku: 'DET-001'
+    },
+    { 
+      rank: 2, 
+      name: 'Head & Shoulders Shampoo 400ml', 
+      brand: 'Procter & Gamble', 
+      category: 'Personal Care', 
+      sales: 320000, 
+      change: 8.7, 
+      share: 6.2,
+      sku: 'SHP-002'
+    },
+    { 
+      rank: 3, 
+      name: 'Taj Mahal Tea Bags 100pcs', 
+      brand: 'Tata Consumer Products', 
+      category: 'Food & Beverages', 
+      sales: 280000, 
+      change: 12.3, 
+      share: 5.8,
+      sku: 'TEA-003'
+    },
+    { 
+      rank: 4, 
+      name: 'Fortune Sunflower Oil 1L', 
+      brand: 'Adani Wilmar', 
+      category: 'Food & Beverages', 
+      sales: 670000, 
+      change: 22.1, 
+      share: 12.1,
+      sku: 'OIL-004'
+    },
+    { 
+      rank: 5, 
+      name: 'Parle-G Biscuit 200g', 
+      brand: 'Parle Products', 
+      category: 'Confectionaries', 
+      sales: 180000, 
+      change: 5.4, 
+      share: 3.9,
+      sku: 'BIS-005'
+    }
+  ]);
   });
 
   const [distributorData, setDistributorData] = useState({
@@ -120,6 +284,239 @@ const Dashboard: React.FC = () => {
     setStats(mockStats);
   }, []);
 
+  // Enhanced dashboard for admin with financial overview
+  const renderEnhancedAdminDashboard = () => (
+    <div className="space-y-8">
+      {/* Filter Bar */}
+      <FilterBar
+        dateRange={dateRange}
+        onDateRangeChange={setDateRange}
+        city={city}
+        onCityChange={setCity}
+        district={district}
+        onDistrictChange={setDistrict}
+        state={state}
+        onStateChange={setState}
+        entityType={entityType}
+        onEntityTypeChange={setEntityType}
+      />
+
+      {/* Financial Section */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2, duration: 0.5 }}
+      >
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Financial Overview</h2>
+        <Row gutter={[24, 24]}>
+          <Col xs={24} sm={8}>
+            <KpiCard
+              title="Receivables"
+              value={financialData.receivables.value}
+              change={financialData.receivables.change}
+              icon={<CreditCard className="w-6 h-6 text-white" />}
+              color="from-blue-500 to-indigo-600"
+              prefix="₹"
+            />
+          </Col>
+          <Col xs={24} sm={8}>
+            <KpiCard
+              title="Payables"
+              value={financialData.payables.value}
+              change={financialData.payables.change}
+              icon={<Receipt className="w-6 h-6 text-white" />}
+              color="from-red-500 to-pink-600"
+              prefix="₹"
+            />
+          </Col>
+          <Col xs={24} sm={8}>
+            <KpiCard
+              title="Inventory Turnover"
+              value={financialData.inventoryTurnover.value}
+              change={financialData.inventoryTurnover.change}
+              icon={<Activity className="w-6 h-6 text-white" />}
+              color="from-teal-500 to-cyan-600"
+              suffix="x"
+            />
+          </Col>
+        </Row>
+      </motion.div>
+
+      {/* Sales & Order Section */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4, duration: 0.5 }}
+      >
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Sales & Order Analytics</h2>
+        <Row gutter={[24, 24]}>
+          {/* Primary Panel */}
+          <Col xs={24} lg={12}>
+            <Card 
+              title="Primary Markets" 
+              className="shadow-xl border-0 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20"
+            >
+              <div className="space-y-6">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-white dark:bg-gray-800 p-4 rounded-xl">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm text-gray-600 dark:text-gray-400">Sales</span>
+                      <Tag color={salesData.primary.sales.change >= 0 ? 'green' : 'red'}>
+                        {salesData.primary.sales.change >= 0 ? '+' : ''}{salesData.primary.sales.change}%
+                      </Tag>
+                    </div>
+                    <p className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                      ₹{salesData.primary.sales.value.toLocaleString('hi-IN')}
+                    </p>
+                    <TrendChart data={salesData.primary.sales.trend} color="#3b82f6" />
+                  </div>
+                  
+                  <div className="bg-white dark:bg-gray-800 p-4 rounded-xl">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm text-gray-600 dark:text-gray-400">Orders</span>
+                      <Tag color={salesData.primary.orderCount.change >= 0 ? 'green' : 'red'}>
+                        {salesData.primary.orderCount.change >= 0 ? '+' : ''}{salesData.primary.orderCount.change}%
+                      </Tag>
+                    </div>
+                    <p className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                      {salesData.primary.orderCount.value.toLocaleString('hi-IN')}
+                    </p>
+                    <TrendChart data={salesData.primary.orderCount.trend} color="#10b981" />
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-white dark:bg-gray-800 p-4 rounded-xl">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm text-gray-600 dark:text-gray-400">UOB</span>
+                      <Tag color={salesData.primary.uob.change >= 0 ? 'green' : 'red'}>
+                        {salesData.primary.uob.change >= 0 ? '+' : ''}{salesData.primary.uob.change}%
+                      </Tag>
+                    </div>
+                    <p className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                      {salesData.primary.uob.value}
+                    </p>
+                    <TrendChart data={salesData.primary.uob.trend} color="#8b5cf6" />
+                  </div>
+                  
+                  <div className="bg-white dark:bg-gray-800 p-4 rounded-xl">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm text-gray-600 dark:text-gray-400">Avg Order</span>
+                      <Tag color={salesData.primary.avgOrderValue.change >= 0 ? 'green' : 'red'}>
+                        {salesData.primary.avgOrderValue.change >= 0 ? '+' : ''}{salesData.primary.avgOrderValue.change}%
+                      </Tag>
+                    </div>
+                    <p className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                      ₹{salesData.primary.avgOrderValue.value.toLocaleString('hi-IN')}
+                    </p>
+                    <TrendChart data={salesData.primary.avgOrderValue.trend} color="#f59e0b" />
+                  </div>
+                </div>
+              </div>
+            </Card>
+          </Col>
+
+          {/* Secondary Panel */}
+          <Col xs={24} lg={12}>
+            <Card 
+              title="Secondary Markets" 
+              className="shadow-xl border-0 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20"
+            >
+              <div className="space-y-6">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-white dark:bg-gray-800 p-4 rounded-xl">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm text-gray-600 dark:text-gray-400">Sales</span>
+                      <Tag color={salesData.secondary.sales.change >= 0 ? 'green' : 'red'}>
+                        {salesData.secondary.sales.change >= 0 ? '+' : ''}{salesData.secondary.sales.change}%
+                      </Tag>
+                    </div>
+                    <p className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                      ₹{salesData.secondary.sales.value.toLocaleString('hi-IN')}
+                    </p>
+                    <TrendChart data={salesData.secondary.sales.trend} color="#3b82f6" />
+                  </div>
+                  
+                  <div className="bg-white dark:bg-gray-800 p-4 rounded-xl">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm text-gray-600 dark:text-gray-400">Orders</span>
+                      <Tag color={salesData.secondary.orderCount.change >= 0 ? 'green' : 'red'}>
+                        {salesData.secondary.orderCount.change >= 0 ? '+' : ''}{salesData.secondary.orderCount.change}%
+                      </Tag>
+                    </div>
+                    <p className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                      {salesData.secondary.orderCount.value.toLocaleString('hi-IN')}
+                    </p>
+                    <TrendChart data={salesData.secondary.orderCount.trend} color="#10b981" />
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-white dark:bg-gray-800 p-4 rounded-xl">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm text-gray-600 dark:text-gray-400">UOB</span>
+                      <Tag color={salesData.secondary.uob.change >= 0 ? 'green' : 'red'}>
+                        {salesData.secondary.uob.change >= 0 ? '+' : ''}{salesData.secondary.uob.change}%
+                      </Tag>
+                    </div>
+                    <p className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                      {salesData.secondary.uob.value}
+                    </p>
+                    <TrendChart data={salesData.secondary.uob.trend} color="#8b5cf6" />
+                  </div>
+                  
+                  <div className="bg-white dark:bg-gray-800 p-4 rounded-xl">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm text-gray-600 dark:text-gray-400">Avg Order</span>
+                      <Tag color={salesData.secondary.avgOrderValue.change >= 0 ? 'green' : 'red'}>
+                        {salesData.secondary.avgOrderValue.change >= 0 ? '+' : ''}{salesData.secondary.avgOrderValue.change}%
+                      </Tag>
+                    </div>
+                    <p className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                      ₹{salesData.secondary.avgOrderValue.value.toLocaleString('hi-IN')}
+                    </p>
+                    <TrendChart data={salesData.secondary.avgOrderValue.trend} color="#f59e0b" />
+                  </div>
+                </div>
+              </div>
+            </Card>
+          </Col>
+        </Row>
+      </motion.div>
+
+      {/* Network Section */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.6, duration: 0.5 }}
+      >
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Network Performance</h2>
+        <Row gutter={[24, 24]}>
+          <Col xs={24} xl={8}>
+            <DataTable
+              title={entityType === 'manufacturers' ? 'Top Manufacturers' : 'Top Distributors'}
+              data={entityType === 'manufacturers' ? networkData.manufacturers : networkData.distributors}
+              showTopBottom={true}
+            />
+          </Col>
+          <Col xs={24} xl={8}>
+            <DataTable
+              title="Top Outlets"
+              data={networkData.outlets}
+              showTopBottom={true}
+            />
+          </Col>
+          <Col xs={24} xl={8}>
+            <DataTable
+              title="SKU Breakdown"
+              data={skuData}
+              showTopBottom={false}
+            />
+          </Col>
+        </Row>
+      </motion.div>
+    </div>
+  );
   const renderStatCard = (title: string, current: number, previous: number, growth: number, icon: React.ElementType, color: string, prefix?: string, suffix?: string) => (
     <Card className="shadow-xl border-0 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden">
       <div className="flex items-center justify-between">
@@ -737,7 +1134,7 @@ const Dashboard: React.FC = () => {
       {/* Role-based Dashboard Content */}
       {user?.role === 'manufacturer' && renderManufacturerDashboard()}
       {user?.role === 'distributor' && renderDistributorDashboard()}
-      {user?.role === 'admin' && renderAdminDashboard()}
+      {user?.role === 'admin' && renderEnhancedAdminDashboard()}
     </div>
   );
 };
