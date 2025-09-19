@@ -882,11 +882,48 @@ const Dashboard: React.FC = () => {
         </Row>
       </motion.div>
 
-      {/* SKU Breakdown - Available for all roles */}
+      {/* Network Section - Available for all roles */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.6, duration: 0.5 }}
+      >
+        <Row gutter={[24, 24]} className="mb-6">
+          <Col xs={24} lg={8}>
+            <EnhancedDataTable
+              title="Top Manufacturers"
+              data={allManufacturersData}
+              topN={topN}
+              bottomN={bottomN}
+              showTopBottom={true}
+            />
+          </Col>
+          <Col xs={24} lg={8}>
+            <EnhancedDataTable
+              title="Top Distributors"
+              data={allDistributorsData}
+              topN={topN}
+              bottomN={bottomN}
+              showTopBottom={true}
+            />
+          </Col>
+          <Col xs={24} lg={8}>
+            <EnhancedDataTable
+              title="Regional Outlets"
+              data={allOutletsData}
+              topN={topN}
+              bottomN={bottomN}
+              showTopBottom={true}
+            />
+          </Col>
+        </Row>
+      </motion.div>
+
+      {/* SKU Breakdown - Available for all roles */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.8, duration: 0.5 }}
       >
         <EnhancedDataTable
           title="SKU Performance Breakdown"
