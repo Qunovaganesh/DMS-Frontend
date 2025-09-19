@@ -30,7 +30,6 @@ import {
   ArrowDown,
   Eye,
   Download,
-  Shield,
   Database,
   Bell
   CreditCard,
