@@ -652,21 +652,21 @@ const Dashboard: React.FC = () => {
         transition={{ delay: 0.2, duration: 0.5 }}
       >
         <Card className="shadow-lg border-0 mb-6">
-          <div className="space-y-6">
+          <div className="space-y-4">
             <div className="flex items-center space-x-2">
               <Filter className="w-5 h-5 text-gray-500" />
               <span className="font-medium text-gray-700 dark:text-gray-300">Filters:</span>
             </div>
             
-            {/* Date Range Section */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-end">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Date Preset</label>
+            {/* All Filters in One Row */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 items-end">
+              <div className="col-span-1">
                 <Select
                   placeholder="Select date range"
                   onChange={(value) => setDateRange(getDatePreset(value))}
                   className="w-full"
                   allowClear
+                  size="small"
                 >
                   <Option value="today">Today</Option>
                   <Option value="yesterday">Yesterday</Option>
@@ -681,31 +681,23 @@ const Dashboard: React.FC = () => {
                 </Select>
               </div>
               
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Custom Date Range</label>
+              <div className="col-span-1">
                 <RangePicker
                   value={dateRange}
                   onChange={setDateRange}
                   className="w-full"
                   placeholder={['Start Date', 'End Date']}
+                  size="small"
                 />
               </div>
               
-              <div className="text-sm text-gray-500 dark:text-gray-400 text-center lg:text-right">
-                <Calendar className="w-4 h-4 inline mr-1" />
-                {dateRange ? `${dateRange[0].format('MMM DD')} - ${dateRange[1].format('MMM DD, YYYY')}` : 'All Time'}
-              </div>
-            </div>
-
-            {/* Entity and Location Filters */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Manufacturer</label>
+              <div className="col-span-1">
                 <Select
                   value={selectedManufacturer}
                   onChange={setSelectedManufacturer}
                   className="w-full"
                   placeholder="Select Manufacturer"
+                  size="small"
                 >
                   {manufacturersList.map(mfr => (
                     <Option key={mfr} value={mfr}>{mfr}</Option>
@@ -713,13 +705,13 @@ const Dashboard: React.FC = () => {
                 </Select>
               </div>
               
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Distributor</label>
+              <div className="col-span-1">
                 <Select
                   value={selectedDistributor}
                   onChange={setSelectedDistributor}
                   className="w-full"
                   placeholder="Select Distributor"
+                  size="small"
                 >
                   {distributorsList.map(dist => (
                     <Option key={dist} value={dist}>{dist}</Option>
@@ -727,13 +719,13 @@ const Dashboard: React.FC = () => {
                 </Select>
               </div>
               
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">State</label>
+              <div className="col-span-1">
                 <Select
                   value={state}
                   onChange={setState}
                   className="w-full"
                   placeholder="State"
+                  size="small"
                 >
                   {statesList.map(s => (
                     <Option key={s} value={s}>{s}</Option>
@@ -741,13 +733,13 @@ const Dashboard: React.FC = () => {
                 </Select>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">District</label>
+              <div className="col-span-1">
                 <Select
                   value={district}
                   onChange={setDistrict}
                   className="w-full"
                   placeholder="District"
+                  size="small"
                 >
                   {districtsList.map(d => (
                     <Option key={d} value={d}>{d}</Option>
@@ -755,44 +747,52 @@ const Dashboard: React.FC = () => {
                 </Select>
               </div>
               
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">City</label>
+              <div className="col-span-1">
                 <Select
                   value={city}
                   onChange={setCity}
                   className="w-full"
                   placeholder="City"
+                  size="small"
                 >
                   {citiesList.map(c => (
                     <Option key={c} value={c}>{c}</Option>
                   ))}
                 </Select>
               </div>
+            
+              <div className="col-span-1 flex items-center space-x-2">
+                <span className="text-xs text-gray-600 dark:text-gray-400">Top:</span>
+                <InputNumber
+                  min={1}
+                  max={20}
+                  value={topN}
+                  onChange={(value) => setTopN(value || 5)}
+                  className="w-16"
+                  size="small"
+                />
+              </div>
             </div>
             
-            {/* Table Controls */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0 pt-4 border-t border-gray-200 dark:border-gray-700">
-              <div className="flex items-center space-x-4">
+            {/* Bottom Row - Table Controls and Date Display */}
+            <div className="flex items-center justify-between pt-2 border-t border-gray-200 dark:border-gray-700">
+              <div className="flex items-center space-x-3">
                 <div className="flex items-center space-x-2">
-                  <span className="text-sm text-gray-600 dark:text-gray-400">Top N:</span>
-                  <InputNumber
-                    min={1}
-                    max={20}
-                    value={topN}
-                    onChange={(value) => setTopN(value || 5)}
-                    className="w-20"
-                  />
-                </div>
-                <div className="flex items-center space-x-2">
-                  <span className="text-sm text-gray-600 dark:text-gray-400">Bottom N:</span>
+                  <span className="text-xs text-gray-600 dark:text-gray-400">Bottom:</span>
                   <InputNumber
                     min={1}
                     max={20}
                     value={bottomN}
                     onChange={(value) => setBottomN(value || 5)}
-                    className="w-20"
+                    className="w-16"
+                    size="small"
                   />
                 </div>
+              </div>
+              
+              <div className="text-xs text-gray-500 dark:text-gray-400">
+                <Calendar className="w-3 h-3 inline mr-1" />
+                {dateRange ? `${dateRange[0].format('MMM DD')} - ${dateRange[1].format('MMM DD, YYYY')}` : 'All Time'}
               </div>
             </div>
           </div>
