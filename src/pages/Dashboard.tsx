@@ -652,53 +652,55 @@ const Dashboard: React.FC = () => {
         transition={{ delay: 0.2, duration: 0.5 }}
       >
         <Card className="shadow-lg border-0 mb-6">
-          <div className="space-y-4">
+          <div className="space-y-6">
             <div className="flex items-center space-x-2">
               <Filter className="w-5 h-5 text-gray-500" />
               <span className="font-medium text-gray-700 dark:text-gray-300">Filters:</span>
             </div>
             
-            {/* Date Range with Presets */}
-            <div className="space-y-3">
-              <div className="flex items-center space-x-2">
-                <Calendar className="w-4 h-4 text-gray-400" />
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Date Range:</span>
+            {/* Date Range Section */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-end">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Date Preset</label>
+                <Select
+                  placeholder="Select date range"
+                  onChange={(value) => setDateRange(getDatePreset(value))}
+                  className="w-full"
+                  allowClear
+                >
+                  <Option value="today">Today</Option>
+                  <Option value="yesterday">Yesterday</Option>
+                  <Option value="thisWeek">This Week</Option>
+                  <Option value="lastWeek">Last Week</Option>
+                  <Option value="thisMonth">This Month</Option>
+                  <Option value="lastMonth">Last Month</Option>
+                  <Option value="thisQuarter">This Quarter</Option>
+                  <Option value="lastQuarter">Last Quarter</Option>
+                  <Option value="thisYear">This Year</Option>
+                  <Option value="lastYear">Last Year</Option>
+                </Select>
               </div>
-              <div className="flex flex-wrap gap-2 mb-3">
-                {[
-                  { label: 'Today', value: 'today' },
-                  { label: 'Yesterday', value: 'yesterday' },
-                  { label: 'This Week', value: 'thisWeek' },
-                  { label: 'Last Week', value: 'lastWeek' },
-                  { label: 'This Month', value: 'thisMonth' },
-                  { label: 'Last Month', value: 'lastMonth' },
-                  { label: 'This Quarter', value: 'thisQuarter' },
-                  { label: 'Last Quarter', value: 'lastQuarter' },
-                  { label: 'This Year', value: 'thisYear' },
-                  { label: 'Last Year', value: 'lastYear' }
-                ].map((preset) => (
-                  <Button
-                    key={preset.value}
-                    size="small"
-                    onClick={() => setDateRange(getDatePreset(preset.value))}
-                    className="text-xs"
-                  >
-                    {preset.label}
-                  </Button>
-                ))}
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Custom Date Range</label>
+                <RangePicker
+                  value={dateRange}
+                  onChange={setDateRange}
+                  className="w-full"
+                  placeholder={['Start Date', 'End Date']}
+                />
               </div>
-              <RangePicker
-                value={dateRange}
-                onChange={setDateRange}
-                className="w-full sm:w-auto"
-                placeholder={['Start Date', 'End Date']}
-              />
+              
+              <div className="text-sm text-gray-500 dark:text-gray-400 text-center lg:text-right">
+                <Calendar className="w-4 h-4 inline mr-1" />
+                {dateRange ? `${dateRange[0].format('MMM DD')} - ${dateRange[1].format('MMM DD, YYYY')}` : 'All Time'}
+              </div>
             </div>
 
-            {/* Entity Filters */}
+            {/* Entity and Location Filters */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
               <div>
-                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Manufacturer</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Manufacturer</label>
                 <Select
                   value={selectedManufacturer}
                   onChange={setSelectedManufacturer}
@@ -712,7 +714,7 @@ const Dashboard: React.FC = () => {
               </div>
               
               <div>
-                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Distributor</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Distributor</label>
                 <Select
                   value={selectedDistributor}
                   onChange={setSelectedDistributor}
@@ -726,7 +728,7 @@ const Dashboard: React.FC = () => {
               </div>
               
               <div>
-                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">State</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">State</label>
                 <Select
                   value={state}
                   onChange={setState}
@@ -740,7 +742,7 @@ const Dashboard: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">District</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">District</label>
                 <Select
                   value={district}
                   onChange={setDistrict}
@@ -754,7 +756,7 @@ const Dashboard: React.FC = () => {
               </div>
               
               <div>
-                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">City</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">City</label>
                 <Select
                   value={city}
                   onChange={setCity}
@@ -769,7 +771,7 @@ const Dashboard: React.FC = () => {
             </div>
             
             {/* Table Controls */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0 pt-4 border-t border-gray-200 dark:border-gray-700">
               <div className="flex items-center space-x-4">
                 <div className="flex items-center space-x-2">
                   <span className="text-sm text-gray-600 dark:text-gray-400">Top N:</span>
@@ -778,7 +780,7 @@ const Dashboard: React.FC = () => {
                     max={20}
                     value={topN}
                     onChange={(value) => setTopN(value || 5)}
-                    className="w-16"
+                    className="w-20"
                   />
                 </div>
                 <div className="flex items-center space-x-2">
@@ -788,12 +790,9 @@ const Dashboard: React.FC = () => {
                     max={20}
                     value={bottomN}
                     onChange={(value) => setBottomN(value || 5)}
-                    className="w-16"
+                    className="w-20"
                   />
                 </div>
-              </div>
-              <div className="text-sm text-gray-500 dark:text-gray-400">
-                Showing data for: {dateRange ? `${dateRange[0].format('MMM DD')} - ${dateRange[1].format('MMM DD, YYYY')}` : 'All Time'}
               </div>
             </div>
           </div>
