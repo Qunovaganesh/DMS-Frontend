@@ -52,6 +52,21 @@ const Dashboard: React.FC = () => {
   const [topN, setTopN] = useState(5);
   const [bottomN, setBottomN] = useState(5);
 
+  // Helper function to format numbers with K/M
+  const formatNumber = (num: number): string => {
+    if (num >= 10000000) { // 10M+
+      return `₹${(num / 10000000).toFixed(1)}Cr`;
+    } else if (num >= 1000000) { // 1M+
+      return `₹${(num / 1000000).toFixed(1)}M`;
+    } else if (num >= 100000) { // 100K+
+      return `₹${(num / 100000).toFixed(1)}L`;
+    } else if (num >= 1000) { // 1K+
+      return `₹${(num / 1000).toFixed(0)}K`;
+    } else {
+      return `₹${num.toLocaleString('hi-IN')}`;
+    }
+  };
+
   // Mock data for financial metrics
   const financialData = {
     receivables: { value: 3400000, change: 14.1 },
@@ -205,7 +220,7 @@ const Dashboard: React.FC = () => {
         dataIndex: 'sales',
         key: 'sales',
         render: (sales: number) => (
-          <span className="font-semibold">₹{sales.toLocaleString('hi-IN')}</span>
+          <span className="font-semibold">{formatNumber(sales)}</span>
         ),
       },
       {
@@ -277,7 +292,7 @@ const Dashboard: React.FC = () => {
                 size="small"
                 onClick={() => setShowAll(!showAll)}
               >
-                {showAll ? 'Show Less' : `+${data.length - (showAll ? 0 : (showTopBottom ? (showTop ? topN : bottomN) : topN))} more`}
+                {showAll ? 'Show Less' : `+${data.length - (showAll ? 0 : (showTopBottom ? (showTop ? topN : bottomN) : topN))}`}
               </Button>
             </div>
           </div>
@@ -292,6 +307,7 @@ const Dashboard: React.FC = () => {
           rowKey={(record) => record.rank}
           className="custom-table"
           rowClassName={(record) => record.isTotal ? 'bg-gray-50 dark:bg-gray-800 font-bold' : ''}
+          scroll={{ x: 400 }}
         />
       </Card>
     );
@@ -709,7 +725,7 @@ const Dashboard: React.FC = () => {
                   </div>
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">₹32,59,000</p>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">₹32.6L</p>
                   <div className="flex items-center space-x-2 mt-1">
                     <ArrowUp className="w-3 h-3 text-green-500" />
                     <span className="text-sm text-green-600 font-medium">32.1% ↑</span>
@@ -775,7 +791,7 @@ const Dashboard: React.FC = () => {
                   </div>
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">₹58,32,387</p>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">₹58.3L</p>
                   <div className="flex items-center space-x-2 mt-1">
                     <ArrowDown className="w-3 h-3 text-red-500" />
                     <span className="text-sm text-red-600 font-medium">1% ↓</span>
@@ -801,7 +817,7 @@ const Dashboard: React.FC = () => {
                   </div>
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">₹23,50,000</p>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">₹23.5L</p>
                   <div className="flex items-center space-x-2 mt-1">
                     <ArrowUp className="w-3 h-3 text-green-500" />
                     <span className="text-sm text-green-600 font-medium">18.1% ↑</span>
@@ -867,7 +883,7 @@ const Dashboard: React.FC = () => {
                   </div>
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">₹69,12,847</p>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">₹69.1L</p>
                   <div className="flex items-center space-x-2 mt-1">
                     <ArrowUp className="w-3 h-3 text-green-500" />
                     <span className="text-sm text-green-600 font-medium">2.8% ↑</span>
