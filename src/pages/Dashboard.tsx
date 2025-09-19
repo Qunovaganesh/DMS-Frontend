@@ -224,7 +224,7 @@ const Dashboard: React.FC = () => {
         ),
       },
       {
-        title: 'Change % / Share %',
+        title: 'Change% / Share%',
         dataIndex: 'change',
         key: 'change',
         width: 140,
@@ -237,11 +237,11 @@ const Dashboard: React.FC = () => {
                 <ArrowDown className="w-3 h-3 text-red-500" />
               )}
               <Tag color={change >= 0 ? 'green' : 'red'} size="small">
-                {change >= 0 ? '+' : ''}{change}%
+                {change >= 0 ? '+' : ''}{change.toFixed(1)}%
               </Tag>
             </div>
             <div className="text-xs text-gray-500 dark:text-gray-400">
-              Share: {record.share}%
+              Share: {record.share.toFixed(1)}%
             </div>
           </div>
         ),
@@ -255,8 +255,8 @@ const Dashboard: React.FC = () => {
         rank: 'Total',
         name: 'Total',
         sales: totalSales,
-        change: avgChange,
-        share: totalShare,
+        change: parseFloat(avgChange.toFixed(1)),
+        share: 100.0,
         isTotal: true
       }
     ];
