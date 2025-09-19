@@ -673,7 +673,213 @@ const Dashboard: React.FC = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4, duration: 0.5 }}
       >
-        {renderRoleSpecificContent()}
+        {/* Row 1: Receivables and Payables */}
+        <Row gutter={[24, 24]} className="mb-6">
+          <Col xs={24} lg={12}>
+            <KpiCard
+              title="Receivables"
+              value={financialData.receivables.value}
+              change={financialData.receivables.change}
+              icon={<ArrowUp className="w-6 h-6 text-white" />}
+              color="from-blue-500 to-blue-600"
+              prefix="₹"
+            />
+          </Col>
+          <Col xs={24} lg={12}>
+            <KpiCard
+              title="Payables"
+              value={financialData.payables.value}
+              change={financialData.payables.change}
+              icon={<ArrowDown className="w-6 h-6 text-white" />}
+              color="from-red-500 to-red-600"
+              prefix="₹"
+            />
+          </Col>
+        </Row>
+
+        {/* Row 2: Primary Market Metrics with Sparklines */}
+        <Row gutter={[24, 24]} className="mb-6">
+          <Col xs={24} lg={6}>
+            <Card className="shadow-xl border-0 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 hover:shadow-2xl transition-all duration-300">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white">Primary Sales</h3>
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                    <DollarSign className="w-6 h-6 text-white" />
+                  </div>
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">₹32,59,000</p>
+                  <div className="flex items-center space-x-2 mt-1">
+                    <ArrowUp className="w-3 h-3 text-green-500" />
+                    <span className="text-sm text-green-600 font-medium">32.1% ↑</span>
+                  </div>
+                </div>
+                <div className="h-12">
+                  <TrendChart data={trendData} color="#3b82f6" height={48} />
+                </div>
+              </div>
+            </Card>
+          </Col>
+          <Col xs={24} lg={6}>
+            <Card className="shadow-xl border-0 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 hover:shadow-2xl transition-all duration-300">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white">Primary Order Count</h3>
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center">
+                    <ShoppingCart className="w-6 h-6 text-white" />
+                  </div>
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">589</p>
+                  <div className="flex items-center space-x-2 mt-1">
+                    <ArrowUp className="w-3 h-3 text-green-500" />
+                    <span className="text-sm text-green-600 font-medium">8.1% ↑</span>
+                  </div>
+                </div>
+                <div className="h-12">
+                  <TrendChart data={trendData} color="#10b981" height={48} />
+                </div>
+              </div>
+            </Card>
+          </Col>
+          <Col xs={24} lg={6}>
+            <Card className="shadow-xl border-0 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 hover:shadow-2xl transition-all duration-300">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white">UDB (Unique Distributor Billed)</h3>
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center">
+                    <Users className="w-6 h-6 text-white" />
+                  </div>
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">795</p>
+                  <div className="flex items-center space-x-2 mt-1">
+                    <ArrowUp className="w-3 h-3 text-green-500" />
+                    <span className="text-sm text-green-600 font-medium">9.1% ↑</span>
+                  </div>
+                </div>
+                <div className="h-12">
+                  <TrendChart data={trendData} color="#8b5cf6" height={48} />
+                </div>
+              </div>
+            </Card>
+          </Col>
+          <Col xs={24} lg={6}>
+            <Card className="shadow-xl border-0 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 hover:shadow-2xl transition-all duration-300">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white">Avg Order Value</h3>
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center">
+                    <Target className="w-6 h-6 text-white" />
+                  </div>
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">₹58,32,387</p>
+                  <div className="flex items-center space-x-2 mt-1">
+                    <ArrowDown className="w-3 h-3 text-red-500" />
+                    <span className="text-sm text-red-600 font-medium">1% ↓</span>
+                  </div>
+                </div>
+                <div className="h-12">
+                  <TrendChart data={trendData.map(d => ({ value: d.value - 10 }))} color="#f97316" height={48} />
+                </div>
+              </div>
+            </Card>
+          </Col>
+        </Row>
+
+        {/* Row 3: Secondary Market Metrics with Sparklines */}
+        <Row gutter={[24, 24]} className="mb-6">
+          <Col xs={24} lg={6}>
+            <Card className="shadow-xl border-0 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 hover:shadow-2xl transition-all duration-300">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white">Secondary Sales</h3>
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-teal-500 to-teal-600 flex items-center justify-center">
+                    <DollarSign className="w-6 h-6 text-white" />
+                  </div>
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">₹23,50,000</p>
+                  <div className="flex items-center space-x-2 mt-1">
+                    <ArrowUp className="w-3 h-3 text-green-500" />
+                    <span className="text-sm text-green-600 font-medium">18.1% ↑</span>
+                  </div>
+                </div>
+                <div className="h-12">
+                  <TrendChart data={trendData.map(d => ({ value: d.value - 20 }))} color="#14b8a6" height={48} />
+                </div>
+              </div>
+            </Card>
+          </Col>
+          <Col xs={24} lg={6}>
+            <Card className="shadow-xl border-0 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 hover:shadow-2xl transition-all duration-300">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white">Secondary Order Count</h3>
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center">
+                    <ShoppingCart className="w-6 h-6 text-white" />
+                  </div>
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">876</p>
+                  <div className="flex items-center space-x-2 mt-1">
+                    <ArrowUp className="w-3 h-3 text-green-500" />
+                    <span className="text-sm text-green-600 font-medium">2.4% ↑</span>
+                  </div>
+                </div>
+                <div className="h-12">
+                  <TrendChart data={trendData.map(d => ({ value: d.value + 15 }))} color="#6366f1" height={48} />
+                </div>
+              </div>
+            </Card>
+          </Col>
+          <Col xs={24} lg={6}>
+            <Card className="shadow-xl border-0 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 hover:shadow-2xl transition-all duration-300">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white">UOB (Unique Outlet Billed)</h3>
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-pink-500 to-pink-600 flex items-center justify-center">
+                    <Package className="w-6 h-6 text-white" />
+                  </div>
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">593</p>
+                  <div className="flex items-center space-x-2 mt-1">
+                    <ArrowUp className="w-3 h-3 text-green-500" />
+                    <span className="text-sm text-green-600 font-medium">15.1% ↑</span>
+                  </div>
+                </div>
+                <div className="h-12">
+                  <TrendChart data={trendData.map(d => ({ value: d.value + 5 }))} color="#ec4899" height={48} />
+                </div>
+              </div>
+            </Card>
+          </Col>
+          <Col xs={24} lg={6}>
+            <Card className="shadow-xl border-0 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 hover:shadow-2xl transition-all duration-300">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white">Avg Order Value</h3>
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center">
+                    <Target className="w-6 h-6 text-white" />
+                  </div>
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">₹69,12,847</p>
+                  <div className="flex items-center space-x-2 mt-1">
+                    <ArrowUp className="w-3 h-3 text-green-500" />
+                    <span className="text-sm text-green-600 font-medium">2.8% ↑</span>
+                  </div>
+                </div>
+                <div className="h-12">
+                  <TrendChart data={trendData.map(d => ({ value: d.value - 5 }))} color="#f59e0b" height={48} />
+                </div>
+              </div>
+            </Card>
+          </Col>
+        </Row>
       </motion.div>
 
       {/* SKU Breakdown - Available for all roles */}
