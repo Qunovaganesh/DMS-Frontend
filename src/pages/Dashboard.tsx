@@ -43,8 +43,6 @@ const Dashboard: React.FC = () => {
     dayjs().subtract(30, 'day'),
     dayjs()
   ]);
-  const [city, setCity] = useState('All Cities');
-  const [district, setDistrict] = useState('All Districts');
   const [state, setState] = useState('All States');
   const [city, setCity] = useState('All Cities');
   const [district, setDistrict] = useState('All Districts');
