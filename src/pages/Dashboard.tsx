@@ -120,53 +120,53 @@ const Dashboard: React.FC = () => {
 
   // Mock data for network tables
   const allManufacturersData = [
-    { rank: 1, name: 'Hindustan Unilever Ltd', sales: 4500000, change: 15.2, share: 28.5 },
-    { rank: 2, name: 'ITC Limited', sales: 3200000, change: 8.7, share: 20.3 },
-    { rank: 3, name: 'Nestle India', sales: 2800000, change: 12.1, share: 17.8 },
-    { rank: 4, name: 'Britannia Industries', sales: 2100000, change: 6.4, share: 13.3 },
-    { rank: 5, name: 'Dabur India Ltd', sales: 1800000, change: 9.8, share: 11.4 },
-    { rank: 6, name: 'Colgate-Palmolive', sales: 1600000, change: 7.2, share: 10.1 },
-    { rank: 7, name: 'Marico Limited', sales: 1400000, change: 5.8, share: 8.8 },
-    { rank: 8, name: 'Godrej Consumer', sales: 1200000, change: 4.3, share: 7.6 },
-    { rank: 9, name: 'Emami Limited', sales: 1000000, change: 3.1, share: 6.3 },
-    { rank: 10, name: 'Wipro Consumer', sales: 800000, change: 2.5, share: 5.1 }
+    { rank: 1, name: 'Hindustan Unilever Ltd', sales: 4500000, change: 15.2, share: 22.5 },
+    { rank: 2, name: 'ITC Limited', sales: 3200000, change: 8.7, share: 16.0 },
+    { rank: 3, name: 'Nestle India', sales: 2800000, change: 12.1, share: 14.0 },
+    { rank: 4, name: 'Britannia Industries', sales: 2100000, change: 6.4, share: 10.5 },
+    { rank: 5, name: 'Dabur India Ltd', sales: 1800000, change: 9.8, share: 9.0 },
+    { rank: 6, name: 'Colgate-Palmolive', sales: 1600000, change: 7.2, share: 8.0 },
+    { rank: 7, name: 'Marico Limited', sales: 1400000, change: 5.8, share: 7.0 },
+    { rank: 8, name: 'Godrej Consumer', sales: 1200000, change: 4.3, share: 6.0 },
+    { rank: 9, name: 'Emami Limited', sales: 1000000, change: 3.1, share: 5.0 },
+    { rank: 10, name: 'Wipro Consumer', sales: 800000, change: 2.5, share: 4.0 }
   ];
 
   const allDistributorsData = [
-    { rank: 1, name: 'Mumbai Retail Stores', sales: 2400000, change: 18.5, share: 22.1 },
-    { rank: 2, name: 'Delhi Supply Chain', sales: 2100000, change: 14.2, share: 19.3 },
-    { rank: 3, name: 'Bangalore Distribution', sales: 1900000, change: 11.7, share: 17.5 },
-    { rank: 4, name: 'Kolkata Partners', sales: 1600000, change: 8.9, share: 14.7 },
-    { rank: 5, name: 'Chennai Networks', sales: 1400000, change: 7.3, share: 12.9 },
-    { rank: 6, name: 'Hyderabad Hub', sales: 1200000, change: 6.1, share: 11.0 },
-    { rank: 7, name: 'Pune Partners', sales: 1000000, change: 4.8, share: 9.2 },
-    { rank: 8, name: 'Ahmedabad Associates', sales: 800000, change: 3.5, share: 7.3 },
-    { rank: 9, name: 'Jaipur Junction', sales: 600000, change: 2.2, share: 5.5 },
-    { rank: 10, name: 'Lucknow Links', sales: 400000, change: 1.8, share: 3.7 }
+    { rank: 1, name: 'Mumbai Retail Stores', sales: 2400000, change: 18.5, share: 18.0 },
+    { rank: 2, name: 'Delhi Supply Chain', sales: 2100000, change: 14.2, share: 16.0 },
+    { rank: 3, name: 'Bangalore Distribution', sales: 1900000, change: 11.7, share: 14.5 },
+    { rank: 4, name: 'Kolkata Partners', sales: 1600000, change: 8.9, share: 12.0 },
+    { rank: 5, name: 'Chennai Networks', sales: 1400000, change: 7.3, share: 10.5 },
+    { rank: 6, name: 'Hyderabad Hub', sales: 1200000, change: 6.1, share: 9.0 },
+    { rank: 7, name: 'Pune Partners', sales: 1000000, change: 4.8, share: 7.5 },
+    { rank: 8, name: 'Ahmedabad Associates', sales: 800000, change: 3.5, share: 6.0 },
+    { rank: 9, name: 'Jaipur Junction', sales: 600000, change: 2.2, share: 4.5 },
+    { rank: 10, name: 'Lucknow Links', sales: 400000, change: 1.8, share: 3.0 }
   ];
 
   const allOutletsData = [
-    { rank: 1, name: 'North India Region', sales: 3200000, change: 16.8, share: 31.2 },
-    { rank: 2, name: 'West India Region', sales: 2800000, change: 13.4, share: 27.3 },
-    { rank: 3, name: 'South India Region', sales: 2400000, change: 10.9, share: 23.4 },
-    { rank: 4, name: 'East India Region', sales: 1800000, change: 8.2, share: 17.6 },
-    { rank: 5, name: 'Central India Region', sales: 1200000, change: 5.7, share: 11.7 },
-    { rank: 6, name: 'Northeast Region', sales: 800000, change: 4.2, share: 7.8 },
-    { rank: 7, name: 'Coastal Region', sales: 600000, change: 3.1, share: 5.8 },
-    { rank: 8, name: 'Hill Stations', sales: 400000, change: 2.3, share: 3.9 }
+    { rank: 1, name: 'North India Region', sales: 3200000, change: 16.8, share: 25.0 },
+    { rank: 2, name: 'West India Region', sales: 2800000, change: 13.4, share: 22.0 },
+    { rank: 3, name: 'South India Region', sales: 2400000, change: 10.9, share: 19.0 },
+    { rank: 4, name: 'East India Region', sales: 1800000, change: 8.2, share: 14.0 },
+    { rank: 5, name: 'Central India Region', sales: 1200000, change: 5.7, share: 9.5 },
+    { rank: 6, name: 'Northeast Region', sales: 800000, change: 4.2, share: 6.0 },
+    { rank: 7, name: 'Coastal Region', sales: 600000, change: 3.1, share: 4.5 },
+    { rank: 8, name: 'Hill Stations', sales: 400000, change: 2.3, share: 0.0 }
   ];
 
   const allSkuData = [
-    { rank: 1, name: 'Surf Excel Detergent Powder 1kg', sales: 450000, change: 15.2, share: 8.9 },
-    { rank: 2, name: 'Head & Shoulders Shampoo 400ml', sales: 320000, change: 8.7, share: 6.3 },
-    { rank: 3, name: 'Taj Mahal Tea Bags 100pcs', sales: 280000, change: 12.1, share: 5.5 },
-    { rank: 4, name: 'Fortune Sunflower Oil 1L', sales: 210000, change: 6.4, share: 4.1 },
-    { rank: 5, name: 'Parle-G Biscuit 200g', sales: 180000, change: 9.8, share: 3.6 },
-    { rank: 6, name: 'Maggi Noodles 70g', sales: 160000, change: 7.1, share: 3.2 },
-    { rank: 7, name: 'Clinic Plus Shampoo 175ml', sales: 140000, change: 5.4, share: 2.8 },
-    { rank: 8, name: 'Biscuit Marie Gold 120g', sales: 120000, change: 4.2, share: 2.4 },
-    { rank: 9, name: 'Tata Tea Premium 500g', sales: 100000, change: 3.8, share: 2.0 },
-    { rank: 10, name: 'Lux Soap 100g', sales: 80000, change: 2.9, share: 1.6 }
+    { rank: 1, name: 'Surf Excel Detergent Powder 1kg', sales: 450000, change: 15.2, share: 15.0 },
+    { rank: 2, name: 'Head & Shoulders Shampoo 400ml', sales: 320000, change: 8.7, share: 12.0 },
+    { rank: 3, name: 'Taj Mahal Tea Bags 100pcs', sales: 280000, change: 12.1, share: 10.5 },
+    { rank: 4, name: 'Fortune Sunflower Oil 1L', sales: 210000, change: 6.4, share: 8.5 },
+    { rank: 5, name: 'Parle-G Biscuit 200g', sales: 180000, change: 9.8, share: 7.0 },
+    { rank: 6, name: 'Maggi Noodles 70g', sales: 160000, change: 7.1, share: 6.5 },
+    { rank: 7, name: 'Clinic Plus Shampoo 175ml', sales: 140000, change: 5.4, share: 5.5 },
+    { rank: 8, name: 'Biscuit Marie Gold 120g', sales: 120000, change: 4.2, share: 4.5 },
+    { rank: 9, name: 'Tata Tea Premium 500g', sales: 100000, change: 3.8, share: 3.5 },
+    { rank: 10, name: 'Lux Soap 100g', sales: 80000, change: 2.9, share: 2.0 }
   ];
 
   // Enhanced DataTable component with total row and configurable rows
@@ -224,28 +224,26 @@ const Dashboard: React.FC = () => {
         ),
       },
       {
-        title: 'Change %',
+        title: 'Change % / Share %',
         dataIndex: 'change',
         key: 'change',
+        width: 140,
         render: (change: number) => (
-          <div className="flex items-center space-x-1">
-            {change >= 0 ? (
-              <ArrowUp className="w-3 h-3 text-green-500" />
-            ) : (
-              <ArrowDown className="w-3 h-3 text-red-500" />
-            )}
-            <Tag color={change >= 0 ? 'green' : 'red'}>
-              {change >= 0 ? '+' : ''}{change}%
-            </Tag>
+          <div className="space-y-1">
+            <div className="flex items-center space-x-1">
+              {change >= 0 ? (
+                <ArrowUp className="w-3 h-3 text-green-500" />
+              ) : (
+                <ArrowDown className="w-3 h-3 text-red-500" />
+              )}
+              <Tag color={change >= 0 ? 'green' : 'red'} size="small">
+                {change >= 0 ? '+' : ''}{change}%
+              </Tag>
+            </div>
+            <div className="text-xs text-gray-500 dark:text-gray-400">
+              Share: {record.share}%
+            </div>
           </div>
-        ),
-      },
-      {
-        title: 'Share %',
-        dataIndex: 'share',
-        key: 'share',
-        render: (share: number) => (
-          <span className="text-sm font-medium">{share}%</span>
         ),
       },
     ];
@@ -294,7 +292,7 @@ const Dashboard: React.FC = () => {
               >
                 {showAll ? 'Show Less' : `+${data.length - (showAll ? 0 : (showTopBottom ? (showTop ? topN : bottomN) : topN))}`}
               </Button>
-            </div>
+          share: 100.0,
           </div>
         }
         className="shadow-lg border-0"
