@@ -228,7 +228,7 @@ const Dashboard: React.FC = () => {
         dataIndex: 'change',
         key: 'change',
         width: 140,
-        render: (change: number) => (
+        render: (change: number, record: any) => (
           <div className="space-y-1">
             <div className="flex items-center space-x-1">
               {change >= 0 ? (
@@ -292,7 +292,7 @@ const Dashboard: React.FC = () => {
               >
                 {showAll ? 'Show Less' : `+${data.length - (showAll ? 0 : (showTopBottom ? (showTop ? topN : bottomN) : topN))}`}
               </Button>
-          share: 100.0,
+            </div>
           </div>
         }
         className="shadow-lg border-0"
