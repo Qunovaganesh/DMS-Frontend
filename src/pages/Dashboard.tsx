@@ -46,11 +46,63 @@ const Dashboard: React.FC = () => {
   const [city, setCity] = useState('All Cities');
   const [district, setDistrict] = useState('All Districts');
   const [state, setState] = useState('All States');
+  const [city, setCity] = useState('All Cities');
+  const [district, setDistrict] = useState('All Districts');
   const [entityType, setEntityType] = useState<'manufacturers' | 'distributors'>('manufacturers');
   const [selectedManufacturer, setSelectedManufacturer] = useState('All Manufacturers');
   const [selectedDistributor, setSelectedDistributor] = useState('All Distributors');
   const [topN, setTopN] = useState(5);
   const [bottomN, setBottomN] = useState(5);
+
+  // Lists for filters
+  const statesList = [
+    'All States', 'Maharashtra', 'Delhi', 'Karnataka', 'Tamil Nadu', 
+    'West Bengal', 'Gujarat', 'Rajasthan', 'Uttar Pradesh', 'Madhya Pradesh'
+  ];
+
+  const citiesList = [
+    'All Cities', 'Mumbai', 'Delhi', 'Bangalore', 'Chennai', 'Kolkata', 
+    'Hyderabad', 'Pune', 'Ahmedabad', 'Jaipur', 'Lucknow', 'Kanpur'
+  ];
+
+  const districtsList = [
+    'All Districts', 'Mumbai City', 'New Delhi', 'Bangalore Urban', 'Chennai', 
+    'Kolkata', 'Hyderabad', 'Pune', 'Ahmedabad', 'Jaipur', 'Lucknow'
+  ];
+
+  // Date range presets
+  const getDatePreset = (preset: string): [dayjs.Dayjs, dayjs.Dayjs] => {
+    const today = dayjs();
+    const startOfWeek = today.startOf('week');
+    const startOfMonth = today.startOf('month');
+    const startOfQuarter = today.startOf('quarter');
+    const startOfYear = today.startOf('year');
+
+    switch (preset) {
+      case 'today':
+        return [today, today];
+      case 'yesterday':
+        return [today.subtract(1, 'day'), today.subtract(1, 'day')];
+      case 'thisWeek':
+        return [startOfWeek, today];
+      case 'lastWeek':
+        return [startOfWeek.subtract(1, 'week'), startOfWeek.subtract(1, 'day')];
+      case 'thisMonth':
+        return [startOfMonth, today];
+      case 'lastMonth':
+        return [startOfMonth.subtract(1, 'month'), startOfMonth.subtract(1, 'day')];
+      case 'thisQuarter':
+        return [startOfQuarter, today];
+      case 'lastQuarter':
+        return [startOfQuarter.subtract(1, 'quarter'), startOfQuarter.subtract(1, 'day')];
+      case 'thisYear':
+        return [startOfYear, today];
+      case 'lastYear':
+        return [startOfYear.subtract(1, 'year'), startOfYear.subtract(1, 'day')];
+      default:
+        return [today.subtract(30, 'day'), today];
+    }
+  };
 
   // Helper function to format numbers with K/M
   const formatNumber = (num: number): string => {
@@ -602,79 +654,148 @@ const Dashboard: React.FC = () => {
         transition={{ delay: 0.2, duration: 0.5 }}
       >
         <Card className="shadow-lg border-0 mb-6">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0 lg:space-x-4">
+          <div className="space-y-4">
             <div className="flex items-center space-x-2">
               <Filter className="w-5 h-5 text-gray-500" />
               <span className="font-medium text-gray-700 dark:text-gray-300">Filters:</span>
             </div>
             
-            <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 flex-1">
+            {/* Date Range with Presets */}
+            <div className="space-y-3">
               <div className="flex items-center space-x-2">
                 <Calendar className="w-4 h-4 text-gray-400" />
-                <RangePicker
-                  value={dateRange}
-                  onChange={setDateRange}
-                  className="w-full sm:w-auto"
-                  placeholder={['Start Date', 'End Date']}
-                />
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Date Range:</span>
+              </div>
+              <div className="flex flex-wrap gap-2 mb-3">
+                {[
+                  { label: 'Today', value: 'today' },
+                  { label: 'Yesterday', value: 'yesterday' },
+                  { label: 'This Week', value: 'thisWeek' },
+                  { label: 'Last Week', value: 'lastWeek' },
+                  { label: 'This Month', value: 'thisMonth' },
+                  { label: 'Last Month', value: 'lastMonth' },
+                  { label: 'This Quarter', value: 'thisQuarter' },
+                  { label: 'Last Quarter', value: 'lastQuarter' },
+                  { label: 'This Year', value: 'thisYear' },
+                  { label: 'Last Year', value: 'lastYear' }
+                ].map((preset) => (
+                  <Button
+                    key={preset.value}
+                    size="small"
+                    onClick={() => setDateRange(getDatePreset(preset.value))}
+                    className="text-xs"
+                  >
+                    {preset.label}
+                  </Button>
+                ))}
+              </div>
+              <RangePicker
+                value={dateRange}
+                onChange={setDateRange}
+                className="w-full sm:w-auto"
+                placeholder={['Start Date', 'End Date']}
+              />
+            </div>
+
+            {/* Entity Filters */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+              <div>
+                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Manufacturer</label>
+                <Select
+                  value={selectedManufacturer}
+                  onChange={setSelectedManufacturer}
+                  className="w-full"
+                  placeholder="Select Manufacturer"
+                >
+                  {manufacturersList.map(mfr => (
+                    <Option key={mfr} value={mfr}>{mfr}</Option>
+                  ))}
+                </Select>
               </div>
               
-              <Select
-                value={selectedManufacturer}
-                onChange={setSelectedManufacturer}
-                className="w-full sm:w-48"
-                placeholder="Select Manufacturer"
-              >
-                {manufacturersList.map(mfr => (
-                  <Option key={mfr} value={mfr}>{mfr}</Option>
-                ))}
-              </Select>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Distributor</label>
+                <Select
+                  value={selectedDistributor}
+                  onChange={setSelectedDistributor}
+                  className="w-full"
+                  placeholder="Select Distributor"
+                >
+                  {distributorsList.map(dist => (
+                    <Option key={dist} value={dist}>{dist}</Option>
+                  ))}
+                </Select>
+              </div>
               
-              <Select
-                value={selectedDistributor}
-                onChange={setSelectedDistributor}
-                className="w-full sm:w-48"
-                placeholder="Select Distributor"
-              >
-                {distributorsList.map(dist => (
-                  <Option key={dist} value={dist}>{dist}</Option>
-                ))}
-              </Select>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">State</label>
+                <Select
+                  value={state}
+                  onChange={setState}
+                  className="w-full"
+                  placeholder="State"
+                >
+                  {statesList.map(s => (
+                    <Option key={s} value={s}>{s}</Option>
+                  ))}
+                </Select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">District</label>
+                <Select
+                  value={district}
+                  onChange={setDistrict}
+                  className="w-full"
+                  placeholder="District"
+                >
+                  {districtsList.map(d => (
+                    <Option key={d} value={d}>{d}</Option>
+                  ))}
+                </Select>
+              </div>
               
-              <Select
-                value={state}
-                onChange={setState}
-                className="w-full sm:w-32"
-                placeholder="State"
-              >
-                <Option value="All States">All States</Option>
-                <Option value="Maharashtra">Maharashtra</Option>
-                <Option value="Delhi">Delhi</Option>
-                <Option value="Karnataka">Karnataka</Option>
-                <Option value="Tamil Nadu">Tamil Nadu</Option>
-              </Select>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">City</label>
+                <Select
+                  value={city}
+                  onChange={setCity}
+                  className="w-full"
+                  placeholder="City"
+                >
+                  {citiesList.map(c => (
+                    <Option key={c} value={c}>{c}</Option>
+                  ))}
+                </Select>
+              </div>
             </div>
             
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <span className="text-sm text-gray-600 dark:text-gray-400">Top N:</span>
-                <InputNumber
-                  min={1}
-                  max={20}
-                  value={topN}
-                  onChange={(value) => setTopN(value || 5)}
-                  className="w-16"
-                />
+            {/* Table Controls */}
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-2">
+                  <span className="text-sm text-gray-600 dark:text-gray-400">Top N:</span>
+                  <InputNumber
+                    min={1}
+                    max={20}
+                    value={topN}
+                    onChange={(value) => setTopN(value || 5)}
+                    className="w-16"
+                  />
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-sm text-gray-600 dark:text-gray-400">Bottom N:</span>
+                  <InputNumber
+                    min={1}
+                    max={20}
+                    value={bottomN}
+                    onChange={(value) => setBottomN(value || 5)}
+                    className="w-16"
+                  />
+                </div>
               </div>
-              <div className="flex items-center space-x-2">
-                <span className="text-sm text-gray-600 dark:text-gray-400">Bottom N:</span>
-                <InputNumber
-                  min={1}
-                  max={20}
-                  value={bottomN}
-                  onChange={(value) => setBottomN(value || 5)}
-                  className="w-16"
-                />
+              <div className="text-sm text-gray-500 dark:text-gray-400">
+                Showing data for: {dateRange ? `${dateRange[0].format('MMM DD')} - ${dateRange[1].format('MMM DD, YYYY')}` : 'All Time'}
               </div>
             </div>
           </div>
