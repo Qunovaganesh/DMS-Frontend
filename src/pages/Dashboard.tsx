@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Row, Col, Select, DatePicker, Button, Table, Tag, Progress } from 'antd';
+import { Card, Row, Col, Select, DatePicker, Button, Table, Tag, Progress, InputNumber } from 'antd';
 import { 
   DollarSign,
   TrendingUp,
-  TrendingDown,
   Users,
   Package,
   ShoppingCart,
   Target,
   BarChart3,
-  PieChart,
   Activity,
   MapPin,
   Calendar,
@@ -18,7 +16,8 @@ import {
   ArrowUp,
   ArrowDown,
   Eye,
-  Download
+  Download,
+  Receipt
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
@@ -48,6 +47,10 @@ const Dashboard: React.FC = () => {
   const [district, setDistrict] = useState('All Districts');
   const [state, setState] = useState('All States');
   const [entityType, setEntityType] = useState<'manufacturers' | 'distributors'>('manufacturers');
+  const [selectedManufacturer, setSelectedManufacturer] = useState('All Manufacturers');
+  const [selectedDistributor, setSelectedDistributor] = useState('All Distributors');
+  const [topN, setTopN] = useState(5);
+  const [bottomN, setBottomN] = useState(5);
 
   // Mock data for financial metrics
   const financialData = {
@@ -77,39 +80,222 @@ const Dashboard: React.FC = () => {
     value: Math.floor(Math.random() * 100) + 50
   }));
 
+  // Mock manufacturer and distributor lists
+  const manufacturersList = [
+    'All Manufacturers',
+    'Hindustan Unilever Ltd',
+    'ITC Limited', 
+    'Nestle India',
+    'Britannia Industries',
+    'Dabur India Ltd',
+    'Colgate-Palmolive',
+    'Marico Limited'
+  ];
+
+  const distributorsList = [
+    'All Distributors',
+    'Mumbai Retail Stores',
+    'Delhi Supply Chain',
+    'Bangalore Distribution',
+    'Kolkata Partners',
+    'Chennai Networks',
+    'Hyderabad Hub',
+    'Pune Partners'
+  ];
+
   // Mock data for network tables
-  const manufacturersData = [
-    { rank: 1, name: 'Hindustan Unilever Ltd', sales: 4500000, change: 15.2, share: 28.5, category: 'FMCG', brand: 'HUL' },
-    { rank: 2, name: 'ITC Limited', sales: 3200000, change: 8.7, share: 20.3, category: 'FMCG', brand: 'ITC' },
-    { rank: 3, name: 'Nestle India', sales: 2800000, change: 12.1, share: 17.8, category: 'Food', brand: 'Nestle' },
-    { rank: 4, name: 'Britannia Industries', sales: 2100000, change: 6.4, share: 13.3, category: 'Food', brand: 'Britannia' },
-    { rank: 5, name: 'Dabur India Ltd', sales: 1800000, change: 9.8, share: 11.4, category: 'Personal Care', brand: 'Dabur' }
+  const allManufacturersData = [
+    { rank: 1, name: 'Hindustan Unilever Ltd', sales: 4500000, change: 15.2, share: 28.5 },
+    { rank: 2, name: 'ITC Limited', sales: 3200000, change: 8.7, share: 20.3 },
+    { rank: 3, name: 'Nestle India', sales: 2800000, change: 12.1, share: 17.8 },
+    { rank: 4, name: 'Britannia Industries', sales: 2100000, change: 6.4, share: 13.3 },
+    { rank: 5, name: 'Dabur India Ltd', sales: 1800000, change: 9.8, share: 11.4 },
+    { rank: 6, name: 'Colgate-Palmolive', sales: 1600000, change: 7.2, share: 10.1 },
+    { rank: 7, name: 'Marico Limited', sales: 1400000, change: 5.8, share: 8.8 },
+    { rank: 8, name: 'Godrej Consumer', sales: 1200000, change: 4.3, share: 7.6 },
+    { rank: 9, name: 'Emami Limited', sales: 1000000, change: 3.1, share: 6.3 },
+    { rank: 10, name: 'Wipro Consumer', sales: 800000, change: 2.5, share: 5.1 }
   ];
 
-  const distributorsData = [
-    { rank: 1, name: 'Mumbai Retail Stores', sales: 2400000, change: 18.5, share: 22.1, category: 'Retail', brand: 'MRS' },
-    { rank: 2, name: 'Delhi Supply Chain', sales: 2100000, change: 14.2, share: 19.3, category: 'Distribution', brand: 'DSC' },
-    { rank: 3, name: 'Bangalore Distribution', sales: 1900000, change: 11.7, share: 17.5, category: 'Distribution', brand: 'BD' },
-    { rank: 4, name: 'Kolkata Partners', sales: 1600000, change: 8.9, share: 14.7, category: 'Retail', brand: 'KP' },
-    { rank: 5, name: 'Chennai Networks', sales: 1400000, change: 7.3, share: 12.9, category: 'Distribution', brand: 'CN' }
+  const allDistributorsData = [
+    { rank: 1, name: 'Mumbai Retail Stores', sales: 2400000, change: 18.5, share: 22.1 },
+    { rank: 2, name: 'Delhi Supply Chain', sales: 2100000, change: 14.2, share: 19.3 },
+    { rank: 3, name: 'Bangalore Distribution', sales: 1900000, change: 11.7, share: 17.5 },
+    { rank: 4, name: 'Kolkata Partners', sales: 1600000, change: 8.9, share: 14.7 },
+    { rank: 5, name: 'Chennai Networks', sales: 1400000, change: 7.3, share: 12.9 },
+    { rank: 6, name: 'Hyderabad Hub', sales: 1200000, change: 6.1, share: 11.0 },
+    { rank: 7, name: 'Pune Partners', sales: 1000000, change: 4.8, share: 9.2 },
+    { rank: 8, name: 'Ahmedabad Associates', sales: 800000, change: 3.5, share: 7.3 },
+    { rank: 9, name: 'Jaipur Junction', sales: 600000, change: 2.2, share: 5.5 },
+    { rank: 10, name: 'Lucknow Links', sales: 400000, change: 1.8, share: 3.7 }
   ];
 
-  const outletsData = [
-    { rank: 1, name: 'North India Region', sales: 3200000, change: 16.8, share: 31.2, category: 'Regional', brand: 'NIR' },
-    { rank: 2, name: 'West India Region', sales: 2800000, change: 13.4, share: 27.3, category: 'Regional', brand: 'WIR' },
-    { rank: 3, name: 'South India Region', sales: 2400000, change: 10.9, share: 23.4, category: 'Regional', brand: 'SIR' },
-    { rank: 4, name: 'East India Region', sales: 1800000, change: 8.2, share: 17.6, category: 'Regional', brand: 'EIR' },
-    { rank: 5, name: 'Central India Region', sales: 1200000, change: 5.7, share: 11.7, category: 'Regional', brand: 'CIR' }
+  const allOutletsData = [
+    { rank: 1, name: 'North India Region', sales: 3200000, change: 16.8, share: 31.2 },
+    { rank: 2, name: 'West India Region', sales: 2800000, change: 13.4, share: 27.3 },
+    { rank: 3, name: 'South India Region', sales: 2400000, change: 10.9, share: 23.4 },
+    { rank: 4, name: 'East India Region', sales: 1800000, change: 8.2, share: 17.6 },
+    { rank: 5, name: 'Central India Region', sales: 1200000, change: 5.7, share: 11.7 },
+    { rank: 6, name: 'Northeast Region', sales: 800000, change: 4.2, share: 7.8 },
+    { rank: 7, name: 'Coastal Region', sales: 600000, change: 3.1, share: 5.8 },
+    { rank: 8, name: 'Hill Stations', sales: 400000, change: 2.3, share: 3.9 }
   ];
 
-  const skuData = [
-    { rank: 1, name: 'Surf Excel Detergent Powder 1kg', sales: 450000, change: 15.2, share: 8.9, category: 'Home Care', brand: 'Surf Excel', sku: 'DET-001' },
-    { rank: 2, name: 'Head & Shoulders Shampoo 400ml', sales: 320000, change: 8.7, share: 6.3, category: 'Personal Care', brand: 'H&S', sku: 'SHP-002' },
-    { rank: 3, name: 'Taj Mahal Tea Bags 100pcs', sales: 280000, change: 12.1, share: 5.5, category: 'Beverages', brand: 'Taj Mahal', sku: 'TEA-003' },
-    { rank: 4, name: 'Fortune Sunflower Oil 1L', sales: 210000, change: 6.4, share: 4.1, category: 'Cooking Oil', brand: 'Fortune', sku: 'OIL-004' },
-    { rank: 5, name: 'Parle-G Biscuit 200g', sales: 180000, change: 9.8, share: 3.6, category: 'Snacks', brand: 'Parle', sku: 'BIS-005' }
+  const allSkuData = [
+    { rank: 1, name: 'Surf Excel Detergent Powder 1kg', sales: 450000, change: 15.2, share: 8.9 },
+    { rank: 2, name: 'Head & Shoulders Shampoo 400ml', sales: 320000, change: 8.7, share: 6.3 },
+    { rank: 3, name: 'Taj Mahal Tea Bags 100pcs', sales: 280000, change: 12.1, share: 5.5 },
+    { rank: 4, name: 'Fortune Sunflower Oil 1L', sales: 210000, change: 6.4, share: 4.1 },
+    { rank: 5, name: 'Parle-G Biscuit 200g', sales: 180000, change: 9.8, share: 3.6 },
+    { rank: 6, name: 'Maggi Noodles 70g', sales: 160000, change: 7.1, share: 3.2 },
+    { rank: 7, name: 'Clinic Plus Shampoo 175ml', sales: 140000, change: 5.4, share: 2.8 },
+    { rank: 8, name: 'Biscuit Marie Gold 120g', sales: 120000, change: 4.2, share: 2.4 },
+    { rank: 9, name: 'Tata Tea Premium 500g', sales: 100000, change: 3.8, share: 2.0 },
+    { rank: 10, name: 'Lux Soap 100g', sales: 80000, change: 2.9, share: 1.6 }
   ];
 
+  // Enhanced DataTable component with total row and configurable rows
+  const EnhancedDataTable: React.FC<{
+    title: string;
+    data: Array<{ rank: number; name: string; sales: number; change: number; share: number }>;
+    topN: number;
+    bottomN: number;
+    showTopBottom?: boolean;
+  }> = ({ title, data, topN, bottomN, showTopBottom = true }) => {
+    const [showAll, setShowAll] = useState(false);
+    const [showTop, setShowTop] = useState(true);
+
+    const getDisplayData = () => {
+      if (showAll) return data;
+      if (!showTopBottom) return data.slice(0, topN);
+      return showTop ? data.slice(0, topN) : data.slice(-bottomN);
+    };
+
+    const displayData = getDisplayData();
+    const totalSales = data.reduce((sum, item) => sum + item.sales, 0);
+    const totalShare = data.reduce((sum, item) => sum + item.share, 0);
+    const avgChange = data.reduce((sum, item) => sum + item.change, 0) / data.length;
+
+    const columns = [
+      {
+        title: 'Rank',
+        dataIndex: 'rank',
+        key: 'rank',
+        width: 60,
+        render: (rank: number) => (
+          <div className="flex items-center justify-center">
+            <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+              rank <= 3 ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-600'
+            }`}>
+              {rank}
+            </span>
+          </div>
+        ),
+      },
+      {
+        title: 'Name',
+        dataIndex: 'name',
+        key: 'name',
+        render: (name: string) => (
+          <span className="font-medium text-gray-900 dark:text-white">{name}</span>
+        ),
+      },
+      {
+        title: 'Sales (₹)',
+        dataIndex: 'sales',
+        key: 'sales',
+        render: (sales: number) => (
+          <span className="font-semibold">₹{sales.toLocaleString('hi-IN')}</span>
+        ),
+      },
+      {
+        title: 'Change %',
+        dataIndex: 'change',
+        key: 'change',
+        render: (change: number) => (
+          <div className="flex items-center space-x-1">
+            {change >= 0 ? (
+              <ArrowUp className="w-3 h-3 text-green-500" />
+            ) : (
+              <ArrowDown className="w-3 h-3 text-red-500" />
+            )}
+            <Tag color={change >= 0 ? 'green' : 'red'}>
+              {change >= 0 ? '+' : ''}{change}%
+            </Tag>
+          </div>
+        ),
+      },
+      {
+        title: 'Share %',
+        dataIndex: 'share',
+        key: 'share',
+        render: (share: number) => (
+          <span className="text-sm font-medium">{share}%</span>
+        ),
+      },
+    ];
+
+    // Add total row to data
+    const dataWithTotal = [
+      ...displayData,
+      {
+        rank: 'Total',
+        name: 'Total',
+        sales: totalSales,
+        change: avgChange,
+        share: totalShare,
+        isTotal: true
+      }
+    ];
+
+    return (
+      <Card 
+        title={
+          <div className="flex items-center justify-between">
+            <span className="text-lg font-bold">{title}</span>
+            <div className="flex items-center space-x-2">
+              {showTopBottom && !showAll && (
+                <div className="flex items-center space-x-1">
+                  <Button
+                    size="small"
+                    type={showTop ? 'primary' : 'default'}
+                    onClick={() => setShowTop(true)}
+                  >
+                    Top {topN}
+                  </Button>
+                  <Button
+                    size="small"
+                    type={!showTop ? 'primary' : 'default'}
+                    onClick={() => setShowTop(false)}
+                  >
+                    Bottom {bottomN}
+                  </Button>
+                </div>
+              )}
+              <Button
+                type="text"
+                size="small"
+                onClick={() => setShowAll(!showAll)}
+              >
+                {showAll ? 'Show Less' : `+${data.length - (showAll ? 0 : (showTopBottom ? (showTop ? topN : bottomN) : topN))} more`}
+              </Button>
+            </div>
+          </div>
+        }
+        className="shadow-lg border-0"
+      >
+        <Table
+          columns={columns}
+          dataSource={dataWithTotal}
+          pagination={false}
+          size="small"
+          rowKey={(record) => record.rank}
+          className="custom-table"
+          rowClassName={(record) => record.isTotal ? 'bg-gray-50 dark:bg-gray-800 font-bold' : ''}
+        />
+      </Card>
+    );
+  };
   const renderRoleSpecificContent = () => {
     if (user?.role === 'admin') {
       return (
@@ -160,27 +346,30 @@ const Dashboard: React.FC = () => {
           {/* Network Overview for Admin */}
           <Row gutter={[24, 24]} className="mb-6">
             <Col xs={24} lg={8}>
-              <DataTable
+              <EnhancedDataTable
                 title="Top Manufacturers"
-                data={manufacturersData}
+                data={allManufacturersData}
+                topN={topN}
+                bottomN={bottomN}
                 showTopBottom={true}
-                maxRows={5}
               />
             </Col>
             <Col xs={24} lg={8}>
-              <DataTable
+              <EnhancedDataTable
                 title="Top Distributors"
-                data={distributorsData}
+                data={allDistributorsData}
+                topN={topN}
+                bottomN={bottomN}
                 showTopBottom={true}
-                maxRows={5}
               />
             </Col>
             <Col xs={24} lg={8}>
-              <DataTable
+              <EnhancedDataTable
                 title="Regional Outlets"
-                data={outletsData}
+                data={allOutletsData}
+                topN={topN}
+                bottomN={bottomN}
                 showTopBottom={true}
-                maxRows={5}
               />
             </Col>
           </Row>
@@ -260,19 +449,21 @@ const Dashboard: React.FC = () => {
           {/* Show only Distributors and Outlets for Manufacturer */}
           <Row gutter={[24, 24]} className="mb-6">
             <Col xs={24} lg={12}>
-              <DataTable
+              <EnhancedDataTable
                 title="Top Distributors"
-                data={distributorsData}
+                data={allDistributorsData}
+                topN={topN}
+                bottomN={bottomN}
                 showTopBottom={true}
-                maxRows={5}
               />
             </Col>
             <Col xs={24} lg={12}>
-              <DataTable
+              <EnhancedDataTable
                 title="Regional Outlets"
-                data={outletsData}
+                data={allOutletsData}
+                topN={topN}
+                bottomN={bottomN}
                 showTopBottom={true}
-                maxRows={5}
               />
             </Col>
           </Row>
@@ -352,11 +543,12 @@ const Dashboard: React.FC = () => {
           {/* Show only Outlets for Distributor */}
           <Row gutter={[24, 24]} className="mb-6">
             <Col xs={24}>
-              <DataTable
+              <EnhancedDataTable
                 title="Regional Outlets Performance"
-                data={outletsData}
+                data={allOutletsData}
+                topN={topN}
+                bottomN={bottomN}
                 showTopBottom={true}
-                maxRows={5}
               />
             </Col>
           </Row>
@@ -395,18 +587,84 @@ const Dashboard: React.FC = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2, duration: 0.5 }}
       >
-        <FilterBar
-          dateRange={dateRange}
-          onDateRangeChange={setDateRange}
-          city={city}
-          onCityChange={setCity}
-          district={district}
-          onDistrictChange={setDistrict}
-          state={state}
-          onStateChange={setState}
-          entityType={entityType}
-          onEntityTypeChange={setEntityType}
-        />
+        <Card className="shadow-lg border-0 mb-6">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0 lg:space-x-4">
+            <div className="flex items-center space-x-2">
+              <Filter className="w-5 h-5 text-gray-500" />
+              <span className="font-medium text-gray-700 dark:text-gray-300">Filters:</span>
+            </div>
+            
+            <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 flex-1">
+              <div className="flex items-center space-x-2">
+                <Calendar className="w-4 h-4 text-gray-400" />
+                <RangePicker
+                  value={dateRange}
+                  onChange={setDateRange}
+                  className="w-full sm:w-auto"
+                  placeholder={['Start Date', 'End Date']}
+                />
+              </div>
+              
+              <Select
+                value={selectedManufacturer}
+                onChange={setSelectedManufacturer}
+                className="w-full sm:w-48"
+                placeholder="Select Manufacturer"
+              >
+                {manufacturersList.map(mfr => (
+                  <Option key={mfr} value={mfr}>{mfr}</Option>
+                ))}
+              </Select>
+              
+              <Select
+                value={selectedDistributor}
+                onChange={setSelectedDistributor}
+                className="w-full sm:w-48"
+                placeholder="Select Distributor"
+              >
+                {distributorsList.map(dist => (
+                  <Option key={dist} value={dist}>{dist}</Option>
+                ))}
+              </Select>
+              
+              <Select
+                value={state}
+                onChange={setState}
+                className="w-full sm:w-32"
+                placeholder="State"
+              >
+                <Option value="All States">All States</Option>
+                <Option value="Maharashtra">Maharashtra</Option>
+                <Option value="Delhi">Delhi</Option>
+                <Option value="Karnataka">Karnataka</Option>
+                <Option value="Tamil Nadu">Tamil Nadu</Option>
+              </Select>
+            </div>
+            
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
+                <span className="text-sm text-gray-600 dark:text-gray-400">Top N:</span>
+                <InputNumber
+                  min={1}
+                  max={20}
+                  value={topN}
+                  onChange={(value) => setTopN(value || 5)}
+                  className="w-16"
+                />
+              </div>
+              <div className="flex items-center space-x-2">
+                <span className="text-sm text-gray-600 dark:text-gray-400">Bottom N:</span>
+                <InputNumber
+                  min={1}
+                  max={20}
+                  value={bottomN}
+                  onChange={(value) => setBottomN(value || 5)}
+                  className="w-16"
+                />
+              </div>
+            </div>
+          </div>
+        </Card>
       </motion.div>
 
       {/* Role-specific Content */}
@@ -424,11 +682,12 @@ const Dashboard: React.FC = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.6, duration: 0.5 }}
       >
-        <DataTable
+        <EnhancedDataTable
           title="SKU Performance Breakdown"
-          data={skuData}
+          data={allSkuData}
+          topN={topN}
+          bottomN={bottomN}
           showTopBottom={true}
-          maxRows={5}
         />
       </motion.div>
     </div>
