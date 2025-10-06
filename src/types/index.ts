@@ -58,6 +58,8 @@ export interface DashboardStats {
   remainingMails: number;
   totalRevenue: number;
   monthlyGrowth: number;
+  transactionsSynced: number;
+  entitiesSynced: number;
 }
 
 export interface AuthState {

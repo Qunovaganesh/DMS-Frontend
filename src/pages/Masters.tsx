@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Table, Button, Tag, Input, Select, Space, Tooltip, Row, Col, Modal, Form, InputNumber, Tabs } from 'antd';
+import { Card, Table, Button, Tag, Input, Select, Space, Tooltip, Row, Col, Modal, Form, InputNumber } from 'antd';
 import {
   Database,
   Plus,
@@ -17,6 +17,12 @@ import {
   Save,
   X,
   Building,
+  Key,
+  Send,
+  CheckCircle,
+  Clock,
+  XCircle,
+  Users,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Swal from 'sweetalert2';
@@ -24,7 +30,6 @@ import Swal from 'sweetalert2';
 const { Search: AntSearch } = Input;
 const { Option } = Select;
 const { TextArea } = Input;
-const { TabPane } = Tabs;
 
 // FMCG Categories
 const FMCG_CATEGORIES = [
@@ -67,6 +72,9 @@ interface Manufacturer {
   status: 'active' | 'inactive' | 'pending';
   createdAt: string;
   lastUpdated: string;
+  username?: string;
+  password?: string;
+  emailSentStatus?: 'sent' | 'pending' | 'failed';
 }
 
 interface Distributor {
@@ -87,6 +95,9 @@ interface Distributor {
   status: 'active' | 'inactive' | 'pending';
   createdAt: string;
   lastUpdated: string;
+  username?: string;
+  password?: string;
+  emailSentStatus?: 'sent' | 'pending' | 'failed';
 }
 
 interface Product {
@@ -106,6 +117,7 @@ interface Product {
   status: 'active' | 'inactive' | 'discontinued';
   createdAt: string;
   lastUpdated: string;
+  caseConfiguration: string;
 }
 
 const Masters: React.FC = () => {
@@ -126,7 +138,7 @@ const Masters: React.FC = () => {
 
   // Modal states
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [editingItem, setEditingItem] = useState<any>(null);
+  const [editingItem, setEditingItem] = useState<Manufacturer | Distributor | Product | null>(null);
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -149,7 +161,10 @@ const Masters: React.FC = () => {
         employeeCount: 1200,
         status: 'active',
         createdAt: '2024-01-15',
-        lastUpdated: '2024-12-20'
+        lastUpdated: '2024-12-20',
+        username: 'mfr001',
+        password: 'Hindustan@2024',
+        emailSentStatus: 'sent'
       },
       {
         id: '2',
@@ -168,7 +183,10 @@ const Masters: React.FC = () => {
         employeeCount: 2500,
         status: 'active',
         createdAt: '2024-02-01',
-        lastUpdated: '2024-12-19'
+        lastUpdated: '2024-12-19',
+        username: 'mfr002',
+        password: 'Patanjali@2024',
+        emailSentStatus: 'pending'
       },
       {
         id: '3',
@@ -187,7 +205,10 @@ const Masters: React.FC = () => {
         employeeCount: 3500,
         status: 'active',
         createdAt: '2024-01-20',
-        lastUpdated: '2024-12-18'
+        lastUpdated: '2024-12-18',
+        username: 'mfr003',
+        password: 'Dabur@2024',
+        emailSentStatus: 'sent'
       }
     ];
 
@@ -209,7 +230,10 @@ const Masters: React.FC = () => {
         vehicleCount: 25,
         status: 'active',
         createdAt: '2024-02-10',
-        lastUpdated: '2024-12-20'
+        lastUpdated: '2024-12-20',
+        username: 'dist001',
+        password: 'Mumbai@2024',
+        emailSentStatus: 'sent'
       },
       {
         id: '2',
@@ -228,7 +252,10 @@ const Masters: React.FC = () => {
         vehicleCount: 40,
         status: 'active',
         createdAt: '2024-02-15',
-        lastUpdated: '2024-12-19'
+        lastUpdated: '2024-12-19',
+        username: 'dist002',
+        password: 'Delhi@2024',
+        emailSentStatus: 'failed'
       },
       {
         id: '3',
@@ -247,7 +274,10 @@ const Masters: React.FC = () => {
         vehicleCount: 30,
         status: 'active',
         createdAt: '2024-03-01',
-        lastUpdated: '2024-12-18'
+        lastUpdated: '2024-12-18',
+        username: 'dist003',
+        password: 'Bangalore@2024',
+        emailSentStatus: 'pending'
       }
     ];
 
@@ -266,6 +296,7 @@ const Masters: React.FC = () => {
         description: 'Advanced detergent powder for top load washing machines',
         hsnCode: '34022000',
         gstRate: 18,
+        caseConfiguration: '1000 ml',
         status: 'active',
         createdAt: '2024-01-20',
         lastUpdated: '2024-12-15'
@@ -284,6 +315,7 @@ const Masters: React.FC = () => {
         description: 'Clinically proven anti-dandruff shampoo',
         hsnCode: '33051000',
         gstRate: 18,
+        caseConfiguration: '400 ml',
         status: 'active',
         createdAt: '2024-01-25',
         lastUpdated: '2024-12-10'
@@ -302,6 +334,7 @@ const Masters: React.FC = () => {
         description: 'Natural herbal hair cleanser with ayurvedic ingredients',
         hsnCode: '33051000',
         gstRate: 18,
+        caseConfiguration: '200 ml',
         status: 'active',
         createdAt: '2024-02-05',
         lastUpdated: '2024-12-12'
@@ -320,6 +353,7 @@ const Masters: React.FC = () => {
         description: 'Traditional ayurvedic immunity booster',
         hsnCode: '21069099',
         gstRate: 12,
+        caseConfiguration: '1 kg',
         status: 'active',
         createdAt: '2024-02-10',
         lastUpdated: '2024-12-08'
@@ -341,13 +375,13 @@ const Masters: React.FC = () => {
     setIsModalVisible(true);
   };
 
-  const handleEdit = (item: any) => {
+  const handleEdit = (item: Manufacturer | Distributor | Product) => {
     setEditingItem(item);
     form.setFieldsValue(item);
     setIsModalVisible(true);
   };
 
-  const handleDelete = (item: any) => {
+  const handleDelete = (item: Manufacturer | Distributor | Product) => {
     const swalWithBootstrapButtons = Swal.mixin({
       customClass: {
         confirmButton: 'bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-lg mr-2 transition-colors',
@@ -359,7 +393,7 @@ const Masters: React.FC = () => {
       buttonsStyling: false
     });
 
-    const itemName = item.companyName || item.name;
+    const itemName = 'companyName' in item ? item.companyName : 'name' in item ? item.name : 'Unknown';
     swalWithBootstrapButtons.fire({
       title: 'Delete Confirmation',
       text: `Are you sure you want to delete "${itemName}"? This action cannot be undone.`,
@@ -449,9 +483,101 @@ const Masters: React.FC = () => {
     }
   };
 
+  const handleRegeneratePassword = (record: Manufacturer | Distributor) => {
+    const swalWithBootstrapButtons = Swal.mixin({
+      customClass: {
+        confirmButton: 'bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg mr-2 transition-colors',
+        cancelButton: 'bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-lg transition-colors',
+        popup: 'bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border-0',
+        title: 'text-gray-900 dark:text-white font-bold',
+        htmlContainer: 'text-gray-700 dark:text-gray-300'
+      },
+      buttonsStyling: false
+    });
+
+    swalWithBootstrapButtons.fire({
+      title: 'Regenerate Password?',
+      text: `This will generate a new password for ${record.companyName} and update their credentials.`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Regenerate',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Generate new password
+        const newPassword = `${record.companyName.replace(/\s/g, '').substring(0, 8)}@${new Date().getFullYear()}`;
+        
+        // Update the record with new password
+        const updatedRecord = { ...record, password: newPassword, emailSentStatus: 'pending' as const } as Manufacturer | Distributor;
+        
+        if (entityType === 'manufacturers') {
+          setManufacturers(prev => prev.map(m => m.id === record.id ? updatedRecord as Manufacturer : m));
+        } else {
+          setDistributors(prev => prev.map(d => d.id === record.id ? updatedRecord as Distributor : d));
+        }
+
+        swalWithBootstrapButtons.fire({
+          icon: 'success',
+          title: 'Password Regenerated!',
+          text: `New password generated for ${record.companyName}. Please send the credentials via email.`,
+          timer: 3000,
+          showConfirmButton: false
+        });
+      }
+    });
+  };
+
+  const handleSendEmail = (record: Manufacturer | Distributor) => {
+    const swalWithBootstrapButtons = Swal.mixin({
+      customClass: {
+        confirmButton: 'bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded-lg mr-2 transition-colors',
+        cancelButton: 'bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-lg transition-colors',
+        popup: 'bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border-0',
+        title: 'text-gray-900 dark:text-white font-bold',
+        htmlContainer: 'text-gray-700 dark:text-gray-300'
+      },
+      buttonsStyling: false
+    });
+
+    swalWithBootstrapButtons.fire({
+      title: 'Send Credentials Email?',
+      html: `
+        <div class="text-left space-y-2">
+          <p>Send login credentials to:</p>
+          <p><strong>Company:</strong> ${record.companyName}</p>
+          <p><strong>Email:</strong> ${record.email}</p>
+          <p><strong>Contact:</strong> ${record.contactPerson}</p>
+        </div>
+      `,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Send Email',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Simulate email sending
+        const updatedRecord = { ...record, emailSentStatus: 'sent' as const } as Manufacturer | Distributor;
+        
+        if (entityType === 'manufacturers') {
+          setManufacturers(prev => prev.map(m => m.id === record.id ? updatedRecord as Manufacturer : m));
+        } else {
+          setDistributors(prev => prev.map(d => d.id === record.id ? updatedRecord as Distributor : d));
+        }
+
+        swalWithBootstrapButtons.fire({
+          icon: 'success',
+          title: 'Email Sent Successfully!',
+          text: `Login credentials have been sent to ${record.email}`,
+          timer: 3000,
+          showConfirmButton: false
+        });
+      }
+    });
+  };
+
   // Filter data based on current selection
   const getFilteredData = () => {
-    let data: any[] = [];
+    let data: (Manufacturer | Distributor | Product)[] = [];
 
     if (activeSection === 'entities') {
       data = entityType === 'manufacturers' ? manufacturers : distributors;
@@ -463,8 +589,8 @@ const Masters: React.FC = () => {
     if (searchText) {
       data = data.filter(item => {
         const searchFields = activeSection === 'entities'
-          ? [item.companyName, item.contactPerson, item.email, item.city, item.state]
-          : [item.name, item.sku, item.brand, item.manufacturerName];
+          ? 'companyName' in item ? [item.companyName, item.contactPerson, item.email, item.city, item.state] : []
+          : 'name' in item ? [item.name, item.sku, item.brand, item.manufacturerName] : [];
 
         return searchFields.some(field =>
           field?.toLowerCase().includes(searchText.toLowerCase())
@@ -479,15 +605,15 @@ const Masters: React.FC = () => {
     if (categoryFilter !== 'all') {
       data = data.filter(item => {
         if (activeSection === 'entities') {
-          return item.categories?.includes(categoryFilter);
+          return 'categories' in item && item.categories?.includes(categoryFilter);
         } else {
-          return item.category === categoryFilter;
+          return 'category' in item && item.category === categoryFilter;
         }
       });
     }
 
     if (stateFilter !== 'all' && activeSection === 'entities') {
-      data = data.filter(item => item.state === stateFilter);
+      data = data.filter(item => 'state' in item && item.state === stateFilter);
     }
 
     return data;
@@ -505,8 +631,8 @@ const Masters: React.FC = () => {
           </div>
           <div>
             <p className="font-semibold text-gray-900 dark:text-white text-sm">{record.companyName}</p>
-            <p className="text-xs text-gray-500 dark:text-gray-400">{record.contactPerson}</p>
-            <p className="text-xs text-gray-400">GST: {record.gst}</p>
+            <p className="text-xs text-gray-400">{record.gst}</p>
+            <p className="text-xs text-gray-400">Code: NS123S</p>
           </div>
         </div>
       ),
@@ -516,6 +642,10 @@ const Masters: React.FC = () => {
       key: 'contact',
       render: (record: Manufacturer) => (
         <div className="space-y-1">
+          <div className="flex items-center text-xs">
+            <Users className="w-3 h-3 mr-1 text-blue-500" />
+            <span className="truncate">{record.contactPerson}</span>
+          </div>
           <div className="flex items-center text-xs">
             <Mail className="w-3 h-3 mr-1 text-blue-500" />
             <span className="truncate">{record.email}</span>
@@ -528,12 +658,35 @@ const Masters: React.FC = () => {
             <MapPin className="w-3 h-3 mr-1 text-red-500" />
             <span>{record.city}, {record.state}</span>
           </div>
+
+        </div>
+      ),
+    },
+   
+    {
+      title: 'Categories',
+      dataIndex: 'categories',
+      key: 'categories',
+      width: 200,
+      render: (categories: string[]) => (
+        <div className="space-y-1">
+          {categories.slice(0, 2).map((category, index) => (
+            <Tag key={index} color="blue"  className="text-xs">
+              {category}
+            </Tag>
+          ))}
+          {categories.length > 2 && (
+            <Tag color="default"  className="text-xs">
+              +{categories.length - 2} more
+            </Tag>
+          )}
         </div>
       ),
     },
     {
       title: 'Business Info',
       key: 'business',
+      width: 160,
       render: (record: Manufacturer) => (
         <div className="space-y-1 text-xs">
           <div className="flex justify-between">
@@ -552,50 +705,101 @@ const Masters: React.FC = () => {
       ),
     },
     {
-      title: 'Categories',
-      dataIndex: 'categories',
-      key: 'categories',
-      width: 200,
-      render: (categories: string[]) => (
-        <div className="space-y-1">
-          {categories.slice(0, 2).map((category, index) => (
-            <Tag key={index} color="blue" size="small" className="text-xs">
-              {category}
-            </Tag>
-          ))}
-          {categories.length > 2 && (
-            <Tag color="default" size="small" className="text-xs">
-              +{categories.length - 2} more
-            </Tag>
-          )}
-        </div>
-      ),
+      title: 'Email Status',
+      dataIndex: 'emailSentStatus',
+      key: 'emailSentStatus',
+      width: 120,
+      render: (status: string, record: Manufacturer) => {
+        if (!status) return <Tag color="default">Not Set</Tag>;
+        const config = {
+          sent: { color: 'green', icon: CheckCircle, text: 'SENT' },
+          pending: { color: 'orange', icon: Clock, text: 'PENDING' },
+          failed: { color: 'red', icon: XCircle, text: 'FAILED' }
+        };
+        const { color, icon: Icon, text } = config[status as keyof typeof config];
+        
+        return (
+          <>
+          <div className="flex items-center space-x-1">
+            <Icon className="w-3 h-3" />
+            <Tag color={color} className="text-xs">{text}</Tag>
+          </div>
+          <Tooltip title="Regenerate Password">
+          <Button
+            type="text"
+            icon={<Key className="w-3 h-3" />}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleRegeneratePassword(record);
+            }}
+            className="text-blue-600 hover:text-blue-800 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+          />
+        </Tooltip>
+        <Tooltip title="Send Credentials Email">
+          <Button
+            type="text"
+            icon={<Send className="w-3 h-3" />}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleSendEmail(record);
+            }}
+            className="text-green-600 hover:text-green-800 hover:bg-green-50 dark:hover:bg-green-900/20"
+          />
+        </Tooltip>
+          </>
+        );
+      },
     },
     // {
-    //   title: 'Status',
-    //   dataIndex: 'status',
-    //   key: 'status',
-    //   render: (status: string) => (
-    //     <Tag color={
-    //       status === 'active' ? 'green' :
-    //         status === 'pending' ? 'orange' : 'red'
-    //     } className="text-xs">
-    //       {status.toUpperCase()}
-    //     </Tag>
+    //   title: 'Regenerate Pw',
+    //   key: 'regeneratePassword',
+    //   align: 'center' as const,
+    //   width: 120,
+    //   render: (record: Manufacturer) => (
+    //     <Tooltip title="Regenerate Password">
+    //       <Button
+    //         type="text"
+    //         icon={<Key className="w-3 h-3" />}
+    //         onClick={(e) => {
+    //           e.stopPropagation();
+    //           handleRegeneratePassword(record);
+    //         }}
+    //         className="text-blue-600 hover:text-blue-800 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+    //       />
+    //     </Tooltip>
+    //   ),
+    // },
+    // {
+    //   title: 'Shoot Email',
+    //   key: 'sendEmail',
+    //   align: 'center' as const,
+    //   width: 100,
+    //   render: (record: Manufacturer) => (
+    //     <Tooltip title="Send Credentials Email">
+    //       <Button
+    //         type="text"
+    //         icon={<Send className="w-3 h-3" />}
+    //         onClick={(e) => {
+    //           e.stopPropagation();
+    //           handleSendEmail(record);
+    //         }}
+    //         className="text-green-600 hover:text-green-800 hover:bg-green-50 dark:hover:bg-green-900/20"
+    //       />
+    //     </Tooltip>
     //   ),
     // },
     {
       title: 'Actions',
       key: 'actions',
+      width: 120,
       render: (record: Manufacturer) => (
-        <Space size="small">
+        <Space >
           <Tooltip title="View Details">
-            <Button type="text" size="small" icon={<Eye className="w-3 h-3" />} />
+            <Button type="text"  icon={<Eye className="w-3 h-3" />} />
           </Tooltip>
           <Tooltip title="Edit">
             <Button
               type="text"
-              size="small"
               icon={<Edit className="w-3 h-3" />}
               onClick={() => handleEdit(record)}
             />
@@ -603,7 +807,6 @@ const Masters: React.FC = () => {
           <Tooltip title="Delete">
             <Button
               type="text"
-              size="small"
               danger
               icon={<Trash2 className="w-3 h-3" />}
               onClick={() => handleDelete(record)}
@@ -626,8 +829,8 @@ const Masters: React.FC = () => {
           </div>
           <div>
             <p className="font-semibold text-gray-900 dark:text-white text-sm">{record.companyName}</p>
-            <p className="text-xs text-gray-500 dark:text-gray-400">{record.contactPerson}</p>
-            <p className="text-xs text-gray-400">GST: {record.gst}</p>
+            <p className="text-xs text-gray-400">{record.gst}</p>
+            <p className='text-xs text-gray-400'>Code: NS123S</p>
           </div>
         </div>
       ),
@@ -637,6 +840,10 @@ const Masters: React.FC = () => {
       key: 'contact',
       render: (record: Distributor) => (
         <div className="space-y-1">
+          <div className="flex items-center text-xs">
+            <Users className="w-3 h-3 mr-1 text-blue-500" />
+            <span className="truncate">{record.contactPerson}</span>
+          </div>
           <div className="flex items-center text-xs">
             <Mail className="w-3 h-3 mr-1 text-blue-500" />
             <span className="truncate">{record.email}</span>
@@ -654,6 +861,7 @@ const Masters: React.FC = () => {
     },
     {
       title: 'Capacity & Fleet',
+      width: 180,
       key: 'capacity',
       render: (record: Distributor) => (
         <div className="space-y-1 text-xs">
@@ -680,43 +888,115 @@ const Masters: React.FC = () => {
       render: (categories: string[]) => (
         <div className="space-y-1">
           {categories.slice(0, 2).map((category, index) => (
-            <Tag key={index} color="green" size="small" className="text-xs">
+            <Tag key={index} color="green"  className="text-xs">
               {category}
             </Tag>
           ))}
           {categories.length > 2 && (
-            <Tag color="default" size="small" className="text-xs">
+            <Tag color="default"  className="text-xs">
               +{categories.length - 2} more
             </Tag>
           )}
         </div>
       ),
     },
+    {
+      title: 'Email Status',
+      dataIndex: 'emailSentStatus',
+      key: 'emailSentStatus',
+      width: 120,
+      render: (status: string, record: Distributor) => {
+        if (!status) return <Tag color="default">Not Set</Tag>;
+        const config = {
+          sent: { color: 'green', icon: CheckCircle, text: 'SENT' },
+          pending: { color: 'orange', icon: Clock, text: 'PENDING' },
+          failed: { color: 'red', icon: XCircle, text: 'FAILED' }
+        };
+        const { color, icon: Icon, text } = config[status as keyof typeof config];
+        
+        return (
+          <>
+          <div className="flex items-center space-x-1">
+            <Icon className="w-3 h-3" />
+            <Tag color={color} className="text-xs">{text}</Tag>
+          </div>
+          <Tooltip title="Regenerate Password">
+          <Button
+            type="text"
+            icon={<Key className="w-3 h-3" />}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleRegeneratePassword(record);
+            }}
+            className="text-blue-600 hover:text-blue-800 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+          />
+        </Tooltip>
+        <Tooltip title="Send Credentials Email">
+          <Button
+            type="text"
+            icon={<Send className="w-3 h-3" />}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleSendEmail(record);
+            }}
+            className="text-green-600 hover:text-green-800 hover:bg-green-50 dark:hover:bg-green-900/20"
+          />
+        </Tooltip>
+        </>
+
+        );
+      },
+    },
     // {
-    //   title: 'Status',
-    //   dataIndex: 'status',
-    //   key: 'status',
-    //   render: (status: string) => (
-    //     <Tag color={
-    //       status === 'active' ? 'green' :
-    //         status === 'pending' ? 'orange' : 'red'
-    //     } className="text-xs">
-    //       {status.toUpperCase()}
-    //     </Tag>
+    //   title: 'Regenerate Pw',
+    //   key: 'regeneratePassword',
+    //   align: 'center' as const,
+    //   width: 120,
+    //   render: (record: Distributor) => (
+    //     <Tooltip title="Regenerate Password">
+    //       <Button
+    //         type="text"
+    //         icon={<Key className="w-3 h-3" />}
+    //         onClick={(e) => {
+    //           e.stopPropagation();
+    //           handleRegeneratePassword(record);
+    //         }}
+    //         className="text-blue-600 hover:text-blue-800 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+    //       />
+    //     </Tooltip>
+    //   ),
+    // },
+    // {
+    //   title: 'Shoot Email',
+    //   key: 'sendEmail',
+    //   align: 'center' as const,
+    //   width: 100,
+    //   render: (record: Distributor) => (
+    //     <Tooltip title="Send Credentials Email">
+    //       <Button
+    //         type="text"
+    //         icon={<Send className="w-3 h-3" />}
+    //         onClick={(e) => {
+    //           e.stopPropagation();
+    //           handleSendEmail(record);
+    //         }}
+    //         className="text-green-600 hover:text-green-800 hover:bg-green-50 dark:hover:bg-green-900/20"
+    //       />
+    //     </Tooltip>
     //   ),
     // },
     {
       title: 'Actions',
       key: 'actions',
+      width: 120,
       render: (record: Distributor) => (
-        <Space size="small">
+        <Space >
           <Tooltip title="View Details">
-            <Button type="text" size="small" icon={<Eye className="w-3 h-3" />} />
+            <Button type="text"  icon={<Eye className="w-3 h-3" />} />
           </Tooltip>
           <Tooltip title="Edit">
             <Button
               type="text"
-              size="small"
               icon={<Edit className="w-3 h-3" />}
               onClick={() => handleEdit(record)}
             />
@@ -724,7 +1004,6 @@ const Masters: React.FC = () => {
           <Tooltip title="Delete">
             <Button
               type="text"
-              size="small"
               danger
               icon={<Trash2 className="w-3 h-3" />}
               onClick={() => handleDelete(record)}
@@ -756,6 +1035,7 @@ const Masters: React.FC = () => {
     {
       title: 'Manufacturer',
       dataIndex: 'manufacturerName',
+
       key: 'manufacturer',
       render: (text: string) => (
         <div className="flex items-center space-x-2">
@@ -767,6 +1047,7 @@ const Masters: React.FC = () => {
     {
       title: 'Pricing & Tax',
       key: 'pricing',
+      width: 150,
       render: (record: Product) => (
         <div className="space-y-1 text-xs">
           <div className="flex justify-between">
@@ -787,6 +1068,7 @@ const Masters: React.FC = () => {
     {
       title: 'Specifications',
       key: 'specs',
+      width: 240,
       render: (record: Product) => (
         <div className="space-y-1 text-xs">
           <div className="flex justify-between">
@@ -796,6 +1078,10 @@ const Masters: React.FC = () => {
           <div className="flex justify-between">
             <span className="text-gray-500">Category:</span>
             <span className="font-medium">{record.category}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-500">Case Configuration:</span>
+            <span className="font-medium">{record.caseConfiguration}</span>
           </div>
         </div>
       ),
@@ -817,14 +1103,13 @@ const Masters: React.FC = () => {
       title: 'Actions',
       key: 'actions',
       render: (record: Product) => (
-        <Space size="small">
+        <Space >
           <Tooltip title="View Details">
-            <Button type="text" size="small" icon={<Eye className="w-3 h-3" />} />
+            <Button type="text"  icon={<Eye className="w-3 h-3" />} />
           </Tooltip>
           <Tooltip title="Edit">
             <Button
               type="text"
-              size="small"
               icon={<Edit className="w-3 h-3" />}
               onClick={() => handleEdit(record)}
             />
@@ -832,7 +1117,6 @@ const Masters: React.FC = () => {
           <Tooltip title="Delete">
             <Button
               type="text"
-              size="small"
               danger
               icon={<Trash2 className="w-3 h-3" />}
               onClick={() => handleDelete(record)}
@@ -1395,9 +1679,9 @@ const Masters: React.FC = () => {
             </div>
 
             <div className="flex items-center justify-between lg:justify-end space-x-4">
-              <span className="text-sm text-gray-600 dark:text-gray-400">
+              {/* <span className="text-sm text-gray-600 dark:text-gray-400">
                 Total: {filteredData.length} {activeSection === 'entities' ? entityType : 'products'}
-              </span>
+              </span> */}
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Button
                   type="primary"

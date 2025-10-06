@@ -1,52 +1,32 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { AuthState, User } from '../types';
+import { authApi, tokenManager } from '../services/api-simple';
 
 interface AuthContextType extends AuthState {
-  login: (userId: string, password: string) => Promise<boolean>;
-  logout: () => void;
+  login: (email: string, password: string, rememberMe?: boolean) => Promise<boolean>;
+  logout: () => Promise<void>;
+  logoutAll: () => Promise<void>;
+  refreshUserData: () => Promise<void>;
+  validateToken: () => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Mock user data with Indian FMCG context
-const mockUsers: User[] = [
-  {
-    id: '1',
-    userId: 'mfr001',
-    email: 'rajesh@hindustanindustries.com',
-    role: 'manufacturer',
-    name: 'Rajesh Kumar',
-    company: 'Hindustan FMCG Industries',
-    avatar: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&dpr=1',
-    isActive: true,
-    createdAt: '2024-01-15',
-    lastLogin: '2024-12-20'
-  },
-  {
-    id: '2',
-    userId: 'admin001',
-    email: 'admin@bizzplus.in',
-    role: 'admin',
-    name: 'Priya Sharma',
-    company: 'Bizz+ Technologies',
-    avatar: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&dpr=1',
-    isActive: true,
-    createdAt: '2024-01-01',
-    lastLogin: '2024-12-20'
-  },
-  {
-    id: '3',
-    userId: 'dist001',
-    email: 'amit@bharatdistribution.com',
-    role: 'distributor',
-    name: 'Amit Patel',
-    company: 'Bharat Distribution Network',
-    avatar: 'https://images.pexels.com/photos/1681010/pexels-photo-1681010.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&dpr=1',
-    isActive: true,
-    createdAt: '2024-02-01',
-    lastLogin: '2024-12-19'
-  }
-];
+// Transform backend user data to frontend User type
+const transformBackendUser = (backendUser: any): User => {
+  return {
+    id: backendUser.id?.toString() || '',
+    userId: backendUser.user_id || '',
+    email: backendUser.email || '',
+    role: backendUser.role || 'distributor',
+    name: backendUser.name || '',
+    company: backendUser.company_name || '',
+    avatar: backendUser.avatar_url || '',
+    isActive: backendUser.is_active ?? true,
+    createdAt: backendUser.created_at || '',
+    lastLogin: backendUser.last_login || '',
+  };
+};
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [authState, setAuthState] = useState<AuthState>({
@@ -55,56 +35,184 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     isLoading: true
   });
 
+  // Check for existing session on app load
   useEffect(() => {
-    // Check for stored auth data
-    const storedUser = localStorage.getItem('bizz_user');
-    if (storedUser) {
-      const user = JSON.parse(storedUser);
+    checkAuthStatus();
+  }, []);
+
+  // Add session activity tracking
+  useEffect(() => {
+    if (authState.isAuthenticated) {
+      // Update last activity timestamp
+      const updateActivity = () => {
+        localStorage.setItem('last_activity', Date.now().toString());
+      };
+
+      // Track user activity
+      const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
+      events.forEach(event => {
+        document.addEventListener(event, updateActivity, true);
+      });
+
+      // Initial activity update
+      updateActivity();
+
+      // Cleanup event listeners
+      return () => {
+        events.forEach(event => {
+          document.removeEventListener(event, updateActivity, true);
+        });
+      };
+    }
+  }, [authState.isAuthenticated]);
+
+  const checkAuthStatus = async () => {
+    console.log('🔍 Checking authentication status...');
+    
+    try {
+      // Check for stored authentication data
+      const storedUser = localStorage.getItem('user_data');
+      const accessToken = localStorage.getItem('access_token'); // Direct check
+      
+      console.log('📦 Stored user data exists:', !!storedUser);
+      console.log('🔑 Access token exists:', !!accessToken);
+
+      if (storedUser && accessToken) {
+        try {
+          const parsedUser = JSON.parse(storedUser);
+          const user = transformBackendUser(parsedUser);
+          console.log('👤 User data parsed successfully:', user.email);
+          
+          // Set user as authenticated based on stored data only
+          // No API calls that could fail and cause logout
+          setAuthState({
+            user,
+            isAuthenticated: true,
+            isLoading: false
+          });
+          
+          console.log('✅ User authenticated from stored data');
+          
+        } catch (parseError) {
+          console.error('❌ Error parsing stored user data:', parseError);
+          // Clear corrupted data and set as not authenticated
+          localStorage.removeItem('user_data');
+          localStorage.removeItem('access_token');
+          setAuthState({
+            user: null,
+            isAuthenticated: false,
+            isLoading: false
+          });
+        }
+      } else {
+        console.log('❌ No stored user data or token found');
+        setAuthState({
+          user: null,
+          isAuthenticated: false,
+          isLoading: false
+        });
+      }
+    } catch (error) {
+      console.error('❌ Auth check error:', error);
+      setAuthState({
+        user: null,
+        isAuthenticated: false,
+        isLoading: false
+      });
+    }
+  };
+
+  const login = async (email: string, password: string, rememberMe: boolean = false): Promise<boolean> => {
+    setAuthState(prev => ({ ...prev, isLoading: true }));
+    
+    try {
+      const loginResponse = await authApi.login(email, password, rememberMe);
+      const user = transformBackendUser(loginResponse.customer);
+      
       setAuthState({
         user,
         isAuthenticated: true,
         isLoading: false
       });
-    } else {
-      setAuthState(prev => ({ ...prev, isLoading: false }));
-    }
-  }, []);
-
-  const login = async (userId: string, password: string): Promise<boolean> => {
-    setAuthState(prev => ({ ...prev, isLoading: true }));
-    
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Mock authentication
-    const user = mockUsers.find(u => u.userId === userId);
-    
-    if (user && password === 'password123') {
-      const updatedUser = { ...user, lastLogin: new Date().toISOString() };
-      localStorage.setItem('bizz_user', JSON.stringify(updatedUser));
-      setAuthState({
-        user: updatedUser,
-        isAuthenticated: true,
-        isLoading: false
-      });
+      
       return true;
+    } catch (error) {
+      console.error('Login error:', error);
+      setAuthState(prev => ({ ...prev, isLoading: false }));
+      return false;
     }
-    
-    setAuthState(prev => ({ ...prev, isLoading: false }));
-    return false;
   };
 
-  const logout = () => {
-    localStorage.removeItem('bizz_user');
-    setAuthState({
-      user: null,
-      isAuthenticated: false,
-      isLoading: false
-    });
+  const logout = async () => {
+    console.log('🚪 Logout initiated');
+    setAuthState(prev => ({ ...prev, isLoading: true }));
+    
+    try {
+      // Only call logout API if we have a valid token
+      const token = tokenManager.getToken();
+      if (token) {
+        await authApi.logout();
+        console.log('✅ Logout API call successful');
+      }
+    } catch (error) {
+      console.error('❌ Logout API error (non-critical):', error);
+      // Don't fail logout if API call fails
+    } finally {
+      // Always clear local state regardless of API call result
+      setAuthState({
+        user: null,
+        isAuthenticated: false,
+        isLoading: false
+      });
+      console.log('✅ Local auth state cleared');
+    }
+  };
+
+  const logoutAll = async () => {
+    // For simple version, same as regular logout
+    await logout();
+  };
+
+  const refreshUserData = async () => {
+    try {
+      const customer = await authApi.getProfile();
+      if (customer) {
+        const user = transformBackendUser(customer);
+        localStorage.setItem('user_data', JSON.stringify(customer));
+        setAuthState(prev => ({
+          ...prev,
+          user
+        }));
+      }
+    } catch (error) {
+      console.error('Refresh user data error:', error);
+    }
+  };
+
+  const validateToken = async (): Promise<boolean> => {
+    try {
+      await authApi.getProfile();
+      console.log('✅ Manual token validation successful');
+      return true;
+    } catch (error: any) {
+      console.error('❌ Manual token validation failed:', error);
+      
+      if (error.message?.includes('401') || 
+          error.message?.includes('403') || 
+          error.message?.includes('Unauthorized') ||
+          error.message?.includes('Forbidden')) {
+        console.log('🚪 Token expired, logging out');
+        await logout();
+        return false;
+      }
+      
+      // Network error, token might still be valid
+      return true;
+    }
   };
 
   return (
-    <AuthContext.Provider value={{ ...authState, login, logout }}>
+    <AuthContext.Provider value={{ ...authState, login, logout, logoutAll, refreshUserData, validateToken }}>
       {children}
     </AuthContext.Provider>
   );

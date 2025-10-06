@@ -2,15 +2,19 @@ import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useLanguage } from '../../contexts/LanguageContext';
-import { Factory, Lock, User, Eye, EyeOff, Languages } from 'lucide-react';
+import { Lock, User, Eye, EyeOff, Languages } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Swal from 'sweetalert2';
+import ForgotPasswordModal from './ForgotPasswordModal';
 
 const LoginForm: React.FC = () => {
-  const [userId, setUserId] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showLanguageSelector, setShowLanguageSelector] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
   const { login, isLoading } = useAuth();
   const { getThemeColors } = useTheme();
   const { language, setLanguage, t } = useLanguage();
@@ -18,12 +22,14 @@ const LoginForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!userId || !password) {
+    setErrorMessage('');
+
+    if (!email || !password) {
+      setErrorMessage('Please enter both email and password');
       Swal.fire({
         icon: 'warning',
         title: 'Information Missing',
-        text: 'Please enter both User ID and Password',
+        text: 'Please enter both email and password',
         confirmButtonColor: colors.primary,
         customClass: {
           popup: 'bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border-0',
@@ -34,13 +40,14 @@ const LoginForm: React.FC = () => {
       return;
     }
 
-    const success = await login(userId, password);
-    
-    if (!success) {
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setErrorMessage('Please enter a valid email address');
       Swal.fire({
-        icon: 'error',
-        title: 'Login Failed',
-        text: 'Invalid credentials. Please check your User ID and Password.',
+        icon: 'warning',
+        title: 'Invalid Email',
+        text: 'Please enter a valid email address',
         confirmButtonColor: colors.primary,
         customClass: {
           popup: 'bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border-0',
@@ -48,13 +55,49 @@ const LoginForm: React.FC = () => {
           htmlContainer: 'text-gray-700 dark:text-gray-300'
         }
       });
-    } else {
+      return;
+    }
+
+    try {
+      const success = await login(email, password, rememberMe);
+
+      if (!success) {
+        setErrorMessage('Invalid credentials. Please check your email and password.');
+        Swal.fire({
+          icon: 'error',
+          title: 'Login Failed',
+          text: 'Invalid credentials. Please check your email and password.',
+          confirmButtonColor: colors.primary,
+          customClass: {
+            popup: 'bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border-0',
+            title: 'text-gray-900 dark:text-white font-bold',
+            htmlContainer: 'text-gray-700 dark:text-gray-300'
+          }
+        });
+      } else {
+        Swal.fire({
+          icon: 'success',
+          title: 'Welcome!',
+          text: 'Login successful. Redirecting to dashboard...',
+          timer: 1500,
+          showConfirmButton: false,
+          customClass: {
+            popup: 'bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border-0',
+            title: 'text-gray-900 dark:text-white font-bold',
+            htmlContainer: 'text-gray-700 dark:text-gray-300'
+          }
+        });
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      const errorMsg = error instanceof Error ? error.message : 'An unexpected error occurred';
+      setErrorMessage(errorMsg);
+
       Swal.fire({
-        icon: 'success',
-        title: 'Welcome!',
-        text: 'Login successful. Redirecting to dashboard...',
-        timer: 1500,
-        showConfirmButton: false,
+        icon: 'error',
+        title: 'Login Error',
+        text: errorMsg,
+        confirmButtonColor: colors.primary,
         customClass: {
           popup: 'bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border-0',
           title: 'text-gray-900 dark:text-white font-bold',
@@ -65,12 +108,15 @@ const LoginForm: React.FC = () => {
   };
 
   return (
-    <div className={`h-100 flex items-center justify-center bg-gradient-to-br ${colors.light} dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 px-4`}>
-      <motion.div 
-        initial={{ opacity: 0, y: 50, scale: 0.95 }}
+    <div
+      style={{ height: '100vh' }}
+    className={`h-max flex items-center justify-center bg-gradient-to-br ${colors.light} dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 px-4`}>
+      <motion.div
+        initial={{ opacity: 0, y: 50, scale: 0.95 }}  
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className="w-full max-w-md"
+        className="w-full max-w-md h-full"
+        style={{ height: '100vh' }}
       >
         {/* Logo and Title */}
         <div className="text-center mb-8">
@@ -99,11 +145,10 @@ const LoginForm: React.FC = () => {
                         setLanguage('en');
                         setShowLanguageSelector(false);
                       }}
-                      className={`flex items-center space-x-3 p-2 rounded-lg transition-all text-left w-full ${
-                        language === 'en'
+                      className={`flex items-center space-x-3 p-2 rounded-lg transition-all text-left w-full ${language === 'en'
                           ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300'
                           : 'hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
-                      }`}
+                        }`}
                     >
                       <span className="text-lg">🇺🇸</span>
                       <span className="text-sm font-medium">English</span>
@@ -113,11 +158,10 @@ const LoginForm: React.FC = () => {
                         setLanguage('hi');
                         setShowLanguageSelector(false);
                       }}
-                      className={`flex items-center space-x-3 p-2 rounded-lg transition-all text-left w-full ${
-                        language === 'hi'
+                      className={`flex items-center space-x-3 p-2 rounded-lg transition-all text-left w-full ${language === 'hi'
                           ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300'
                           : 'hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
-                      }`}
+                        }`}
                     >
                       <span className="text-lg">🇮🇳</span>
                       <span className="text-sm font-medium">हिंदी</span>
@@ -128,20 +172,17 @@ const LoginForm: React.FC = () => {
             </div>
           </div>
 
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2, duration: 0.3 }}
             className="inline-flex flex-col items-center justify-center mb-4 mt-5"
           >
-            <img 
-              src="/src/assets/bizz+Logo_Final.png" 
-              alt="Bizz+" 
+            <img
+              src="/src/assets/bizz+Logo_Final.png"
+              alt="Bizz+"
               className="h-16 w-auto mb-4"
             />
-            {/* <div className={`inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br ${colors.gradient} rounded-2xl shadow-lg`}>
-              <Factory className="w-8 h-8 text-white" />
-            </div> */}
           </motion.div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">FMCG Distribution Hub</h1>
           <p className="text-gray-600 dark:text-gray-400">{t('login.subtitle')}</p>
@@ -149,38 +190,39 @@ const LoginForm: React.FC = () => {
         </div>
 
         {/* Login Card */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.4 }}
           className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 sm:p-8 backdrop-blur-sm border border-gray-200 dark:border-gray-700"
         >
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Demo Credentials */}
-            <div className={`bg-gradient-to-r ${colors.light} dark:${colors.dark} border border-opacity-20 rounded-lg p-4 mb-6`} style={{ borderColor: colors.primary }}>
-              <h3 className="text-sm font-semibold mb-2" style={{ color: colors.primary }}>{t('login.demoCredentials')}</h3>
-              <div className="text-xs space-y-1" style={{ color: colors.accent }}>
-                <p><strong>{t('login.manufacturer')}:</strong> mfr001 / password123</p>
-                <p><strong>{t('login.admin')}:</strong> admin001 / password123</p>
-                <p><strong>{t('login.distributor')}:</strong> dist001 / password123</p>
+            {/* Error Message */}
+            {errorMessage && (
+              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3 mb-4">
+                <p className="text-red-700 dark:text-red-300 text-sm">{errorMessage}</p>
               </div>
-            </div>
+            )}
 
-            {/* User ID Field */}
+            {/* Email Field */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                {t('login.userId')}
+                Email Address
               </label>
               <div className="relative">
                 <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <input
-                  type="text"
-                  value={userId}
-                  onChange={(e) => setUserId(e.target.value)}
+                  type="email"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (errorMessage) setErrorMessage('');
+                  }}
                   className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:border-transparent transition-all"
                   style={{ focusRingColor: colors.primary }}
-                  placeholder={t('login.enterUserId')}
+                  placeholder="Enter your email address"
                   required
+                  autoComplete="email"
                 />
               </div>
             </div>
@@ -188,18 +230,22 @@ const LoginForm: React.FC = () => {
             {/* Password Field */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                {t('login.password')}
+                Password
               </label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    if (errorMessage) setErrorMessage('');
+                  }}
                   className="w-full pl-10 pr-12 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:border-transparent transition-all"
                   style={{ focusRingColor: colors.primary }}
-                  placeholder={t('login.enterPassword')}
+                  placeholder="Enter your password"
                   required
+                  autoComplete="current-password"
                 />
                 <button
                   type="button"
@@ -209,6 +255,31 @@ const LoginForm: React.FC = () => {
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
+            </div>
+
+            {/* Remember Me and Forgot Password */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <input
+                  id="remember-me"
+                  name="remember-me"
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700"
+                />
+                <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+                  Remember me for 30 days
+                </label>
+              </div>
+              
+              <button
+                type="button"
+                onClick={() => setShowForgotPassword(true)}
+                className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:underline transition-colors"
+              >
+                Forgot Password?
+              </button>
             </div>
 
             {/* Submit Button */}
@@ -223,17 +294,17 @@ const LoginForm: React.FC = () => {
               {isLoading ? (
                 <div className="flex items-center justify-center space-x-2">
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  <span>{t('login.signingIn')}</span>
+                  <span>Signing In...</span>
                 </div>
               ) : (
-                t('login.signIn')
+                'Sign In'
               )}
             </motion.button>
           </form>
         </motion.div>
 
         {/* Footer */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5, duration: 0.3 }}
@@ -244,6 +315,12 @@ const LoginForm: React.FC = () => {
           </p>
         </motion.div>
       </motion.div>
+
+      {/* Forgot Password Modal */}
+      <ForgotPasswordModal 
+        isOpen={showForgotPassword} 
+        onClose={() => setShowForgotPassword(false)} 
+      />
     </div>
   );
 };

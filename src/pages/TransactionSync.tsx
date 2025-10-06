@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import dayjs from 'dayjs';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const { Option } = Select;
 const { RangePicker } = DatePicker;
@@ -41,6 +42,7 @@ interface TransactionSyncData {
 }
 
 const TransactionSync: React.FC = () => {
+  const { t } = useLanguage();
   const [entities, setEntities] = useState<TransactionSyncData[]>([]);
   const [filteredData, setFilteredData] = useState<TransactionSyncData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -49,6 +51,7 @@ const TransactionSync: React.FC = () => {
   const [syncTypeFilter, setSyncTypeFilter] = useState<'all' | 'Sales' | 'Purchase' | 'Payments' | 'Receipts'>('all');
   const [bizzPlusFilter, setBizzPlusFilter] = useState<'all' | 'bizz+' | 'non-bizz+'>('all');
   const [dateRange, setDateRange] = useState<[dayjs.Dayjs, dayjs.Dayjs] | null>(null);
+  const [timeFilter, setTimeFilter] = useState('all');
 
   useEffect(() => {
     // Mock data
@@ -137,6 +140,36 @@ const TransactionSync: React.FC = () => {
     }, 1000);
   }, []);
 
+  // Helper function to get date range based on time filter
+  const getDateRangeFromTimeFilter = (filter: string) => {
+    const now = dayjs();
+    
+    switch (filter) {
+      case 'today':
+        return [now.startOf('day'), now.endOf('day')];
+      case 'yesterday':
+        return [now.subtract(1, 'day').startOf('day'), now.subtract(1, 'day').endOf('day')];
+      case 'thisWeek':
+        return [now.startOf('week'), now.endOf('week')];
+      case 'lastWeek':
+        return [now.subtract(1, 'week').startOf('week'), now.subtract(1, 'week').endOf('week')];
+      case 'thisMonth':
+        return [now.startOf('month'), now.endOf('month')];
+      case 'lastMonth':
+        return [now.subtract(1, 'month').startOf('month'), now.subtract(1, 'month').endOf('month')];
+      case 'thisQuarter':
+        return [now.startOf('quarter'), now.endOf('quarter')];
+      case 'lastQuarter':
+        return [now.subtract(1, 'quarter').startOf('quarter'), now.subtract(1, 'quarter').endOf('quarter')];
+      case 'thisYear':
+        return [now.startOf('year'), now.endOf('year')];
+      case 'lastYear':
+        return [now.subtract(1, 'year').startOf('year'), now.subtract(1, 'year').endOf('year')];
+      default:
+        return null;
+    }
+  };
+
   useEffect(() => {
     let filtered = entities;
 
@@ -161,6 +194,18 @@ const TransactionSync: React.FC = () => {
       filtered = filtered.filter(item => item.isBizzPlus === isBizzPlus);
     }
 
+    // Apply time filter (only if no custom date range is set)
+    if (!dateRange && timeFilter !== 'custom') {
+      const timeFilterRange = getDateRangeFromTimeFilter(timeFilter);
+      if (timeFilterRange) {
+        filtered = filtered.filter(item => {
+          const syncDate = dayjs(item.syncDateTime);
+          return syncDate.isAfter(timeFilterRange[0]) && syncDate.isBefore(timeFilterRange[1]);
+        });
+      }
+    }
+
+    // Apply custom date range (overrides time filter)
     if (dateRange) {
       filtered = filtered.filter(item => {
         const syncDate = dayjs(item.syncDateTime);
@@ -169,7 +214,7 @@ const TransactionSync: React.FC = () => {
     }
 
     setFilteredData(filtered);
-  }, [searchText, entityFilter, syncTypeFilter, bizzPlusFilter, dateRange, entities]);
+  }, [searchText, entityFilter, syncTypeFilter, bizzPlusFilter, dateRange, timeFilter, entities]);
 
   const getSyncTypeIcon = (type: string) => {
     switch (type) {
@@ -378,6 +423,34 @@ const TransactionSync: React.FC = () => {
             <Row gutter={[16, 16]}>
               <Col xs={24} sm={12} md={4}>
                 <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Time Period</label>
+                  <Select
+                    value={timeFilter}
+                    onChange={(value) => {
+                      setTimeFilter(value);
+                      // Clear custom date range when predefined time filter is selected
+                      if (value !== 'custom') {
+                        setDateRange(null);
+                      }
+                    }}
+                    className="w-full"
+                  >
+                    <Option value="all">{t('common.allTime')}</Option>
+                    <Option value="today">{t('common.today')}</Option>
+                    <Option value="yesterday">{t('common.yesterday')}</Option>
+                    <Option value="thisWeek">{t('common.thisWeek')}</Option>
+                    <Option value="lastWeek">{t('common.lastWeek')}</Option>
+                    <Option value="thisMonth">{t('common.thisMonth')}</Option>
+                    <Option value="lastMonth">{t('common.lastMonth')}</Option>
+                    <Option value="thisQuarter">{t('common.thisQuarter')}</Option>
+                    <Option value="lastQuarter">{t('common.lastQuarter')}</Option>
+                    <Option value="thisYear">{t('common.thisYear')}</Option>
+                    <Option value="lastYear">{t('common.lastYear')}</Option>
+                  </Select>
+                </div>
+              </Col>
+              <Col xs={24} sm={12} md={4}>
+                <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Entity Type</label>
                   <Select
                     value={entityFilter}
@@ -391,7 +464,7 @@ const TransactionSync: React.FC = () => {
                   </Select>
                 </div>
               </Col>
-              <Col xs={24} sm={12} md={4}>
+              <Col xs={24} sm={12} md={3}>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Sync Type</label>
                   <Select
@@ -407,7 +480,7 @@ const TransactionSync: React.FC = () => {
                   </Select>
                 </div>
               </Col>
-              <Col xs={24} sm={12} md={4}>
+              <Col xs={24} sm={12} md={3}>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Bizz+ Filter</label>
                   <Select
@@ -421,17 +494,25 @@ const TransactionSync: React.FC = () => {
                   </Select>
                 </div>
               </Col>
-              <Col xs={24} sm={12} md={8}>
+              <Col xs={24} sm={12} md={6}>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Date Range</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Custom Date Range</label>
                   <RangePicker
                     value={dateRange}
-                    onChange={(dates) => setDateRange(dates as [dayjs.Dayjs, dayjs.Dayjs] | null)}
+                    onChange={(dates) => {
+                      setDateRange(dates as [dayjs.Dayjs, dayjs.Dayjs] | null);
+                      // Clear time filter when custom range is selected
+                      if (dates) {
+                        setTimeFilter('custom');
+                      }
+                    }}
                     className="w-full"
                     format="YYYY-MM-DD"
+                    placeholder={['Start Date', 'End Date']}
                   />
                 </div>
               </Col>
+           
               <Col xs={24} md={4}>
                 <div className="flex items-end h-full">
                   <div className="text-sm text-gray-600 dark:text-gray-400">

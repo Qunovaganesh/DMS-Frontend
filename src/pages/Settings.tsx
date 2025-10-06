@@ -208,117 +208,10 @@ const Settings: React.FC = () => {
           </motion.div>
         </Col>
 
-        {/* Appearance & Notifications */}
-        <Col xs={24} lg={12}>
-          <div className="space-y-6">
-            {/* Appearance */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.3, duration: 0.5 }}
-            >
-              <Card 
-                title={
-                  <div className="flex items-center space-x-2">
-                    <Palette className="w-5 h-5 text-purple-500" />
-                    <span>Appearance</span>
-                  </div>
-                }
-                className="shadow-lg border-0"
-              >
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-medium text-gray-900 dark:text-white">Dark Mode</p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">Toggle between light and dark themes</p>
-                    </div>
-                    <Switch checked={isDark} onChange={toggleTheme} />
-                  </div>
-                  <Divider />
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Language</label>
-                    <Select 
-                      value={settings.system.language}
-                      onChange={(value) => setSettings(prev => ({
-                        ...prev,
-                        system: { ...prev.system, language: value }
-                      }))}
-                      className="w-full"
-                    >
-                      <Option value="en">English</Option>
-                      <Option value="es">Spanish</Option>
-                      <Option value="fr">French</Option>
-                      <Option value="de">German</Option>
-                    </Select>
-                  </div>
-                </div>
-              </Card>
-            </motion.div>
-
-            {/* Notifications */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.4, duration: 0.5 }}
-            >
-              <Card 
-                title={
-                  <div className="flex items-center space-x-2">
-                    <Bell className="w-5 h-5 text-orange-500" />
-                    <span>Notifications</span>
-                  </div>
-                }
-                className="shadow-lg border-0"
-              >
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-medium text-gray-900 dark:text-white">Email Notifications</p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">Receive notifications via email</p>
-                    </div>
-                    <Switch 
-                      checked={settings.notifications.emailNotifications}
-                      onChange={(checked) => setSettings(prev => ({
-                        ...prev,
-                        notifications: { ...prev.notifications, emailNotifications: checked }
-                      }))}
-                    />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-medium text-gray-900 dark:text-white">Weekly Reports</p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">Get weekly performance summaries</p>
-                    </div>
-                    <Switch 
-                      checked={settings.notifications.weeklyReports}
-                      onChange={(checked) => setSettings(prev => ({
-                        ...prev,
-                        notifications: { ...prev.notifications, weeklyReports: checked }
-                      }))}
-                    />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-medium text-gray-900 dark:text-white">Security Alerts</p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">Important security notifications</p>
-                    </div>
-                    <Switch 
-                      checked={settings.notifications.securityAlerts}
-                      onChange={(checked) => setSettings(prev => ({
-                        ...prev,
-                        notifications: { ...prev.notifications, securityAlerts: checked }
-                      }))}
-                    />
-                  </div>
-                </div>
-              </Card>
-            </motion.div>
-          </div>
-        </Col>
       </Row>
 
       {/* Mail & Security Settings */}
-      <Row gutter={[24, 24]}>
+      {/* <Row gutter={[24, 24]}>
         <Col xs={24} lg={12}>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -437,10 +330,10 @@ const Settings: React.FC = () => {
             </Card>
           </motion.div>
         </Col>
-      </Row>
+      </Row> */}
 
       {/* System Preferences */}
-      <motion.div
+      {/* <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.7, duration: 0.5 }}
@@ -516,7 +409,7 @@ const Settings: React.FC = () => {
             </Col>
           </Row>
         </Card>
-      </motion.div>
+      </motion.div> */}
     </div>
   );
 };
