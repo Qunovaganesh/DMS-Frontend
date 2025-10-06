@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { AuthState, User } from '../types';
-import { authApi, tokenManager } from '../services/api-simple';
+import { authApi } from '../services/api-simple';
 
 interface AuthContextType extends AuthState {
   login: (email: string, password: string, rememberMe?: boolean) => Promise<boolean>;
@@ -13,18 +13,18 @@ interface AuthContextType extends AuthState {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // Transform backend user data to frontend User type
-const transformBackendUser = (backendUser: any): User => {
+const transformBackendUser = (backendUser: Record<string, unknown>): User => {
   return {
-    id: backendUser.id?.toString() || '',
-    userId: backendUser.user_id || '',
-    email: backendUser.email || '',
-    role: backendUser.role || 'distributor',
-    name: backendUser.name || '',
-    company: backendUser.company_name || '',
-    avatar: backendUser.avatar_url || '',
-    isActive: backendUser.is_active ?? true,
-    createdAt: backendUser.created_at || '',
-    lastLogin: backendUser.last_login || '',
+    id: (backendUser.id as string)?.toString() || '',
+    userId: (backendUser.user_id as string) || '',
+    email: (backendUser.email as string) || '',
+    role: (backendUser.role as 'distributor' | 'manufacturer' | 'admin') || 'distributor',
+    name: (backendUser.name as string) || '',
+    company: (backendUser.company_name as string) || '',
+    avatar: (backendUser.avatar_url as string) || '',
+    isActive: (backendUser.is_active as boolean) ?? true,
+    createdAt: (backendUser.created_at as string) || '',
+    lastLogin: (backendUser.last_login as string) || '',
   };
 };
 
@@ -68,12 +68,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const checkAuthStatus = async () => {
     console.log('🔍 Checking authentication status...');
-    
+
     try {
       // Check for stored authentication data
       const storedUser = localStorage.getItem('user_data');
       const accessToken = localStorage.getItem('access_token'); // Direct check
-      
+
       console.log('📦 Stored user data exists:', !!storedUser);
       console.log('🔑 Access token exists:', !!accessToken);
 
@@ -82,7 +82,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           const parsedUser = JSON.parse(storedUser);
           const user = transformBackendUser(parsedUser);
           console.log('👤 User data parsed successfully:', user.email);
-          
+
           // Set user as authenticated based on stored data only
           // No API calls that could fail and cause logout
           setAuthState({
@@ -90,9 +90,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             isAuthenticated: true,
             isLoading: false
           });
-          
+
           console.log('✅ User authenticated from stored data');
-          
+
         } catch (parseError) {
           console.error('❌ Error parsing stored user data:', parseError);
           // Clear corrupted data and set as not authenticated
@@ -122,19 +122,60 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  const login = async (email: string, password: string, rememberMe: boolean = false): Promise<boolean> => {
+  const login = async (email: string, _password: string, _rememberMe: boolean = false): Promise<boolean> => {
     setAuthState(prev => ({ ...prev, isLoading: true }));
-    
+
     try {
-      const loginResponse = await authApi.login(email, password, rememberMe);
-      const user = transformBackendUser(loginResponse.customer);
-      
+      // DUMMY LOGIN - Comment out real API call
+      // const loginResponse = await authApi.login(email, password, rememberMe);
+      // const user = transformBackendUser(loginResponse.customer);
+
+      // Dummy login logic - accept any email/password combination
+      console.log('🔐 Using dummy login - accepting any credentials');
+      console.log('📧 Email:', email, '🔑 Password provided:', !!_password, '💾 Remember me:', _rememberMe);
+
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // Create dummy user data
+      const dummyUser: User = {
+        id: '1',
+        userId: 'dummy_user_123',
+        email: email,
+        role: 'distributor',
+        name: email.split('@')[0] || 'Dummy User',
+        company: 'Dummy Company',
+        avatar: '',
+        isActive: true,
+        createdAt: new Date().toISOString(),
+        lastLogin: new Date().toISOString(),
+      };
+
+      // Store dummy data in localStorage
+      localStorage.setItem('user_data', JSON.stringify({
+        id: 1,
+        user_id: 'dummy_user_123',
+        email: email,
+        role: 'distributor',
+        name: email.split('@')[0] || 'Dummy User',
+        company_name: 'Dummy Company',
+        avatar_url: '',
+        is_bizz_plus: false,
+        status: 'active',
+        is_active: true,
+        last_login: new Date().toISOString(),
+        created_at: new Date().toISOString(),
+      }));
+
+      // Set dummy access token
+      localStorage.setItem('access_token', 'dummy_access_token_12345');
+
       setAuthState({
-        user,
+        user: dummyUser,
         isAuthenticated: true,
         isLoading: false
       });
-      
+
       return true;
     } catch (error) {
       console.error('Login error:', error);
@@ -146,14 +187,19 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const logout = async () => {
     console.log('🚪 Logout initiated');
     setAuthState(prev => ({ ...prev, isLoading: true }));
-    
+
     try {
+      // DUMMY LOGOUT - Comment out real API call
       // Only call logout API if we have a valid token
-      const token = tokenManager.getToken();
-      if (token) {
-        await authApi.logout();
-        console.log('✅ Logout API call successful');
-      }
+      // const token = tokenManager.getToken();
+      // if (token) {
+      //   await authApi.logout();
+      //   console.log('✅ Logout API call successful');
+      // }
+
+      // Dummy logout - just clear local data
+      console.log('🔐 Using dummy logout - clearing local data only');
+      await authApi.logout();
     } catch (error) {
       console.error('❌ Logout API error (non-critical):', error);
       // Don't fail logout if API call fails
@@ -175,15 +221,18 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const refreshUserData = async () => {
     try {
-      const customer = await authApi.getProfile();
-      if (customer) {
-        const user = transformBackendUser(customer);
-        localStorage.setItem('user_data', JSON.stringify(customer));
-        setAuthState(prev => ({
-          ...prev,
-          user
-        }));
-      }
+      // DUMMY REFRESH - Comment out real API call
+      // const customer = await authApi.getProfile();
+      // if (customer) {
+      //   const user = transformBackendUser(customer);
+      //   localStorage.setItem('user_data', JSON.stringify(customer));
+      //   setAuthState(prev => ({
+      //     ...prev,
+      //     user
+      //   }));
+      // }
+
+      console.log('🔐 Using dummy refresh - no API call needed');
     } catch (error) {
       console.error('Refresh user data error:', error);
     }
@@ -191,21 +240,32 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const validateToken = async (): Promise<boolean> => {
     try {
-      await authApi.getProfile();
-      console.log('✅ Manual token validation successful');
-      return true;
-    } catch (error: any) {
+      // DUMMY VALIDATION - Comment out real API call
+      // await authApi.getProfile();
+      // console.log('✅ Manual token validation successful');
+      // return true;
+
+      // Dummy validation - just check if we have a token in localStorage
+      const token = localStorage.getItem('access_token');
+      if (token && token.startsWith('dummy_')) {
+        console.log('✅ Dummy token validation successful');
+        return true;
+      }
+
+      console.log('❌ No valid dummy token found');
+      return false;
+    } catch (error: unknown) {
       console.error('❌ Manual token validation failed:', error);
-      
-      if (error.message?.includes('401') || 
-          error.message?.includes('403') || 
-          error.message?.includes('Unauthorized') ||
-          error.message?.includes('Forbidden')) {
+
+      if (error instanceof Error && (error.message?.includes('401') ||
+        error.message?.includes('403') ||
+        error.message?.includes('Unauthorized') ||
+        error.message?.includes('Forbidden'))) {
         console.log('🚪 Token expired, logging out');
         await logout();
         return false;
       }
-      
+
       // Network error, token might still be valid
       return true;
     }

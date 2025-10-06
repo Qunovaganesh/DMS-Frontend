@@ -144,34 +144,39 @@ const apiClient = new SimpleApiClient();
 
 // Authentication API
 export const authApi = {
-  async login(email: string, password: string, rememberMe: boolean = false): Promise<LoginResponse> {
-    const response = await apiClient.post<LoginResponse>('/auth/login', {
-      email,
-      password,
-      remember_me: rememberMe,
-    });
+  // DUMMY LOGIN - Comment out real API call
+  // async login(email: string, password: string, rememberMe: boolean = false): Promise<LoginResponse> {
+  //   const response = await apiClient.post<LoginResponse>('/auth/login', {
+  //     email,
+  //     password,
+  //     remember_me: rememberMe,
+  //   });
 
-    if (response.success && response.data) {
-      const { access_token } = response.data;
-      tokenManager.setToken(access_token);
+  //   if (response.success && response.data) {
+  //     const { access_token } = response.data;
+  //     tokenManager.setToken(access_token);
       
-      // Store user data
-      localStorage.setItem('user_data', JSON.stringify(response.data.customer));
+  //     // Store user data
+  //     localStorage.setItem('user_data', JSON.stringify(response.data.customer));
       
-      return response.data;
-    }
+  //     return response.data;
+  //   }
 
-    throw new Error(response.message || 'Login failed');
-  },
+  //   throw new Error(response.message || 'Login failed');
+  // },
 
   async logout(): Promise<void> {
+    // DUMMY LOGOUT - Comment out real API call
+    // tokenManager.clearToken();
+    console.log('🔐 Using dummy logout - clearing local data only');
     tokenManager.clearToken();
   },
 
-  async getProfile(): Promise<any> {
-    const response = await apiClient.get('/profile');
-    return response.data?.customer;
-  },
+  // DUMMY PROFILE - Comment out real API call
+  // async getProfile(): Promise<any> {
+  //   const response = await apiClient.get('/profile');
+  //   return response.data?.customer;
+  // },
 };
 
 // Export token manager for direct access if needed
