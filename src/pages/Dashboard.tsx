@@ -823,7 +823,6 @@ const Dashboard: React.FC = () => {
                   />
                 </div>
               </div>
-
               <div className="text-xs text-gray-500 dark:text-gray-400">
                 <Calendar className="w-3 h-3 inline mr-1" />
                 {dateRange ? `${dateRange[0].format('MMM DD')} - ${dateRange[1].format('MMM DD, YYYY')}` : 'All Time'}
